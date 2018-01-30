@@ -7,14 +7,21 @@ import json
 
 
 class Search(object):
-    """Locates image IDs for geometries and corresponding dates. 
-        One -> Many relationship between geometry and dates. 'id' field is key between them. 
+    """Locates image IDs for geometries and
+        corresponding dates.
+        One -> Many relationship between geometry 
+        and dates. 'id' field is key between them. 
     """
 
-    def __init__(self, geometries, dates):
+    def __init__(self, geometries, dates, dry=False, key="id",
+                 start_col="start_date", end_col="end_date"):
         super(Search, self).__init__()
         # initialize api
         self._client = api.ClientV1()
+        self.dry = dry
+        self.key = key
+        self.start_col = start_col
+        self.end_col = end_col
 
         # type-check and save members
         if(isinstance(geometries, gpd.GeoDataFrame)):
@@ -26,14 +33,25 @@ class Search(object):
             self.dates = dates
 
     def query(self):
-        _joined = self.geometries.join(self.dates, how='outer')
+        _joined = self.dates.join(self.geometries.set_index(self.key),
+                                  on=self.key, how='left',
+                                  lsuffix='Left')
         result = []
-        for _, row in tqdm(_joined.iterrows(), desc="Querying Planet API", unit="searches", total=len(_joined)):
+        for _, row in tqdm(_joined.iterrows(),
+                           desc="Querying Planet API",
+                           unit="searches", total=len(_joined)):
+            if(self.dry):
+                print("Dry run, not executing search"
+                      ". {id}:{start} - {end}".format(id=row[self.key],
+                                                      start=row[self.start_col],
+                                                      end=row[self.end_col]))
+                continue
             _r = self._exec(row['geometry'],
-                            row['start_date'],
-                            row['end_date'])
-            result.append((row.name, _r))
-        return(result)
+                            row[self.start_col],
+                            row[self.end_col])
+            _r['loc_id'] = row.name
+            result.append(_r)
+        return(pd.concat(result))
 
     def _exec(self, geom, date_start, date_end, _opt_str=None):
         """
@@ -57,4 +75,4 @@ class Search(object):
         request = api.filters.build_search_request(query, item_types)
         # this will cause an exception if there are any API related errors
         results = self._client.quick_search(request)
-        return(json.loads(results.get_raw())['features'])
+        return(pd.read_json(json.dumps(json.loads(results.get_raw())['features'])))
