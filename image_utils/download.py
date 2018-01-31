@@ -11,7 +11,7 @@ PL_API_KEY = os.environ["PL_API_KEY"]
 
 class CroppedDownload(object):
     """Downloads a set of cropped images for a given geometry."""
-    @retry(wait_fixed=5000)
+    @retry(wait_fixed=5000, stop_max_delay = 600000) # try for 10 minutes, 5 second delay
     def _check_clip_op(self, id):
         r = requests.get(
             "{_base}/{id}".format(_base=CLIP_API_URL, id=id),
@@ -36,21 +36,25 @@ class CroppedDownload(object):
         payload = {
             "aoi": mapping(self.geometry),
             "targets": [{
-                "item_id": image_id,
+                "item_id": id,
                 "item_type": "PSScene4Band",
                 "asset_type": 'analytic'
             }]
         }
-        return(payload)
 
-        r = requests.post(CLIP_API_URL, auth=(PL_API_KEY, ""), json=payload)
-
+        try: 
+            r = requests.post(CLIP_API_URL, auth=(PL_API_KEY, ""), json=payload)
+            r.raise_for_status()
+        except Exception as e:
+            print(e)
+            return("error: {id}".format(id=id))
+        
         response = self._check_clip_op(r.json()['id'])
 
         image_url = response['_links']['results'][0]
 
         local_filename = os.path.join(
-            dest_dir, "{loc}_{img}.zip".format(loc=loc_id, img=image_id))
+            self.dest_dir, "{loc}_{img}.zip".format(loc=self.loc_id, img=id))
 
         r = requests.get(image_url, stream=True, auth=(PL_API_KEY, ""))
         with open(local_filename, 'wb') as f:
