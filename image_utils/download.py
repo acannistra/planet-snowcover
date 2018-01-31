@@ -17,7 +17,6 @@ class CroppedDownload(object):
             "{_base}/{id}".format(_base=CLIP_API_URL, id=id),
             auth=(PL_API_KEY, ""))
         if r.json()['state'] != "succeeded":
-            print("\t...waiting")
             raise Exception("Not Yet")
         else:
             print("response found.")
@@ -42,12 +41,13 @@ class CroppedDownload(object):
             }]
         }
 
-        try: 
+        @retry(wait_exponential_multiplier=1000,wait_exponential_max=10000)
+        def _start_op(payload):
             r = requests.post(CLIP_API_URL, auth=(PL_API_KEY, ""), json=payload)
             r.raise_for_status()
-        except Exception as e:
-            print(e)
-            return("error: {id}".format(id=id))
+            return(r)
+        
+        r = _start_op(payload)
         
         response = self._check_clip_op(r.json()['id'])
 
