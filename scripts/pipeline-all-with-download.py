@@ -18,6 +18,7 @@ import random
 import folium
 import json
 import requests
+from datetime import timedelta
 import os
 import cartopy.crs as ccrs
 from cartopy import feature
@@ -34,6 +35,8 @@ from multiprocessing.dummy import Pool as ThreadPool
 
 NUM_RANDOM_DATES = 10
 NUM_RANDOM_LOCATIONS = 20
+POST_SNOW = True
+PS_BUFFER_DAYS = 60
 YEAR = 2017
 IMAGEDIR = "../images/"
 
@@ -60,13 +63,28 @@ boxes = locations[['Location', 'geometry']].copy()
 #TODO: better understand buffer size
 boxes.geometry = [g.buffer(0.005, cap_style=3) for g in boxes.geometry]
 
+## Select Dates
+if(not POST_SNOW):
+    dates = locations[['Location', "snow_appearance_date", "snow_disappearance_date"]]
+else:
+    timebuffer = timedelta(days=PS_BUFFER_DAYS)
+    start_dates = locations['snow_disappearance_date']
+    end_dates = locations['snow_disappearance_date'].apply(lambda x: x + timebuffer)
+    start_dates.name = "snowfree_buffer_start"
+    end_dates.name = "snowfree_buffer_end"
+    dates = pd.concat([locations.Location, start_dates, end_dates], axis=1)
+
 
 # ## Search API For Image Candidates
 
-dates = locations[['Location', "snow_appearance_date", "snow_disappearance_date"]]
-searcher = search.Search(boxes, dates, dry=False,
-                         key='Location', start_col='snow_appearance_date',
-                         end_col="snow_disappearance_date")
+if(not POST_SNOW):
+    searcher = search.Search(boxes, dates, dry=False,
+                             key='Location', start_col='snow_appearance_date',
+                             end_col="snow_disappearance_date")
+else:
+    searcher = search.Search(boxes, dates, dry=False,
+                             key='Location', start_col='snowfree_buffer_start',
+                             end_col="snowfree_buffer_end")
 results = searcher.query()
 
 
@@ -81,7 +99,6 @@ for group in results.groupby('loc_id'):
         loc_img_ids[group[0]] = list(set(group[1].id.values))
 
 
-reload(download)
 files = {}
 for loc_id, img_ids in tqdm(loc_img_ids.items(), 
                            desc="Cropping + Downloading Images", 
