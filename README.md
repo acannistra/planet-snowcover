@@ -8,10 +8,9 @@ Tony Cannistra and Kavya Pradhan – CEE 573 Wi18 University of Washington, Seat
 Understanding the responses of species to climate change requires a robust understanding of the impact of abiotic (environmental) factors on habitat suitability and habitat availability at spatial scales relevant to the study species (Hannah et al. 2014). When studying plant species in montane ecosystems, snow cover is a particularly relevant abiotic factor in determining habitat suitability. However, remotely-sensed snow cover measurements are either captured at a spatial scale far too large to be relevant to the study species (e.g. MODIS SCA), or are appropriate in spatial scale but cost-prohibitive (e.g. LiDAR snow measurements). This project will evaluate the suitability of Planet data, a commercial satellite imagery product with unprecedented spatial (< 0.8 m) and temporal (< 5 day) resolution, for the purpose of acquiring detailed snow-cover and snow-melt data at ecologically-relevant scales. The challenge herein is the radiometric bandwidth available from Planet imagery: only Red, Green, Blue, and Near Infrared bands are measured by these satellites, which makes standard spectral snow cover indices like the Normalized Difference Snow Index (NDSI, Hall et al. 1995) unusable. We will develop a method for using this limited radiometric bandwidth to determine snow cover. 
 
 
-## Study System
-
-We will focus our analysis of the usability of Planet data for acquiring snow cover information across Mt. Rainier National Park. The availability of snow presence/absence data through a vast network of iButton sensors acts as the ideal “ground-truthing” dataset since it can be used both for training and validating Planet based snow cover information. Here's their geographic distribution in 2017: 
+## Study System 
 <img align="right" src="figures/testout.png" width="250"/>
+We will focus our analysis of the usability of Planet data for acquiring snow cover information across Mt. Rainier National Park. The availability of snow presence/absence data through a vast network of iButton sensors acts as the ideal “ground-truthing” dataset since it can be used both for training and validating Planet based snow cover information. The figure shows their geographic distribution in 2017.
 
 ## Objectives
 
@@ -51,7 +50,13 @@ The explosive growth and availability of satellite imagery at unprecedented spat
 
 1. We've acquired Planet Labs Ambassador status to get imagery (January 2017)
 2. We've been able to download snow-on and snow-off images and extract pixel values. 
-3. Some initial analysis of the data looks like this: <img src="figures/histcompare.png" width="500" align="center"/>. A Gaussian Mixture clustering on all bands (TOA reflectance) looks like this: <img src="figures/gaussiancluster.png" width="450" align="center"/>
+3. Some initial analysis of the data looks like this: 
+	
+	<img src="figures/histcompare.png" width="500" align="center"/>.
+	
+	 A Gaussian Mixture clustering on all bands (TOA reflectance) looks like this:
+	
+	<img src="figures/gaussiancluster.png" width="450" align="center"/>
 
 
 ## References:        
