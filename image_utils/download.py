@@ -2,7 +2,7 @@ import requests
 import pandas as pd
 from shapely.geometry import mapping
 from retrying import retry
-from multiprocessing.dummy import Pool as ThreadPool
+from multiprocessing import Pool as ThreadPool
 import os
 
 CLIP_API_URL = "https://api.planet.com/compute/ops/clips/v1/"
@@ -41,15 +41,25 @@ class CroppedDownload(object):
             }]
         }
 
-        @retry(wait_exponential_multiplier=1000,wait_exponential_max=10000)
+        @retry(wait_fixed=5000,stop_max_delay=600000)
         def _start_op(payload):
             r = requests.post(CLIP_API_URL, auth=(PL_API_KEY, ""), json=payload)
             r.raise_for_status()
             return(r)
         
-        r = _start_op(payload)
+        try:            
+            r = _start_op(payload)
+        except Exception as e:
+            print(e)
+            print("error starting clip operation")
+            return("{loc} - error starting clip operation".format(loc=self.loc_id))
         
-        response = self._check_clip_op(r.json()['id'])
+        try:
+            response = self._check_clip_op(r.json()['id'])
+        except Exception as e:
+            print(e)
+            print("error retrieving clipped raster")
+            return("{loc} - error retrieving clipped raster".format(loc=self.loc_id))
 
         image_url = response['_links']['results'][0]
 
