@@ -12,6 +12,8 @@ Understanding the responses of species to climate change requires a robust under
 
 We will focus our analysis of the usability of Planet data for acquiring snow cover information across Mt. Rainier National Park. The availability of snow presence/absence data through a vast network of iButton sensors acts as the ideal “ground-truthing” dataset since it can be used both for training and validating Planet based snow cover information.
 
+### Ground-truth Observations
+We have access from the HilleRisLambers lab at the University of Washington ground-truth snow cover data sensors. Here's their geographic distribution in 2017: ![test](figures/testout.png)
 
 ## Objectives
 
@@ -47,7 +49,11 @@ The explosive growth and availability of satellite imagery at unprecedented spat
    1. Additional study sites include the Upper Tuolumne River Basin (California) and the Senator Beck Basin (Colorado) for which LIDAR snow cover data exist.
 1. Manuscript Development
 
+## Updates
 
+1. We've acquired Planet Labs Ambassador status to get imagery (January 2017)
+2. We've been able to download snow-on and snow-off images and extract pixel values. 
+3. Some initial analysis of the data looks like this: ![histogram](figures/histcompare.png)
 
 
 ## References:        
