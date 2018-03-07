@@ -35,13 +35,14 @@ from multiprocessing.dummy import Pool as ThreadPool
 
 NUM_RANDOM_DATES = 10
 NUM_RANDOM_LOCATIONS = 20
-POST_SNOW = True
+POST_SNOW = False
+JUST_LOCS = False
 PS_BUFFER_DAYS = 60
-YEAR = 2017
-IMAGEDIR = "../images/"
+YEAR = 2016
+IMAGEDIR = "../images/2016/snow"
 
 
-# ## Extract 2017 Measurement Locations
+# ## Extract Measurement Locations
 
 snowdata = pd.read_csv("../data/snow_summary_all_2009_2017_locs.csv", 
                        parse_dates = ["snow_appearance_date", "snow_disappearance_date", 
@@ -52,10 +53,14 @@ snowdata = gpd.GeoDataFrame(snowdata)
 snowdata.crs = {'init' : 'epsg:4326'}
 
 locations = snowdata.dropna(subset=["longitude", 'latitude']).drop_duplicates("Location")
+locations[["Location", 'longitude', 'latitude']].to_csv("these_locations.csv", index_label = "id")
+
+if(JUST_LOCS): exit()
 
 ## Select NUM_RANDOM_LOCATIONS locations
 
 locations = locations.loc[choice(locations.index, NUM_RANDOM_LOCATIONS, replace=False)]
+
 
 # ## Add bounding boxes
 
