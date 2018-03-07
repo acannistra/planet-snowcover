@@ -14,7 +14,7 @@ class Search(object):
     """
 
     def __init__(self, geometries, dates, dry=False, key="id",
-                 start_col="start_date", end_col="end_date"):
+                 start_col="start_date", end_col="end_date", item_type = "PSScene4Band"):
         super(Search, self).__init__()
         # initialize api
         self._client = api.ClientV1()
@@ -22,6 +22,7 @@ class Search(object):
         self.key = key
         self.start_col = start_col
         self.end_col = end_col
+        self.item_type = item_type
 
         # type-check and save members
         if(isinstance(geometries, gpd.GeoDataFrame)):
@@ -71,7 +72,7 @@ class Search(object):
                                    lt=date_end.strftime(_api_datefmt))
         )
         # we are requesting PlanetScope 4 Band imagery
-        item_types = ['PSScene4Band']
+        item_types = [self.item_type]
         request = api.filters.build_search_request(query, item_types)
         # this will cause an exception if there are any API related errors
         results = self._client.quick_search(request)
