@@ -3,6 +3,8 @@
 
 Tony Cannistra and Kavya Pradhan – CEE 573 Wi18 University of Washington, Seattle.
 
+[**Results Presentation**](https://docs.google.com/presentation/d/174RDwsjo9BVH3Lxn2SKa70jmZlqzDUOFXx_y3du1Qvk/edit?usp=sharing) | [**Final Paper**][#]
+
 ## Introduction
 
 Understanding the responses of species to climate change requires a robust understanding of the impact of abiotic (environmental) factors on habitat suitability and habitat availability at spatial scales relevant to the study species (Hannah et al. 2014). When studying plant species in montane ecosystems, snow cover is a particularly relevant abiotic factor in determining habitat suitability. However, remotely-sensed snow cover measurements are either captured at a spatial scale far too large to be relevant to the study species (e.g. MODIS SCA), or are appropriate in spatial scale but cost-prohibitive (e.g. LiDAR snow measurements). This project will evaluate the suitability of Planet data, a commercial satellite imagery product with unprecedented spatial (< 0.8 m) and temporal (< 5 day) resolution, for the purpose of acquiring detailed snow-cover and snow-melt data at ecologically-relevant scales. The challenge herein is the radiometric bandwidth available from Planet imagery: only Red, Green, Blue, and Near Infrared bands are measured by these satellites, which makes standard spectral snow cover indices like the Normalized Difference Snow Index (NDSI, Hall et al. 1995) unusable. We will develop a method for using this limited radiometric bandwidth to determine snow cover. 
