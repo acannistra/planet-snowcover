@@ -3,7 +3,7 @@
 
 Tony Cannistra and Kavya Pradhan – CEE 573 Wi18 University of Washington, Seattle.
 
-[**Results Presentation**](https://docs.google.com/presentation/d/174RDwsjo9BVH3Lxn2SKa70jmZlqzDUOFXx_y3du1Qvk/edit?usp=sharing) | [**Final Paper**][#]
+[**Results Presentation**](https://docs.google.com/presentation/d/174RDwsjo9BVH3Lxn2SKa70jmZlqzDUOFXx_y3du1Qvk/edit?usp=sharing) | [**Final Paper**](#)
 
 ## Introduction
 
