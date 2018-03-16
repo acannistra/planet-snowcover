@@ -1,9 +1,18 @@
-# Data Exploration and Download Notebooks
+# Notebooks
 
-The notebooks in this directory are the experimental launch points for the image utilities in `../image_utils` and `../scripts`. They also have some preliminary image analysis in them. It's probably stupid, and is definitely wrong. 
+These notebooks represent the meat of the analysis, from image acquisition and processing to machine learning. 
 
 ## `ml-v1.ipynb`
-An initial attempt at using a gaussian process classifier with an RBF kernel to classify snow vs non-snow. Very good accuracy. No classification of unseen image pixels yet though. 
+An initial attempt at using a gaussian process classifier with an RBF kernel to classify snow vs non-snow at Mt. Rainier. Very good accuracy in cross-validation. 
+
+## `ASO-extract.ipynb`
+Utilities for managing NASA/JPL Airborne Snow Observatory (ASO) snow observations. 
+
+## `ml-v4-ASO.ipynb` and `ml-verify-ASO.ipynb`
+Model training and quantitaive/qualitative evaluation on ASO-based data. 
+
+## `mlverify-image.ipynb`
+Qualitative assessment of snow cover performance on actual imagery. 
 
 ## `pipeline-all-with-download.ipynb`
 Contains all of the code which went into understanding the Planet API, and uses some abstractions around it for simplicity. 
