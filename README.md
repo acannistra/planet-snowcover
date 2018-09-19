@@ -3,6 +3,10 @@
 
 Tony Cannistra and Kavya Pradhan – CEE 573 Wi18 University of Washington, Seattle.
 
+**This code is being reworked** to support the `mapbox/robosat` image segmentation pipeline. You can find this effort in the `robosat/` folder of this repository, and the `NOTES.md` file is a good place to start. 
+
+---
+
 [**Results Presentation**](https://docs.google.com/presentation/d/174RDwsjo9BVH3Lxn2SKa70jmZlqzDUOFXx_y3du1Qvk/edit?usp=sharing) | [**Final Paper**](./cannistra-pradhan-cee573_final.pdf)
 
 ## Introduction
