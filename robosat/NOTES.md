@@ -3,7 +3,7 @@
 1. Convert Planet image extent into shapefile using `gdaltindex [image]`
 2. Threshold SWE mask with `gdalcalc.py` 
 
-	gdal_calc.py -A [SWE_MASK].tif --outfile [SWE_MASK]_thresh.tif --calc="0*(A<[THRESHOLD])" --calc="1*(A>[THRESHOLD])"
+	`gdal_calc.py -A [SWE_MASK].tif --outfile [SWE_MASK]_thresh.tif --calc="0*(A<[THRESHOLD])" --calc="1*(A>[THRESHOLD])"`
 
 3. Crop resulting thresholded mask with image extent using `gdalwarp -cutline [sat_image_extent] -crop_to_cutline [thresh_swe_mask] output...etc`. **Carefully consider CRS here**. 
 4. Convert cropped mask to polygons using `gdal_polygonize.py`. 
