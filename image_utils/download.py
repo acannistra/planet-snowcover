@@ -4,6 +4,7 @@ from shapely.geometry import mapping
 from retrying import retry
 from multiprocessing import Pool as ThreadPool
 import os
+from smart_open import smart_open
 
 CLIP_API_URL = "https://api.planet.com/compute/ops/clips/v1/"
 ACTIVATE_API_URL = "https://api.planet.com/data/v1/item-types/{atype}/items/{id}/assets/"
@@ -23,7 +24,7 @@ class WholeDownload(object):
             print("response found.")
             return(r.json())
 
-    def __init__(self, loc_id, image_ids, dest_dir, assettype = "PSScene4Band", itemtype="analytic", _threads=5):
+    def __init__(self, loc_id, image_ids, dest_dir, assettype = "PSScene4Band", itemtype="analytic", _threads=5, profile=None):
         super(WholeDownload, self).__init__()
         self.loc_id = loc_id
         self.image_ids = image_ids
@@ -31,6 +32,7 @@ class WholeDownload(object):
         self.assettype = assettype
         self.itemtype = itemtype
         self._threads = _threads
+        self.profile = profile # for smart_open
 
     def _request_and_download_image(self, id):
         print("Starting activation for image {img}".format(img=id))
@@ -72,7 +74,7 @@ class WholeDownload(object):
 
         if(not os.path.isfile(local_tif_filename)):
             r = requests.get(image_url, stream=True, auth=(PL_API_KEY, ""))
-            with open(local_tif_filename, 'wb') as f:
+            with smart_open(local_tif_filename, 'wb') as f:
                 for chunk in r.iter_content(chunk_size=1024):
                     if chunk:  # filter out keep-alive new chunks
                         f.write(chunk)
@@ -109,14 +111,15 @@ class CroppedDownload(object):
             print("response found.")
             return(r.json())
 
-    def __init__(self, loc_id, geometry, image_ids, dest_dir, _threads=5):
+    def __init__(self, loc_id, geometry, image_ids, dest_dir, _threads=5, aws_profile=None):
         super(CroppedDownload, self).__init__()
         self.loc_id = loc_id
         self.geometry = geometry
         self.image_ids = image_ids
         self.dest_dir = dest_dir
         self._threads = _threads
-
+        self.aws_profile = None # used for smart_open
+        
     def _request_and_download_image(self, id):
         print("Starting download for image {img}".format(img=id))
         payload = {
@@ -155,7 +158,8 @@ class CroppedDownload(object):
             self.dest_dir, "{loc}_{img}.zip".format(loc=self.loc_id, img=id))
 
         r = requests.get(image_url, stream=True, auth=(PL_API_KEY, ""))
-        with open(local_filename, 'wb') as f:
+
+        with smart_open(local_filename, 'wb', profile_name=self.aws_profile) as f:
             for chunk in r.iter_content(chunk_size=1024):
                 if chunk:  # filter out keep-alive new chunks
                     f.write(chunk)
