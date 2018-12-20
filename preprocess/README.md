@@ -87,3 +87,5 @@ __Output:__ A cloud storage bucket containing an `/images` and `/masks` director
 ### GCP Implementation Design
 
 The major steps in this pipeline will be implemented as containerized Python modules and be linked together with the Kubeflow pipeline system. Some of the components may contain some Cloud Dataflow (i.e. Apache Beam) workflow elements.
+
+This document outlines the containers which will be connected together to perform the intermediary operations. 
