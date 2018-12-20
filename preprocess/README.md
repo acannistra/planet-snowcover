@@ -82,4 +82,8 @@ Three steps here:
 1. Be sure that all image tiles have a paired ground truth tile and that there are no orphan tiles.
 1. Come up with some sort of standardized directory structure (maybe best to stick with XYZ/OSM tiles here and reorganize later for training?)
 
-__Output:__ A cloud storage bucket containing an `/images` and `/masks` directory
+__Output:__ A cloud storage bucket containing an `/images` and `/masks` directory with some sort of standardized directory structure.
+
+### GCP Implementation Design
+
+The major steps in this pipeline will be implemented as containerized Python modules and be linked together with the Kubeflow pipeline system. Some of the components may contain some Cloud Dataflow (i.e. Apache Beam) workflow elements.
