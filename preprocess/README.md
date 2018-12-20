@@ -3,7 +3,7 @@ This file contains a design for a [Google Kubeflow](https://cloud.google.com/blo
 
 # Pipeline Design Considerations
 
-The purpose of this pipeline is to merge raw ground truth data with imagery for the production of a set of standardized image tiles for the purpose of training a machine learning model.
+The purpose of this pipeline is to merge raw ground truth data in raster or vector format with satellite imagery for the production of a set of standardized image tiles for the purpose of training a machine learning model.
 
 This particular implementation assumes a desired output of paired (data, mask) tilesets.
 
@@ -20,8 +20,8 @@ This particular implementation assumes a desired output of paired (data, mask) t
 
 | Name | Data Type | Description |
 | ---- | -----     | ----        |
-| Image Tiles | Cloud Storage bucket (S3, GCS) | Bucket with either `{z}/{x}/{y}.png` structure or `{z}_{x}_{y}.png` filenames containing tiles. |
-| Mask Tiles | Cloud Storage Bucket (S3, GCS) | Bucket with either `{z}/{x}/{y}.png` structure or `{z}_{x}_{y}.png` filenames containing binary masks for training. |
+| Image Tiles | Cloud Storage bucket (S3, GCS) | Bucket with either `{z}/{x}/{y}.tif` structure or `{z}_{x}_{y}.tif` filenames containing tiles. (_it's likely that we'll need `.tif` files to include 4 bands, see below._)|
+| Mask Tiles | Cloud Storage Bucket (S3, GCS) | Bucket with either `{z}/{x}/{y}.tif` structure or `{z}_{x}_{y}.tif` filenames containing binary masks for training.  (_it's likely that we'll need `.tif` files to include 4 bands, see below._)|
 
 The output __Image Tiles__ are cropped to the extent of the ground truth information. The set of __Image Tiles__ and __Mask Tiles__ is identical.
 
@@ -84,8 +84,36 @@ Three steps here:
 
 __Output:__ A cloud storage bucket containing an `/images` and `/masks` directory with some sort of standardized directory structure.
 
-### GCP Implementation Design
+## GCP Implementation Design
 
 The major steps in this pipeline will be implemented as containerized Python modules and be linked together with the Kubeflow pipeline system. Some of the components may contain some Cloud Dataflow (i.e. Apache Beam) workflow elements.
 
-This document outlines the containers which will be connected together to perform the intermediary operations. 
+This document outlines the __containers__ which will be connected together to perform the intermediary operations.
+
+### `gt_pre`
+
+Consumes ground truth data as above (__`--gt_raw`__) and outputs `{gt_raw}_gt_binary_raster` and `{gt_raw}_gt_footprint` into a directory (__`--output_dir`__). Binary raster is created either by:
+* rasterizing a polygon
+* thresholding a real-valued raster via `--threshold` arg, or
+* doing nothing (returning input binary raster)
+
+`{gt_raw}_gt_binary_raster.tif` and `{gt_raw}_gt_footprint.geojson` are placed into `/gt_processed` either in a cloud storage bucket or local folder (KubeFlow global pipeline variable `output_dir`).
+
+_How in particular do we pass around the variables / inputs / outputs?_
+
+### `get_images`
+
+Consumes `{gt_raw}_gt_footprint.geojson` (__`--footprint`__), along with __`--date`__ and __`--date_range`__ arguments and queries image search API to identify download candidates. Selects candidates (several options available here for this, potentially: __`--max_images`__, __`--max_cloud`__, etc) and uses [Planet Clips API](https://developers.planet.com/docs/api/reference/#tag/Clip-And-Ship) to download imagery within bounds of data footprint. Imagery with ID = `ID` is unzipped and placed into `/images/{ID}` within local storage or a cloud storage bucket (__`--output_dir`__).
+
+### `tile`
+
+_still in progress here –– not entirely sure whether it's best to keep each image tiled in its own directory or try to merge all images together. seems like keeping image tiles in their own directory allows for more downstream flexibility_.
+
+The purpose of this
+__We'll use this container for two steps in the pipeline__: first to tile the binary mask raster, and again to run a distributed tiling operation on the images in `/image/{ids}`.
+
+As a result, this container will contain __two__ related but distinct python functions. The first will tile a single image, and the second will be a Cloud Dataflow operation to tile a while directory of images. The Pipeline will run these two distinct operations seperately but both derived from this `tile` container.
+
+__Single Image tiler__: will take in __`--image`__ and perhaps __`--zoom_level`__ and produce an XYZ/OSM tile structure from the image. _Except: these images will likely remain as TIFF files so we can use multiple bands in training, rather than the typical PNG format used for OSM tiles_.
+
+__Multiple Image tiler__: TBD, still not quite sure how to structure the beam dataflow here. 
