@@ -1,7 +1,7 @@
 This file contains a design for a [Google Kubeflow](https://cloud.google.com/blog/products/ai-machine-learning/getting-started-kubeflow-pipelines)/[Google Cloud Dataflow](https://cloud.google.com/dataflow/) pipeline for preparing satellite images for machine learning via a raster or vector-based ground-truth label set. GCP's Kubeflow pipelines service is a managed containerized pipeline service which allows for distributed execution of a Docker-based processing pipeline.
 
 
-## Pipeline Design Considerations
+# Pipeline Design Considerations
 
 The purpose of this pipeline is to merge raw ground truth data with imagery for the production of a set of standardized image tiles for the purpose of training a machine learning model.
 
@@ -25,11 +25,11 @@ This particular implementation assumes a desired output of paired (data, mask) t
 
 The output __Image Tiles__ are cropped to the extent of the ground truth information. The set of __Image Tiles__ and __Mask Tiles__ is identical.
 
-### Conceptual Workflow
+## Conceptual Workflow
 
 The primary steps to completing this data transformation are 1) ground truth pre-processing, 2) image acquisition and storage, 3) image preprocessing, 4) image and mask tiling.
 
-#### Ground Truth Preprocessing
+### Ground Truth Preprocessing
 
 | input parameter | description |
 | ----  | ---- |
@@ -48,7 +48,7 @@ We must accept all three of these input data types and process them as follows:
 
 __Output__: this stage of the pipeline places in cloud storage the binary raster produced via this processing step and outputs its location for use by future steps. It also produces a `.GeoJSON` file containing the spatial extent of the ground truth for use by the image acquisition step.
 
-#### Image Acquisition
+### Image Acquisition
 
 | input parameter | description |
 | ----  | ---- |
@@ -66,11 +66,11 @@ __Output:__ A cloud storage bucket containing GeoTIFF files representing raw 4-b
 
 
 
-#### Image Preprocessing
+### Image Preprocessing
 
 Not totally sure what goes in here but I'm sure we're going to want to do something to the imagery before it gets tiled. Perhaps a TOA correction or some such thing. Wanted to leave room for it.
 
-#### Tiling
+### Tiling
 
 | input parameter | description |
 | ----- | ----- |
