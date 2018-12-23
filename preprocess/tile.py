@@ -7,6 +7,7 @@ def add_parser(subparser):
         formatter_class = argparse.ArgumentDefaultsHelpFormatter
     )
 
+
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument("--src_dir", help="directory containing tiled images")
     group.add_argument("--image", help="single image to tile")
