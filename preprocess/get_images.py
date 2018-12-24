@@ -8,10 +8,12 @@ from shapely.geometry import shape
 from json import loads
 
 from planet_utils.search import SimpleSearch
+from planet_utils.download import CroppedDownload
 
 from os import makedirs
 
 import pandas as pd
+import geopandas as gpd
 
 from yaspin import yaspin
 SUCCESS = "✔"
@@ -99,28 +101,44 @@ def _select_candidates(images, max_images = None, max_overlap = None, nearest_da
 
     return(images)
 
-def get_images(geometry, date, date_range, max_images = None,
+def _download_images(images, geometry, output_dir):
+    geom_overlaps = [g.intersection(geometry) for g in images.geometry.values]
+
+    downloader = CroppedDownload(0, geom_overlaps, images['id'].values, output_dir)
+
+    filenames = downloader.run()
+    return(filenames)
+
+
+
+def get_images(geometry, date, date_range, output_dir, max_images = None,
                max_overlap = None, nearest_date = None, max_cloud_cover = None):
 
     center_date = date
     start_date = center_date - timedelta(days = date_range)
     end_date = center_date + timedelta(days = date_range)
 
+    search_hull = geometry.convex_hull
     with yaspin(text="searching Planet API.", color="red") as spinner:
-        images = _search(geometry, start_date, end_date)
+        images = _search(search_hull, start_date, end_date)
         spinner.text = "found {} images.".format(len(images))
         spinner.ok(SUCCESS)
 
 
     # supplement in order to _select_candidates
+    images = gpd.GeoDataFrame(images, geometry = [shape(g) for g in images.geometry.values])
 
     images['datediff'] = [abs(pd.to_datetime(r['acquired']) - center_date) for r in images.properties.values]
 
-    images['overlap'] = [shape(g).intersection(geometry).area for g in images.geometry.values]
+    images['overlap'] = [g.intersection(geometry).area for g in images.geometry.values]
 
     images = _select_candidates(images, max_images, max_overlap, nearest_date, max_cloud_cover)
 
-    return(images)
+    filenames = _download_images(images, geometry, output_dir)
+
+
+    return(filenames)
+
 
 
 
@@ -128,6 +146,6 @@ def main(args):
     makedirs(args.output_dir, exist_ok = True)
 
     with open(args.footprint, 'r') as fp:
-        geometry = shape(loads(fp.read())).convex_hull
+        geometry = shape(loads(fp.read()))
 
-    print(get_images(geometry, args.date, args.date_range, args.max_images, args.max_overlap, args.nearest_date, args.max_cloud_cover)[['id', 'overlap', 'datediff']])
+    print(get_images(geometry, args.date, args.date_range, args.output_dir, args.max_images, args.max_overlap, args.nearest_date, args.max_cloud_cover))
