@@ -5,10 +5,10 @@ import unittest
 import rasterio as rio
 from rasterio.transform import guard_transform
 
-from os import path, remove
+from os import path, remove, makedirs
 
 from yaspin import yaspin
-SUCCESS = "✅ "
+SUCCESS = "✔"
 FAIL = "💥 "
 
 DESCRIPTION = """
@@ -133,18 +133,19 @@ def _is_binary_raster(raster):
     file = rio.open(raster)
     return(set(unique(file.read())) == set([1, 0]))
 
-def main(args):
 
-    file_base = path.splitext(path.basename(args.gt_file))[0]
+def gt_pre(gt_file, output_dir, threshold = None):
+    file_base = path.splitext(path.basename(gt_file))[0]
 
-    if not _is_binary_raster(args.gt_file):
+    if not _is_binary_raster(gt_file):
         # not binary raster, so need a threshold
-        if (args.threshold is None):
-            raise Exception(f"{args.gt_file} is not a binary raster. Threshold required.")
+        if (threshold is None):
+            raise Exception(f"{gt_file} is not a binary raster. Threshold required.")
 
-        with yaspin(text="thresholding raster", color="yellow") as spinner:
-            binrast_file = path.join(args.output_dir, f"{file_base}_binary.tif")
-            _threshold_raster(args.gt_file, binrast_file, args.threshold)
+        with yaspin(text="thresholding raster...", color="yellow") as spinner:
+            binrast_file = path.join(output_dir, f"{file_base}_binary.tif")
+            _threshold_raster(gt_file, binrast_file, threshold)
+            spinner.text = "thresholding raster...done"
             spinner.ok(SUCCESS)
 
     else:
@@ -152,6 +153,13 @@ def main(args):
         binrast_file = args.gt_file
 
     vec_filename = ".".join([file_base, 'geojson'])
-    with yaspin(text="writing vector", color="yellow") as spinner:
-        _write_vector(binrast_file, path.join(args.output_dir, vec_filename))
+    with yaspin(text="writing vector...", color="yellow") as spinner:
+        _write_vector(binrast_file, path.join(output_dir, vec_filename))
+        spinner.text = "writing vector...done"
         spinner.ok(SUCCESS)
+
+    return(0);
+
+def main(args):
+    makedirs(args.output_dir, exist_ok = True)
+    return(gt_pre(args.gt_file, args.output_dir, args.threshold))

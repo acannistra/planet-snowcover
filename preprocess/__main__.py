@@ -1,5 +1,5 @@
 """
-groundcover
+preprocess
 
 implementation of a pipeline to associate satellite imagery with a raster or vector ground-truth data source.
 
