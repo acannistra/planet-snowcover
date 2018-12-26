@@ -10,10 +10,16 @@ from json import loads
 from planet_utils.search import SimpleSearch
 from planet_utils.download import CroppedDownload
 
-from os import makedirs
+from os import makedirs, path
+
+from multiprocessing import Pool as ThreadPool
+from functools import partial
 
 import pandas as pd
 import geopandas as gpd
+
+import subprocess
+
 
 from yaspin import yaspin
 SUCCESS = "✔"
@@ -27,7 +33,7 @@ Selects candidates and uses Planet Clips API to download imagery within bounds o
 """
 
 class TestGetImages(unittest.TestCase):
-    pass;
+    pass #ha;
 
 def add_parser(subparser):
     parser = subparser.add_parser(
@@ -66,6 +72,15 @@ def add_parser(subparser):
                         help="remove images with cloud cover greater than a value.",
                         type=float)
 
+    parser.add_argument("--aws_profile",
+                        help = "AWS CLI Profile to use if s3:// url is given.",
+                        type = str)
+
+    parser.add_argument("--unzip",
+                        help = "Unzips .zip archives from Planet API into output_dir",
+                        action = 'store_true')
+
+
     parser.set_defaults(func = main)
 
 def _search(footprint, start_date, end_date, dry=False):
@@ -101,18 +116,39 @@ def _select_candidates(images, max_images = None, max_overlap = None, nearest_da
 
     return(images)
 
-def _download_images(images, geometry, output_dir):
-    geom_overlaps = [g.intersection(geometry) for g in images.geometry.values]
+def _download_images(images, geometry, output_dir, aws_profile):
+    geom_overlaps = [g.intersection(geometry).envelope for g in images.geometry.values] # adding envelope because original geom too large.
 
-    downloader = CroppedDownload(0, geom_overlaps, images['id'].values, output_dir)
+    downloader = CroppedDownload(0, geom_overlaps, images['id'].values, output_dir, aws_profile)
 
     filenames = downloader.run()
     return(filenames)
 
 
+def _process_zip(zipFile, output_dir, aws_profile = None):
+    """
+    Unzip Planet image archive to output_dir (if s3:// can provide aws_profile)
+    """
+    from zipfile import ZipFile
+    from smart_open import smart_open
+    from fnmatch import fnmatch
+
+    f = ZipFile(zipFile)
+    files = []
+    for f_i in f.namelist():
+        f_iter = f.open(f_i)
+        with smart_open(path.join(output_dir, f_i), 'wb') as w:
+            for line in f_iter:
+                w.write(line)
+        files.append(f_i)
+
+    return(files)
+
+
+
 
 def get_images(geometry, date, date_range, output_dir, max_images = None,
-               max_overlap = None, nearest_date = None, max_cloud_cover = None):
+               max_overlap = None, nearest_date = None, max_cloud_cover = None, aws_profile=None):
 
     center_date = date
     start_date = center_date - timedelta(days = date_range)
@@ -134,8 +170,7 @@ def get_images(geometry, date, date_range, output_dir, max_images = None,
 
     images = _select_candidates(images, max_images, max_overlap, nearest_date, max_cloud_cover)
 
-    filenames = _download_images(images, geometry, output_dir)
-
+    filenames = _download_images(images, geometry, output_dir, aws_profile)
 
     return(filenames)
 
@@ -148,4 +183,13 @@ def main(args):
     with open(args.footprint, 'r') as fp:
         geometry = shape(loads(fp.read()))
 
-    print(get_images(geometry, args.date, args.date_range, args.output_dir, args.max_images, args.max_overlap, args.nearest_date, args.max_cloud_cover))
+    filenames = get_images(geometry, args.date, args.date_range, args.output_dir, args.max_images, args.max_overlap, args.nearest_date, args.max_cloud_cover, args.aws_profile)
+
+    if args.unzip:
+        with yaspin(text="unzipping images...") as s:
+            tp = ThreadPool()
+            __unzipper = partial(_process_zip, output_dir = args.output_dir, aws_profile = args.aws_profile)
+            unzipped = list(tp.map(__unzipper, filenames))
+            s.ok(SUCCESS)
+
+    print(unzipped)
