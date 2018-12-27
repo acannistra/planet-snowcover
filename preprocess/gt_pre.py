@@ -2,6 +2,8 @@ import argparse
 
 import unittest
 
+from raster_utils import reproject_raster
+
 import rasterio as rio
 from rasterio.transform import guard_transform
 
@@ -78,7 +80,11 @@ def add_parser(subparser):
     parser.add_argument("--gt_file", help="ground truth filename.",
                         required=True)
     parser.add_argument("--threshold", help="threshold for ", type=float)
+
+    parser.add_argument("--dst_crs", help="EPSG code to reproject binary output raster into. Otherwise will keep source CRS.", type=int)
+
     parser.add_argument("output_dir", help="output directory. (AWS S3 and GCP GS compatible).")
+
 
     parser.set_defaults(func = main)
 
@@ -88,21 +94,28 @@ def _filetype(filename):
     "return extension of file without '.' "
     return(path.splitext(filename)[1])[1:]
 
-def _threshold_raster(file, out_name, threshold=0.9):
+def _threshold_raster(file, out_name, threshold=0.9, dst_crs = None):
     """
     writes thresholded ground-truth as single-band uint16 tiff
     """
     file = rio.open(file)
     profile = file.profile
 
+
     data = file.read(1)
-    profile.update(dtype='uint16')
-    profile.update(nodata = 0)
+    profile.update(dtype='int16')
+    data[data == 0] = -1.
+    profile.update(nodata = -1.)
     profile.update(transform=guard_transform(profile['transform']))
     with rio.open(out_name, 'w', **profile) as dest:
         threshed = (data >= threshold)
-        data = (threshed).astype('uint16')
+        data = (threshed).astype('int16')
         dest.write(data, 1)
+
+    if dst_crs is not None:
+        reproject_raster(out_name, dst_crs, out_name)
+
+
 
 def _write_vector(binaryRaster, outfilename):
     """
@@ -122,10 +135,13 @@ def _write_vector(binaryRaster, outfilename):
     largest = [sorted(s, key = lambda x: x.area, reverse=True)[0]]
 
     gdf = GeoDataFrame(geometry=largest, crs=file.crs)
+    gdf['area'] = gdf.geometry.area
 
     gdf = gdf.to_crs({'init': 'epsg:4326'}) # reproject
-    with open(outfilename, 'w') as test:
-        test.write(dumps(mapping(gdf.geometry.values[0])))
+    # with open(outfilename, 'w') as test:
+    #     test.write(dumps(mapping(gdf.geometry.values[0])))
+
+    gdf.to_file(outfilename, driver="GeoJSON")
 
 def _is_binary_raster(raster):
     from numpy import unique
@@ -134,7 +150,7 @@ def _is_binary_raster(raster):
     return(set(unique(file.read())) == set([1, 0]))
 
 
-def gt_pre(gt_file, output_dir, threshold = None):
+def gt_pre(gt_file, output_dir, threshold = None, dst_crs = None):
     file_base = path.splitext(path.basename(gt_file))[0]
 
     if not _is_binary_raster(gt_file):
@@ -144,7 +160,7 @@ def gt_pre(gt_file, output_dir, threshold = None):
 
         with yaspin(text="thresholding raster...", color="yellow") as spinner:
             binrast_file = path.join(output_dir, f"{file_base}_binary.tif")
-            _threshold_raster(gt_file, binrast_file, threshold)
+            _threshold_raster(gt_file, binrast_file, threshold, dst_crs)
             spinner.text = "thresholding raster...done"
             spinner.ok(SUCCESS)
 
@@ -162,4 +178,4 @@ def gt_pre(gt_file, output_dir, threshold = None):
 
 def main(args):
     makedirs(args.output_dir, exist_ok = True)
-    return(gt_pre(args.gt_file, args.output_dir, args.threshold))
+    return(gt_pre(args.gt_file, args.output_dir, args.threshold, args.dst_crs))
