@@ -1,0 +1,6 @@
+[submodule "planet_utils"]
+	path = planet_utils
+	url = https://git@github.com/acannistra/planet_utils.git
+[submodule "preprocess/robosat"]
+	path = preprocess/robosat
+	url = https://github.com/mapbox/robosat.git
