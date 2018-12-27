@@ -1,4 +1,6 @@
-This file contains a design for a [Google Kubeflow](https://cloud.google.com/blog/products/ai-machine-learning/getting-started-kubeflow-pipelines)/[Google Cloud Dataflow](https://cloud.google.com/dataflow/) pipeline for preparing satellite images for machine learning via a raster or vector-based ground-truth label set. GCP's Kubeflow pipelines service is a managed containerized pipeline service which allows for distributed execution of a Docker-based processing pipeline.
+~~This file contains a design for a [Google Kubeflow](https://cloud.google.com/blog/products/ai-machine-learning/getting-started-kubeflow-pipelines)/[Google Cloud Dataflow](https://cloud.google.com/dataflow/) pipeline for preparing satellite images for machine learning via a raster or vector-based ground-truth label set. GCP's Kubeflow pipelines service is a managed containerized pipeline service which allows for distributed execution of a Docker-based processing pipeline.~~
+
+_Early on I considered using a workflow engine for this, and might soon. this document was the design for a Google Cloud-based workflow. Many of the components are the same, but are currently implemented as python modules._
 
 
 # Pipeline Design Considerations
@@ -116,4 +118,4 @@ As a result, this container will contain __two__ related but distinct python fun
 
 __Single Image tiler__: will take in __`--image`__ and perhaps __`--zoom_level`__ and produce an XYZ/OSM tile structure from the image. _Except: these images will likely remain as TIFF files so we can use multiple bands in training, rather than the typical PNG format used for OSM tiles_.
 
-__Multiple Image tiler__: TBD, still not quite sure how to structure the beam dataflow here. 
+__Multiple Image tiler__: TBD, still not quite sure how to structure the beam dataflow here.
