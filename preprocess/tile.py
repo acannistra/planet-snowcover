@@ -71,7 +71,6 @@ def _write_tile(tile, image, output_dir, tile_size = 512, bands = [1,2,3,4]):
     try:
         with rio.open(tile_path, 'w', **profile) as dst:
             for band in range(0, bands ):
-                print(data[band].shape)
                 dst.write(data[band], band+1)
     except Exception as e:
         print(e)
@@ -110,7 +109,6 @@ def tile_image(imageFile, output_dir, zoom, cover=None, indexes = None):
 
         print(f"reproject successful {f.crs.to_dict()}")
 
-    print(f.indexes)
     bbox = box(f.bounds.left, f.bounds.bottom, f.bounds.right, f.bounds.top)
     bbox = loads(gpd.GeoSeries(bbox).to_json())['features'] # need geojson dict
 
@@ -134,7 +132,6 @@ def tile_image(imageFile, output_dir, zoom, cover=None, indexes = None):
 
 
 def main(args):
-    print(args)
     all_tiles = []
 
     for image in args.files:

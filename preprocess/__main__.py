@@ -16,8 +16,8 @@ from preprocess import (
 )
 
 def add_parsers():
-    parser = argparse.ArgumentParser(prog="./groundcover")
-    subparser = parser.add_subparsers(title="groundcover tools", metavar="")
+    parser = argparse.ArgumentParser(prog="preprocess")
+    subparser = parser.add_subparsers(title="preprocess tools", metavar="")
 
     gt_pre.add_parser(subparser)
     get_images.add_parser(subparser)

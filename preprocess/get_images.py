@@ -107,7 +107,6 @@ def _select_candidates(images, max_images = None, max_overlap = None, nearest_da
         images = images.sort_values('datediff')
 
     if max_overlap and nearest_date:
-        print('here')
         images = images.sort_values(['overlap', 'datediff'],
                                     ascending = [False, True])
 
