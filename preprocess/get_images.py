@@ -28,12 +28,12 @@ FAIL = "💥 "
 DESCRIPTION = """
 Consumes geojson footprint, along with date and optional date range arguments and queries image search API to identify download candidates.
 
-Selects candidates and uses Planet Clips API to download imagery within bounds of data footprint. Imagery with ID = `ID` is unzipped and placed into `/images/{ID}` within local storage or a cloud storage bucket.
+Selects candidates and uses Planet Clips API to download imagery within bounds of data footprint. Imagery with ID = `ID` is unzipped and placed also into output_dir.
 
 """
 
 class TestGetImages(unittest.TestCase):
-    pass #ha;
+    pass #ha
 
 def add_parser(subparser):
     parser = subparser.add_parser(
@@ -180,8 +180,8 @@ def get_images(geometry, date, date_range, output_dir, max_images = None,
 def main(args):
     makedirs(args.output_dir, exist_ok = True)
 
-    with open(args.footprint, 'r') as fp:
-        geometry = shape(loads(fp.read()))
+    gdf = gpd.read_file(args.footprint)
+    geometry = gdf.geometry.values[0]
 
     filenames = get_images(geometry, args.date, args.date_range, args.output_dir, args.max_images, args.max_overlap, args.nearest_date, args.max_cloud_cover, args.aws_profile)
 
@@ -192,4 +192,5 @@ def main(args):
             unzipped = list(tp.map(__unzipper, filenames))
             s.ok(SUCCESS)
 
-    print(unzipped)
+    [print(i) for i in unzipped]
+    return(0)
