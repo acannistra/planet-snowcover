@@ -7,14 +7,16 @@ implementation of a neural network based image segmentation pipeline for the ide
 
 import argparse
 
-from model import *
+from model import (
+    concat
+)
 
 def add_parsers():
     parser = argparse.ArgumentParser(prog="model")
     subparser = parser.add_subparsers(title="tools", metavar = "")
 
     ## individual tool parsers
-    ...
+    concat.add_parser(subparser)
 
     subparser.required = True
 
