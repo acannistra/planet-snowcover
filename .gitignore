@@ -2,3 +2,5 @@
 *.xml
 *.tif
 *.zip
+*/__pycache__/*
+*/.DS_store/*
