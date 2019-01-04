@@ -36,7 +36,6 @@ def add_parser(subparser):
 
 def main(args):
 
-
     imageTiles = []
     imageTileIds = set()
     discardedTiles = 0
