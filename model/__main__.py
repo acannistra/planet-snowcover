@@ -8,7 +8,8 @@ implementation of a neural network based image segmentation pipeline for the ide
 import argparse
 
 from model import (
-    concat
+    concat,
+    train
 )
 
 def add_parsers():
@@ -17,6 +18,7 @@ def add_parsers():
 
     ## individual tool parsers
     concat.add_parser(subparser)
+    train.add_parser(subparser)
 
     subparser.required = True
 

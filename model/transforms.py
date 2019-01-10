@@ -6,9 +6,18 @@ image transforms
 """
 
 import torchvision
+from torch import from_numpy
 import numpy as np
 
+ImageToTensor = torchvision.transforms.ToTensor
+MaskToTensor = ImageToTensor
+
+class TensorFromNumpy:
+    def __call__(self, np):
+        return from_numpy(np)
+
 class __arbitrary:
+
 
     def __init__(self, f, *args):
         self.np_f = f
@@ -76,6 +85,13 @@ class JointTransform:
 
         return image, mask
 
+    def __repr__(self):
+        return ("<JointTransform ({}, {})>".format(
+                self.image_transform.__repr__(),
+                self.mask_transform.__repr__()))
+
+
+
 class JointCompose:
     """Callable to transform an image and it's mask at the same time.
     """
@@ -104,3 +120,6 @@ class JointCompose:
             image, mask = transform(image, mask)
 
         return image, mask
+
+    def __repr__(self):
+        return("<JointCompose {}>".format(str([r.__repr__() for r in self.transforms])))

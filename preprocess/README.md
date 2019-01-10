@@ -119,3 +119,7 @@ As a result, this container will contain __two__ related but distinct python fun
 __Single Image tiler__: will take in __`--image`__ and perhaps __`--zoom_level`__ and produce an XYZ/OSM tile structure from the image. _Except: these images will likely remain as TIFF files so we can use multiple bands in training, rather than the typical PNG format used for OSM tiles_.
 
 __Multiple Image tiler__: TBD, still not quite sure how to structure the beam dataflow here.
+
+### TODO: `split`
+
+This module is responsible for creating a train-validation split of the images 
