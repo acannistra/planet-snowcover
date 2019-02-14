@@ -93,7 +93,7 @@ def tile_image(imageFile, output_dir, zoom, cover=None, indexes = None):
         if len(coverTiles.columns) != 3:
             raise Exception("cover file needs to have 3 columns (z, x, y)")
 
-        return [Tile(z, x, y) for z, x, y in list(coverTiles.to_records())]
+        return [Tile(z, x, y) for _, (z, x, y) in list(coverTiles.iterrows())]
 
     f = rio.open(imageFile)
 
@@ -118,7 +118,7 @@ def tile_image(imageFile, output_dir, zoom, cover=None, indexes = None):
     covertiles = set()
     if cover is not None:
         covertiles = set(__load_cover_tiles(cover))
-        tiles = tiles.intersection(covertiles)
+        tiles = set(tiles).intersection(covertiles)
 
     __TILER = partial(_write_tile, image = imageFile,
                      output_dir = output_dir, bands = indexes)

@@ -15,6 +15,8 @@ import rasterio as rio
 
 import os
 
+import numpy as np
+
 
 class PairedTiles(torch.utils.data.Dataset):
     """ Pairs images with mask from <image> and <tiles> directories
@@ -67,6 +69,7 @@ class PairedTiles(torch.utils.data.Dataset):
 
         image = rio.open(os.path.join(self.imagedir, imageFile)).read()
         mask = rio.open(os.path.join(self.maskdir, maskFile)).read()
+        mask = np.squeeze(mask)
 
         if self.joint_transform is not None:
             image, mask = self.joint_transform(image, mask)

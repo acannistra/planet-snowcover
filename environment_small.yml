@@ -24,7 +24,7 @@ dependencies:
   - requests
   - rio-tiler
   - supermercado
-  - torch=1.0.0
+  - torch==1.0.0
   - torchvision
   - urllib3
   - yaspin
