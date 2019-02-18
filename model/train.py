@@ -54,7 +54,7 @@ def add_parser(subparser):
     parser.add_argument("--config", type=str, required=True, help="path to configuration file")
     parser.add_argument("--checkpoint", type=str, required=False, help="path to a model checkpoint (to retrain)")
     parser.add_argument("--save_intermed", action='store_true',
-    help="save intermediate checkpoints")
+    help="save intermediate checkpoints", default=False)
     parser.add_argument("--resume", action="store_true", help="resume training (imply to provide a checkpoint)")
     parser.add_argument("--workers", type=int, default=0, help="number of workers pre-processing images")
     parser.add_argument("--dataset", type=int, help="if set, override dataset path value from config file")
@@ -182,9 +182,10 @@ def main(args):
         visual_path = os.path.join(args.out, "history-{:05d}-of-{:05d}.png".format(epoch + 1, num_epochs))
         plot(visual_path, history)
 
-        states = {"epoch": epoch + 1, "state_dict": net.state_dict(), "optimizer": optimizer.state_dict()}
-        checkpoint_path = os.path.join(args.out, "checkpoint-{:05d}-of-{:05d}.pth".format(epoch + 1, num_epochs))
-        torch.save(states, checkpoint_path)
+        if (args.save_intermed):
+            states = {"epoch": epoch + 1, "state_dict": net.state_dict(), "optimizer": optimizer.state_dict()}
+            checkpoint_path = os.path.join(args.out, "checkpoint-{:05d}-of-{:05d}.pth".format(epoch + 1, num_epochs))
+            torch.save(states, checkpoint_path)
 
 
 def train(loader, num_classes, device, net, optimizer, criterion):
