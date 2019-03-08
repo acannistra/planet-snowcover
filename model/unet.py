@@ -91,7 +91,7 @@ class UNet(nn.Module):
         super().__init__()
 
         self.resnet = resnet50(pretrained=pretrained)
-        
+
 
         assert num_channels
 
@@ -127,7 +127,7 @@ class UNet(nn.Module):
         """
         size = x.size()
         print(size)
-        #assert size[-1] % 32 == 0 and size[-2] % 32 == 0, "image resolution has to be divisible by 32 for resnet"
+        assert size[-1] % 32 == 0 and size[-2] % 32 == 0, "image resolution has to be divisible by 32 for resnet"
 
 
         enc0 = self.resnet.conv1(x)

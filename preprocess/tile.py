@@ -118,7 +118,7 @@ def tile_image(imageFile, output_dir, zoom, cover=None, indexes = None):
     covertiles = set()
     if cover is not None:
         covertiles = set(__load_cover_tiles(cover))
-        tiles = set(tiles).intersection(covertiles)
+    tiles = set(tiles).intersection(covertiles)
 
     __TILER = partial(_write_tile, image = imageFile,
                      output_dir = output_dir, bands = indexes)
