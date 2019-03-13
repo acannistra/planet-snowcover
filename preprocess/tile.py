@@ -62,7 +62,10 @@ def _write_tile(tile, image, output_dir, tile_size = 512, bands = [1,2,3,4], qua
 
 
     dirpath = path.join(output_dir, str(tile.z), str(tile.x)).replace('\0', "")
-    makedirs(dirpath, exist_ok=True)
+
+    if(not dirpath.startswith("s3://")):
+        makedirs(dirpath, exist_ok=True)
+
     tile_path = path.join(output_dir, str(tile.z), str(tile.x), "{}.{}".format(tile.y, "tif"))
 
     new_transform = rio.transform.from_bounds(*tile_latlon_bounds, width, height)
