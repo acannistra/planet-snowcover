@@ -37,13 +37,16 @@ def add_parser(subparser):
 
     parser.add_argument("--indexes", help='band indices to include in tile.', nargs="+", type=int, default = [1,2,3,4])
 
+    parser.add_argument("--quant", help="value to divide bands with, if quantized", type = int, default = None)
+
     parser.add_argument("files", help="file or files to tile", nargs="+")
 
 
 
     parser.set_defaults(func = main)
 
-def _write_tile(tile, image, output_dir, tile_size = 512, bands = [1,2,3,4]):
+def _write_tile(tile, image, output_dir, tile_size = 512, bands = [1,2,3,4], quant = None):
+    print(quant)
     """
         extracts and writes tile from image into output_dir
     """
@@ -52,7 +55,14 @@ def _write_tile(tile, image, output_dir, tile_size = 512, bands = [1,2,3,4]):
     data, mask = tile_read(image, tile_xy_bounds, tile_size, indexes=bands)
     bands, height, width = data.shape
 
-    makedirs(path.join(output_dir, str(tile.z), str(tile.x)), exist_ok=True)
+
+
+    if quant is not None:
+        data = data / quant
+
+
+    dirpath = path.join(output_dir, str(tile.z), str(tile.x)).replace('\0', "")
+    makedirs(dirpath, exist_ok=True)
     tile_path = path.join(output_dir, str(tile.z), str(tile.x), "{}.{}".format(tile.y, "tif"))
 
     new_transform = rio.transform.from_bounds(*tile_latlon_bounds, width, height)
@@ -79,9 +89,9 @@ def _write_tile(tile, image, output_dir, tile_size = 512, bands = [1,2,3,4]):
     return tile, True
 
 
-def tile_image(imageFile, output_dir, zoom, cover=None, indexes = None):
+def tile_image(imageFile, output_dir, zoom, cover=None, indexes = None, quant = None):
     """
-    Produce either A) all tiles covering <image> at <zoom> or B) all tiles in <cover> if <cover> is not None at <zoom> and place OSM directory structure in <imageFile>/Z/X/Y.png format inside output_dir.
+    Produce either A) all tiles covering <image> at <zoom> or B) all tiles in <cover> if <cover> is not None at <zoom> and place OSM directory structure in <imageFile>/Z/X/Y.png format inside output_dir. If quant, divide all bands by Quant first.
 
     """
     from shapely.geometry import box
@@ -118,10 +128,11 @@ def tile_image(imageFile, output_dir, zoom, cover=None, indexes = None):
     covertiles = set()
     if cover is not None:
         covertiles = set(__load_cover_tiles(cover))
-    tiles = set(tiles).intersection(covertiles)
+        tiles = set(tiles).intersection(covertiles)
+
 
     __TILER = partial(_write_tile, image = imageFile,
-                     output_dir = output_dir, bands = indexes)
+                     output_dir = output_dir, bands = indexes, quant = quant)
 
     with futures.ThreadPoolExecutor() as executor:
         responses = list(executor.map(__TILER, tiles))
@@ -137,4 +148,4 @@ def main(args):
     for image in args.files:
         fbase = path.splitext(path.basename(image))[0]
         image_output = path.join(args.output_dir, fbase)
-        all_tiles.append(tile_image(image, image_output, args.zoom, args.cover, args.indexes))
+        all_tiles.append(tile_image(image, image_output, args.zoom, args.cover, args.indexes, args.quant))
