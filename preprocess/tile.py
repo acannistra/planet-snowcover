@@ -51,9 +51,8 @@ def add_parser(subparser):
     parser.set_defaults(func = main)
 
 def _write_tile(tile, image, output_dir, tile_size = 512, bands = [1,2,3,4], quant = None, aws_profile = None):
-    print(quant)
     """
-        extracts and writes tile from image into output_dir
+        extracts and writes tile from image into output_dir, which can be s3://
     """
     tile_xy_bounds = xy_bounds(tile)
     tile_latlon_bounds = bounds(tile)
@@ -111,7 +110,7 @@ def _write_tile(tile, image, output_dir, tile_size = 512, bands = [1,2,3,4], qua
         tile_path = tile_path[5:]
         # open s3 Session
         session = boto3.Session(profile_name = aws_profile)
-        fs = s3fs.S3FileSystem(session=  session)
+        fs = s3fs.S3FileSystem(session =  session)
         # open file , write file
         s3fp = fs.open(tile_path, 'wb')
         s3fp.write(tile_file.read())
@@ -128,7 +127,7 @@ def _write_tile(tile, image, output_dir, tile_size = 512, bands = [1,2,3,4], qua
 
 def tile_image(imageFile, output_dir, zoom, cover=None, indexes = None, quant = None, aws_profile = None):
     """
-    Produce either A) all tiles covering <image> at <zoom> or B) all tiles in <cover> if <cover> is not None at <zoom> and place OSM directory structure in <imageFile>/Z/X/Y.png format inside output_dir. If quant, divide all bands by Quant first.
+    Produce either A) all tiles covering <image> at <zoom> or B) all tiles in <cover> if <cover> is not None at <zoom> and place OSM directory structure in <imageFile>/Z/X/Y.png format inside output_dir. If quant, divide all bands by Quant first. Can write to s3:// destinations with aws_profile. 
 
     """
     from shapely.geometry import box
