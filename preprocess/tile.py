@@ -19,6 +19,9 @@ import numpy as np
 
 from concurrent import futures
 
+import s3fs
+import boto3
+
 def add_parser(subparser):
     parser = subparser.add_parser(
         "tile", help = "Tile images.",
@@ -38,6 +41,8 @@ def add_parser(subparser):
     parser.add_argument("--indexes", help='band indices to include in tile.', nargs="+", type=int, default = [1,2,3,4])
 
     parser.add_argument("--quant", help="value to divide bands with, if quantized", type = int, default = None)
+    
+    parser.add_argument("--aws_profile", help='aws profile name for s3:// destinations', default = None)
 
     parser.add_argument("files", help="file or files to tile", nargs="+")
 
@@ -45,7 +50,7 @@ def add_parser(subparser):
 
     parser.set_defaults(func = main)
 
-def _write_tile(tile, image, output_dir, tile_size = 512, bands = [1,2,3,4], quant = None):
+def _write_tile(tile, image, output_dir, tile_size = 512, bands = [1,2,3,4], quant = None, aws_profile = None):
     print(quant)
     """
         extracts and writes tile from image into output_dir
@@ -81,18 +86,47 @@ def _write_tile(tile, image, output_dir, tile_size = 512, bands = [1,2,3,4], qua
     }
 
 
-    try:
-        with rio.open(tile_path, 'w', **profile) as dst:
-            for band in range(0, bands ):
-                dst.write(data[band], band+1)
-    except Exception as e:
-        print(e)
-        return tile, False
+#    try:
+        
+    ## S3 DESTINATION - use memoryfile 
+    using_memoryfile = False
+    if (tile_path.startswith('s3://')):
+        tile_file = rio.MemoryFile()
+        using_memoryfile = True
+    else:
+        tile_file = tile_path
+
+    # write data to file, either on disk or memoryfile
+    with rio.open(tile_file, 'w', **profile) as dst:
+        for band in range(0, bands ):
+            dst.write(data[band], band+1)
+
+    # need to seek mf for reading
+    if (using_memoryfile):
+        tile_file.seek(0)
+
+    ## S3 DESTINATION – write memoryfile with s3fs
+    if (tile_path.startswith('s3://')):
+        # strip "s3://"
+        tile_path = tile_path[5:]
+        # open s3 Session
+        session = boto3.Session(profile_name = aws_profile)
+        fs = s3fs.S3FileSystem(session=  session)
+        # open file , write file
+        s3fp = fs.open(tile_path, 'wb')
+        s3fp.write(tile_file.read())
+        # close fps
+        s3fp.close()
+        tile_file.close()
+            
+#     except Exception as e:
+#         print(e)
+#         return tile, False
 
     return tile, True
 
 
-def tile_image(imageFile, output_dir, zoom, cover=None, indexes = None, quant = None):
+def tile_image(imageFile, output_dir, zoom, cover=None, indexes = None, quant = None, aws_profile = None):
     """
     Produce either A) all tiles covering <image> at <zoom> or B) all tiles in <cover> if <cover> is not None at <zoom> and place OSM directory structure in <imageFile>/Z/X/Y.png format inside output_dir. If quant, divide all bands by Quant first.
 
@@ -135,7 +169,8 @@ def tile_image(imageFile, output_dir, zoom, cover=None, indexes = None, quant = 
 
 
     __TILER = partial(_write_tile, image = imageFile,
-                     output_dir = output_dir, bands = indexes, quant = quant)
+                     output_dir = output_dir, bands = indexes,
+                     quant = quant, aws_profile = aws_profile)
 
     with futures.ThreadPoolExecutor() as executor:
         responses = list(executor.map(__TILER, tiles))
@@ -151,4 +186,4 @@ def main(args):
     for image in args.files:
         fbase = path.splitext(path.basename(image))[0]
         image_output = path.join(args.output_dir, fbase)
-        all_tiles.append(tile_image(image, image_output, args.zoom, args.cover, args.indexes, args.quant))
+        all_tiles.append(tile_image(image, image_output, args.zoom, args.cover, args.indexes, args.quant, args.aws_profile))
