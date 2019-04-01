@@ -41,8 +41,10 @@ def add_parser(subparser):
     parser.add_argument("--indexes", help='band indices to include in tile.', nargs="+", type=int, default = [1,2,3,4])
 
     parser.add_argument("--quant", help="value to divide bands with, if quantized", type = int, default = None)
-    
+
     parser.add_argument("--aws_profile", help='aws profile name for s3:// destinations', default = None)
+
+    parser.add_argument("--skip-blanks", help="Skip blank tiles.")
 
     parser.add_argument("files", help="file or files to tile", nargs="+")
 
@@ -50,16 +52,19 @@ def add_parser(subparser):
 
     parser.set_defaults(func = main)
 
-def _write_tile(tile, image, output_dir, tile_size = 512, bands = [1,2,3,4], quant = None, aws_profile = None):
+def _write_tile(tile, image, output_dir, tile_size = 512, bands = [1,2,3,4], quant = None, aws_profile = None, skip_blanks = True, nodata_val = 0):
     """
         extracts and writes tile from image into output_dir, which can be s3://
+
     """
     tile_xy_bounds = xy_bounds(tile)
     tile_latlon_bounds = bounds(tile)
     data, mask = tile_read(image, tile_xy_bounds, tile_size, indexes=bands)
     bands, height, width = data.shape
 
-
+    if (skip_blanks and (data == nodata_val).all()):
+        print("Blank (nodata) tile ({}), skipping...".format(tile))
+        return (tile, False)
 
     if quant is not None:
         data = data / quant
@@ -86,8 +91,8 @@ def _write_tile(tile, image, output_dir, tile_size = 512, bands = [1,2,3,4], qua
 
 
 #    try:
-        
-    ## S3 DESTINATION - use memoryfile 
+
+    ## S3 DESTINATION - use memoryfile
     using_memoryfile = False
     if (tile_path.startswith('s3://')):
         tile_file = rio.MemoryFile()
@@ -117,7 +122,7 @@ def _write_tile(tile, image, output_dir, tile_size = 512, bands = [1,2,3,4], qua
         # close fps
         s3fp.close()
         tile_file.close()
-            
+
 #     except Exception as e:
 #         print(e)
 #         return tile, False
@@ -125,9 +130,9 @@ def _write_tile(tile, image, output_dir, tile_size = 512, bands = [1,2,3,4], qua
     return tile, True
 
 
-def tile_image(imageFile, output_dir, zoom, cover=None, indexes = None, quant = None, aws_profile = None):
+def tile_image(imageFile, output_dir, zoom, cover=None, indexes = None, quant = None, aws_profile = None, skip_blanks = True):
     """
-    Produce either A) all tiles covering <image> at <zoom> or B) all tiles in <cover> if <cover> is not None at <zoom> and place OSM directory structure in <imageFile>/Z/X/Y.png format inside output_dir. If quant, divide all bands by Quant first. Can write to s3:// destinations with aws_profile. 
+    Produce either A) all tiles covering <image> at <zoom> or B) all tiles in <cover> if <cover> is not None at <zoom> and place OSM directory structure in <imageFile>/Z/X/Y.png format inside output_dir. If quant, divide all bands by Quant first. Can write to s3:// destinations with aws_profile.
 
     """
     from shapely.geometry import box
@@ -169,7 +174,8 @@ def tile_image(imageFile, output_dir, zoom, cover=None, indexes = None, quant = 
 
     __TILER = partial(_write_tile, image = imageFile,
                      output_dir = output_dir, bands = indexes,
-                     quant = quant, aws_profile = aws_profile)
+                     quant = quant, aws_profile = aws_profile,
+                     no_blank_tiles = skip_blanks, nodata_val = f.nodata)
 
     with futures.ThreadPoolExecutor() as executor:
         responses = list(executor.map(__TILER, tiles))
@@ -185,4 +191,4 @@ def main(args):
     for image in args.files:
         fbase = path.splitext(path.basename(image))[0]
         image_output = path.join(args.output_dir, fbase)
-        all_tiles.append(tile_image(image, image_output, args.zoom, args.cover, args.indexes, args.quant, args.aws_profile))
+        all_tiles.append(tile_image(image, image_output, args.zoom, args.cover, args.indexes, args.quant, args.aws_profile, args.skip_blanks))
