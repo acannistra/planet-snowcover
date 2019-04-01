@@ -44,7 +44,7 @@ def add_parser(subparser):
 
     parser.add_argument("--aws_profile", help='aws profile name for s3:// destinations', default = None)
 
-    parser.add_argument("--skip-blanks", help="Skip blank tiles.")
+    parser.add_argument("--skip-blanks", help="Skip blank tiles.", action = 'store_true')
 
     parser.add_argument("files", help="file or files to tile", nargs="+")
 
