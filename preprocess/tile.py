@@ -175,7 +175,7 @@ def tile_image(imageFile, output_dir, zoom, cover=None, indexes = None, quant = 
     __TILER = partial(_write_tile, image = imageFile,
                      output_dir = output_dir, bands = indexes,
                      quant = quant, aws_profile = aws_profile,
-                     no_blank_tiles = skip_blanks, nodata_val = f.nodata)
+                     skip_blanks = skip_blanks, nodata_val = f.nodata)
 
     with futures.ThreadPoolExecutor() as executor:
         responses = list(executor.map(__TILER, tiles))
