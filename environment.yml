@@ -1,189 +1,175 @@
-name: imageprocess
+name: geo-train
 channels:
-- conda-forge
-- defaults
+  - albumentations
+  - defaults
 dependencies:
-- altair=1.2.1=py_0
-- backports.functools_lru_cache=1.4=py35_1
-- branca=0.2.0=py_1
-- descartes=1.1.0=py35_0
-- folium=0.5.0=py_0
-- fuzzywuzzy=0.15.1=py35_0
-- geopandas=0.3.0=py35_0
-- libspatialindex=1.8.5=1
-- python-levenshtein=0.12.0=py35_0
-- rtree=0.8.3=py35_0
-- vega=0.4.4=py35_1
-- affine=2.1.0=pyh128a3a6_1
-- appnope=0.1.0=py35hd172556_0
-- asn1crypto=0.22.0=py35ha010153_1
-- attrs=17.2.0=py35h4a2dd8a_0
-- backports=1.0=py35h2556c16_1
-- bleach=2.0.0=py35h7b4af82_0
-- boost=1.65.1=py35h20a5e87_3
-- boost-cpp=1.65.1=h82f57ea_3
-- boto3=1.4.7=py35hd462e4d_0
-- botocore=1.7.20=py35h01c6a2e_0
-- bzip2=1.0.6=h92991f9_1
-- ca-certificates=2017.08.26=ha1e5d58_0
-- cairo=1.14.10=h111df13_5
-- certifi=2017.7.27.1=py35h0fdde5e_0
-- cffi=1.10.0=py35hca2225f_1
-- chardet=3.0.4=py35h16a84c2_1
-- click=6.7=py35hcc65ea6_0
-- click-plugins=1.0.3=py35hcd8d381_0
-- cligj=0.4.0=py35h225cd6b_0
-- cryptography=2.0.3=py35hde935b2_1
-- curl=7.55.1=h7601780_3
-- cycler=0.10.0=py35hb89929e_0
-- dbus=1.10.22=h50d9ad6_0
-- decorator=4.1.2=py35hf37c5b3_0
-- docutils=0.14=py35hb13dbd9_0
-- entrypoints=0.2.3=py35h837ec6f_2
-- expat=2.2.4=hec26022_2
-- fiona=1.7.10=py35h88b8189_0
-- fontconfig=2.12.4=hffb9db1_2
-- freetype=2.8=h143eb01_0
-- freexl=1.0.4=h90bbc58_4
-- gdal=2.2.2=py35he67b238_1
-- geos=3.6.0=he6050e9_1
-- gettext=0.19.8.1=hb0f4f8b_2
-- giflib=5.1.4=h1035379_1
-- glib=2.53.6=h33f6a65_2
-- hdf4=4.2.13=h4fef8ec_1
-- hdf5=1.10.1=h6090a45_0
-- html5lib=0.999999999=py35ha3ce4a6_0
-- hypothesis=3.23.0=py35hcda8997_0
-- icu=58.2=hea21ae5_0
-- idna=2.6=py35h01aacb0_1
-- intel-openmp=2018.0.0=h68bdfb3_7
-- ipykernel=4.6.1=py35h9865fc8_0
-- ipython=6.1.0=py35h3f7db8a_1
-- ipython_genutils=0.2.0=py35hf129286_0
-- ipywidgets=7.0.0=py35hb70205d_0
-- jedi=0.10.2=py35heb0647e_0
-- jinja2=2.9.6=py35h7194686_1
-- jmespath=0.9.3=py35h1b8d03c_0
-- jpeg=9b=hc9e287d_1
-- json-c=0.12.1=h6b7fe83_2
-- jsonschema=2.6.0=py35h2dd9e4b_0
-- jupyter=1.0.0=py35hf3a1ed8_0
-- jupyter_client=5.1.0=py35hfe06ecd_0
-- jupyter_console=5.2.0=py35hd2aa692_1
-- jupyter_core=4.3.0=py35h1d2ac15_0
-- kealib=1.4.7=hd6e7696_4
-- krb5=1.14.2=hc0fd8ed_4
-- libboost=1.65.1=h8182a68_3
-- libcxx=4.0.1=h579ed51_0
-- libcxxabi=4.0.1=hebd6815_0
-- libdap4=3.19.0=h51aaa68_1
-- libedit=3.1=hb4e282d_0
-- libffi=3.2.1=h475c297_4
-- libgdal=2.2.2=hdcd1c41_0
-- libgfortran=3.0.1=h93005f0_2
-- libiconv=1.15=h5ed5702_6
-- libkml=1.3.0=h694af70_2
-- libnetcdf=4.4.1.1=h3429952_7
-- libpng=1.6.32=h6184301_3
-- libpq=9.6.5=hbb47d45_0
-- libsodium=1.0.13=hba5e272_2
-- libspatialite=4.3.0a=h4050264_17
-- libssh2=1.8.0=h1218725_2
-- libtiff=4.0.8=h8cd0352_9
-- libuuid=1.0.3=h01fd73e_2
-- libxml2=2.9.4=hbd0960b_5
-- markupsafe=1.0=py35h9ba0a7f_1
-- matplotlib=2.1.0=py35hc2166d4_0
-- mistune=0.7.4=py35h0ccc54f_0
-- mkl=2018.0.0=h5ef208c_6
-- munch=2.2.0=py35h14d5eb5_0
-- nbconvert=5.3.1=py35h63fb950_0
-- nbformat=4.4.0=py35h41c2038_0
-- ncurses=6.0=ha932d30_1
-- notebook=5.2.1=py35h5b7e3fc_0
-- numpy=1.13.3=py35hfd7066c_0
-- openjpeg=2.2.0=hd744cf3_1
-- openssl=1.0.2m=h86d3e6a_0
-- pandas=0.21.0=py35h4431f20_1
-- pandoc=1.19.2.1=ha5e8f32_1
-- pandocfilters=1.4.2=py35hff87490_1
-- pcre=8.41=h29eefc5_0
-- pexpect=4.2.1=py35hde8bc66_0
-- pickleshare=0.7.4=py35h9517181_0
-- pip=9.0.1=py35h33ce766_4
-- pixman=0.34.0=hca0a616_3
-- poppler=0.60.1=hb654a48_0
-- poppler-data=0.4.8=hf2eda46_0
-- proj4=4.9.3=hf612e18_6
-- prompt_toolkit=1.0.15=py35h93950c5_0
-- psycopg2=2.7.3.1=py35h342289d_0
-- ptyprocess=0.5.2=py35hfc37984_0
-- py-boost=1.65.1=py35h7bc8c8f_3
-- pycparser=2.18=py35hab820b0_1
-- pygments=2.2.0=py35h392a662_0
-- pympler=0.5=py35hf41ee38_0
-- pyopenssl=17.2.0=py35h4737193_0
-- pyparsing=2.2.0=py35h31fab04_0
-- pyproj=1.9.5.1=py35_0
-- pyqt=5.6.0=py35hbd126f6_6
-- pysal=1.14.2=py35ha61106f_1
-- pysocks=1.6.7=py35h3cfcbe1_1
-- python=3.5.4=h8f450c2_22
-- python-dateutil=2.6.1=py35h10515e0_1
-- pytz=2017.2=py35h9789cde_1
-- pyzmq=16.0.2=py35h1c7c2ed_2
-- qt=5.6.2=h9975529_14
-- qtconsole=4.3.1=py35hd6d667b_0
-- rasterio=0.36.0=py35he0d65b2_0
-- readline=7.0=h5003dca_4
-- requests=2.18.4=py35h0d65e6b_1
-- s3transfer=0.1.10=py35hf8511d9_1
-- scipy=1.0.0=py35h8b35106_0
-- setuptools=36.5.0=py35h52cde6a_0
-- shapely=1.6.1=py35hc800253_2
-- simplegeneric=0.8.1=py35h0a3d746_0
-- sip=4.18.1=py35h79e1f92_2
-- six=1.11.0=py35h39a4c60_1
-- snuggs=1.4.1=py35h08d951a_0
-- sqlalchemy=1.1.13=py35h499c78e_0
-- sqlite=3.20.1=h7e4c145_2
-- terminado=0.6=py35hf269ddc_0
-- testpath=0.3.1=py35hf8009f4_0
-- tk=8.6.7=h35a86e2_3
-- tornado=4.5.2=py35h4099233_0
-- traitlets=4.3.2=py35hd3d1486_0
-- urllib3=1.22=py35he002d57_0
-- vincent=0.4.4=py35_0
-- wcwidth=0.1.7=py35hdd0c235_0
-- webencodings=0.5.1=py35hcf8ebf9_1
-- wheel=0.29.0=py35ha7aa5c4_1
-- widgetsnbextension=3.0.2=py35hdbe965d_1
-- xerces-c=3.2.0=h5f07086_2
-- xz=5.2.3=h0278029_2
-- zeromq=4.2.2=ha360ad0_2
-- zlib=1.2.11=hf3cbc9b_2
-- zope=1.0=py35_0
-- zope.interface=4.4.3=py35hdbc5dd8_0
-- pip:
-  - backports.functools-lru-cache==1.4
-  - cartopy==0.15.1
-  - geojson==2.3.0
-  - geomet==0.2.0.post2
-  - html2text==2017.10.4
-  - ipython-genutils==0.2.0
-  - jupyter-client==5.1.0
-  - jupyter-console==5.2.0
-  - jupyter-core==4.3.0
-  - networkx==2.0
-  - olefile==0.44
-  - pillow==4.3.0
-  - prompt-toolkit==1.0.15
-  - pyepsg==0.3.2
-  - pyshp==1.2.12
-  - pywavelets==0.5.2
-  - scikit-image==0.13.1
-  - seaborn==0.8.1
-  - sentinelsat==0.12.1
-  - tqdm==4.19.4
-prefix: /Users/tony/miniconda3/envs/imageprocess
+  - albumentations=0.1.8
+  - appnope=0.1.0
+  - backcall=0.1.0
+  - blas=1.0
+  - bleach=3.0.2
+  - bzip2=1.0.6
+  - ca-certificates=2018.03.07
+  - cairo=1.14.12
+  - certifi=2018.11.29
+  - cycler=0.10.0
+  - dbus=1.13.2
+  - decorator=4.3.0
+  - entrypoints=0.2.3
+  - expat=2.2.6
+  - ffmpeg=4.0
+  - fontconfig=2.13.0
+  - freetype=2.9.1
+  - gettext=0.19.8.1
+  - glib=2.56.2
+  - graphite2=1.3.12
+  - harfbuzz=1.8.8
+  - hdf5=1.10.2
+  - icu=58.2
+  - intel-openmp=2019.1
+  - ipykernel=5.1.0
+  - ipython=7.2.0
+  - ipython_genutils=0.2.0
+  - ipywidgets=7.4.2
+  - jasper=2.0.14
+  - jedi=0.13.2
+  - jinja2=2.10
+  - jpeg=9b
+  - jsonschema=2.6.0
+  - jupyter=1.0.0
+  - jupyter_client=5.2.4
+  - jupyter_console=6.0.0
+  - jupyter_core=4.4.0
+  - kiwisolver=1.0.1
+  - libcxx=4.0.1
+  - libcxxabi=4.0.1
+  - libedit=3.1.20170329
+  - libffi=3.2.1
+  - libgfortran=3.0.1
+  - libiconv=1.15
+  - libopencv=3.4.2
+  - libopus=1.3
+  - libpng=1.6.35
+  - libsodium=1.0.16
+  - libtiff=4.0.9
+  - libvpx=1.7.0
+  - libxml2=2.9.8
+  - markupsafe=1.1.0
+  - matplotlib=3.0.2
+  - mistune=0.8.4
+  - mkl=2019.1
+  - mkl_fft=1.0.6
+  - mkl_random=1.0.2
+  - nbconvert=5.3.1
+  - nbformat=4.4.0
+  - ncurses=6.1
+  - notebook=5.7.4
+  - numpy=1.15.4
+  - numpy-base=1.15.4
+  - opencv=3.4.2
+  - openssl=1.1.1a
+  - pandoc=2.2.3.2
+  - pandocfilters=1.4.2
+  - parso=0.3.1
+  - pcre=8.42
+  - pexpect=4.6.0
+  - pickleshare=0.7.5
+  - pip=18.1
+  - pixman=0.34.0
+  - prometheus_client=0.5.0
+  - prompt_toolkit=2.0.7
+  - ptyprocess=0.6.0
+  - py-opencv=3.4.2
+  - pygments=2.3.1
+  - pyparsing=2.3.0
+  - pyqt=5.9.2
+  - python=3.6.7
+  - python-dateutil=2.7.5
+  - pytz=2018.7
+  - pyzmq=17.1.2
+  - qt=5.9.7
+  - qtconsole=4.4.3
+  - readline=7.0
+  - scipy=1.1.0
+  - send2trash=1.5.0
+  - setuptools=40.6.3
+  - sip=4.19.8
+  - six=1.12.0
+  - sqlite=3.26.0
+  - terminado=0.8.1
+  - testpath=0.4.2
+  - tk=8.6.8
+  - tornado=5.1.1
+  - traitlets=4.3.2
+  - wcwidth=0.1.7
+  - webencodings=0.5.1
+  - wheel=0.32.3
+  - widgetsnbextension=3.4.2
+  - xz=5.2.4
+  - zeromq=4.2.5
+  - zlib=1.2.11
+  - pip:
+    - affine==2.2.2
+    - atomicwrites==1.2.1
+    - attrs==18.2.0
+    - boto==2.49.0
+    - boto3==1.9.71
+    - botocore==1.12.71
+    - bz2file==0.98
+    - chardet==3.0.4
+    - click==7.0
+    - click-plugins==1.0.4
+    - cligj==0.5.0
+    - cloudpickle==0.6.1
+    - dask==1.0.0
+    - docutils==0.14
+    - fiona==1.8.4
+    - flask==1.0.2
+    - geojson==2.4.1
+    - geopandas==0.4.0
+    - idna==2.8
+    - imageio==2.4.1
+    - imgaug==0.2.7
+    - itsdangerous==1.1.0
+    - jmespath==0.9.3
+    - mercantile==1.0.4
+    - more-itertools==5.0.0
+    - munch==2.3.2
+    - networkx==2.2
+    - numexpr==2.6.9
+    - opencv-contrib-python==3.4.5.20
+    - opencv-python==3.4.5.20
+    - osmium==2.15.0
+    - pandas==0.23.4
+    - pillow==5.3.0
+    - planet==1.2.1
+    - pluggy==0.8.0
+    - py==1.7.0
+    - pyproj==1.9.5.1
+    - pytest==4.0.2
+    - pywavelets==1.0.1
+    - rasterio==1.0.13
+    - requests==2.21.0
+    - requests-futures==0.9.9
+    - retrying==1.3.3
+    - rio-mucho==1.0.0
+    - rio-pansharpen==0.2.0
+    - rio-tiler==1.0rc2
+    - rio-toa==0.3.0
+    - rtree==0.8.3
+    - s3transfer==0.1.13
+    - scikit-image==0.14.1
+    - shapely==1.6.4.post2
+    - smart-open==1.7.1
+    - snuggs==1.4.2
+    - supermercado==0.0.5
+    - toml==0.10.0
+    - toolz==0.9.0
+    - torch==1.0.0
+    - torchvision==0.2.1
+    - tqdm==4.28.1
+    - urllib3==1.24.1
+    - werkzeug==0.14.1
+    - yaspin==0.14.0
+prefix: /Users/tony/miniconda3/envs/geo-train
 

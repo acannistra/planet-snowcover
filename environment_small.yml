@@ -1,0 +1,28 @@
+name: planet-snowcover
+channels:
+- albumentations
+- conda-forge
+- defaults
+dependencies:
+- geopandas
+- boto
+- albumentations
+- pip:
+  - cartopy
+  - geojson
+  - pillow
+  - planet
+  - retrying
+  - scikit-image
+  - seaborn
+  - tqdm
+  - dask
+  - mercantile
+  - rasterio
+  - requests
+  - rio-tiler
+  - supermercado
+  - torch==1.0.0
+  - torchvision
+  - urllib3
+  - yaspin
