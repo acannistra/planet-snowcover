@@ -52,14 +52,9 @@ def add_parser(subparser):
     )
 
     parser.add_argument("--config", type=str, required=True, help="path to configuration file")
-    parser.add_argument("--checkpoint", type=str, required=False, help="path to a model checkpoint (to retrain)")
+    parser.add_argument("--checkpoint_url", type=str, required=False, help="path to a model checkpoint (to retrain)")
     parser.add_argument("--save_intermed", action='store_true',
     help="save intermediate checkpoints", default=False)
-    parser.add_argument("--resume", action="store_true", help="resume training (imply to provide a checkpoint)")
-    parser.add_argument("--workers", type=int, default=0, help="number of workers pre-processing images")
-    parser.add_argument("--dataset", type=int, help="if set, override dataset path value from config file")
-    parser.add_argument("--epochs", type=int, help="if set, override epochs value from config file")
-    parser.add_argument("--lr", type=float, help="if set, override learning rate value from config file")
     parser.add_argument("out", type=str, help="directory to save checkpoint .pth files and log")
 
     parser.set_defaults(func=main)
@@ -67,6 +62,7 @@ def add_parser(subparser):
 
 def main(args):
     config = load_config(args.config)
+    print(config)
     lr = args.lr if args.lr else config["model"]["lr"]
     dataset_path = args.dataset if args.dataset else config["dataset"]["path"]
     num_epochs = args.epochs if args.epochs else config["model"]["epochs"]
