@@ -4,3 +4,6 @@
 [submodule "model/robosat"]
 	path = model/robosat
 	url = https://github.com/mapbox/robosat.git
+[submodule "model/robosat_pink"]
+	path = model/robosat_pink
+	url = https://github.com/acannistra/robosat.pink
