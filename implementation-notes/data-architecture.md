@@ -17,6 +17,7 @@ Here we describe our source data and the methods used to create and store web ti
 This project relies upon spatially-explicit raster data derived from airborne or satellite observation platforms. These data are divided into ground truth observations from the NASA/JPL Airborne Snow Observatory and multispectral imagery from Planet Labs, which will henceforth be referred to as "Ground Truth"  and "Imagery.
 
 <a name="table:datasource"></a>
+
 | data source | derivation | format | reference | resolution | spatial extent | temporal extent |
 | ----  | ---- | ---- | ---- | ---- | ---- | ---- |
 | Ground Truth | airborne lidar | spatial raster (GeoTIFF) |  https://aso.jpl.nasa.gov/ | 3m | Several Basins: Tuolumne (CA), Merced (CA), San Joaquin (CA), Uncompahgre (CO) | Weekly, Feb 2016 – June 2018 |
