@@ -1,20 +1,17 @@
-~~This file contains a design for a [Google Kubeflow](https://cloud.google.com/blog/products/ai-machine-learning/getting-started-kubeflow-pipelines)/[Google Cloud Dataflow](https://cloud.google.com/dataflow/) pipeline for preparing satellite images for machine learning via a raster or vector-based ground-truth label set. GCP's Kubeflow pipelines service is a managed containerized pipeline service which allows for distributed execution of a Docker-based processing pipeline.~~
-
-_Early on I considered using a workflow engine for this, and might soon. this document was the design for a Google Cloud-based workflow. Many of the components are the same, but are currently implemented as python modules._
-
-
-# Pipeline Design Considerations
+# Preprocess toolkit documentation
 
 The purpose of this pipeline is to merge raw ground truth data in raster or vector format with satellite imagery for the production of a set of standardized image tiles for the purpose of training a machine learning model.
 
 This particular implementation assumes a desired output of paired (data, mask) tilesets.
 
 
+## Data
+
 **Inputs**
 
 | Name | Data Type | Description |   
 | ---- | --------- | ----------- |
-| Ground Truth | Raster File (`.tif`, `.jp2`, etc) or Vector File (`.shp`, `.geojson`) | Contains information about ground state (in this case, snow presence or absence) as measured by another method (e.g. ASO/SnowEX lidar). Can either be a GeoJson binary vector or a raw or binary raster.
+| Ground Truth | spatial Raster File (`.tif`, `.jp2`, etc) | Contains information about ground state (in this case, snow presence or absence) as measured by another method (e.g. ASO/SnowEX lidar). Can either be a GeoJson binary vector or a raw or binary raster.
 | Date | string or `datetime` | date of ground truth data acqusition. Used to determine which imagery to acquire.|
 | Date Range | integer | number of days around ground truth acqusition date to search for imagery.
 
@@ -22,34 +19,51 @@ This particular implementation assumes a desired output of paired (data, mask) t
 
 | Name | Data Type | Description |
 | ---- | -----     | ----        |
-| Image Tiles | Cloud Storage bucket (S3, GCS) | Bucket with either `{z}/{x}/{y}.tif` structure or `{z}_{x}_{y}.tif` filenames containing tiles. (_it's likely that we'll need `.tif` files to include 4 bands, see below._)|
-| Mask Tiles | Cloud Storage Bucket (S3, GCS) | Bucket with either `{z}/{x}/{y}.tif` structure or `{z}_{x}_{y}.tif` filenames containing binary masks for training.  (_it's likely that we'll need `.tif` files to include 4 bands, see below._)|
+| Image Tiles | Cloud Storage bucket (S3) | Bucket with either `{z}/{x}/{y}.tif` structure or `{z}_{x}_{y}.tif` filenames containing tiles with same data architecture as original imagery. |
+| Mask Tiles | Cloud Storage Bucket (S3, GCS) | Bucket with either `{z}/{x}/{y}.tif` structure or `{z}_{x}_{y}.tif` filenames containing binary masks for training. |
 
 The output __Image Tiles__ are cropped to the extent of the ground truth information. The set of __Image Tiles__ and __Mask Tiles__ is identical.
 
-## Conceptual Workflow
+## Toolkit
 
 The primary steps to completing this data transformation are 1) ground truth pre-processing, 2) image acquisition and storage, 3) image preprocessing, 4) image and mask tiling.
 
-### Ground Truth Preprocessing
+### `gt_pre`: Ground Truth Preprocessing
 
 | input parameter | description |
 | ----  | ---- |
 | __`--gt_file`__ | ground truth data file, as below|  
-|  _`--threshold`_ (optional) | threshold for real-valued raster input|
+| __`--threshold`__ (optional) | threshold for real-valued raster input|
+| __`--dst_crs`__ (optional) | EPSG code to reproject input into. Default is original CRS |
+| __output_dir__ (required) | directory for output |
 
-Ground truth data can come in the form of either a GeoJSON file containing the spatial extent of the desired segmentation (e.g. snow locations) as a `Polygon`, or as a raster file (GeoTIFF, JP2). These raster files, in practice, are either binary (similar to vectors) or have real values in them (e.g. lidar snow depth) which must be thresholded to create a mask.
 
-We must accept all three of these input data types and process them as follows:
+__Output__: this stage of the pipeline outputs the binary raster produced via this processing step as `<output_dir>/<gt_file>_binary.tif` for use by future steps. It also produces a `.GeoJSON` file containing the spatial extent of the ground truth for use by the image acquisition step.
 
-| Input Data Type | Processing Strategy |
-| ---- | ---- |
-| binary raster | No processing needed --- can proceed directly to tiling.  |
-| real-valued raster | Must be thresholded (__need a `--threshold` pipeline parameter__) to a binary raster. |
-| binary vector | Must be converted to binary raster. |  
+### `tile`: Spherical Mercator Tiling
 
-__Output__: this stage of the pipeline places in cloud storage the binary raster produced via this processing step and outputs its location for use by future steps. It also produces a `.GeoJSON` file containing the spatial extent of the ground truth for use by the image acquisition step.
 
+| input parameter | description |
+| ----  | ---- |
+| __`--zoom`__ | zoom level for output tiles |  
+| __`--indexes`__  | raster band indices to include in tiles |
+| __`--quant`__ (optional) | value to divide bands with, if input data is quantized |
+| __`--aws_profile`__ (optional) | aws profile name for s3:// destinations |
+| __`--skip_blanks`__ (optional) | skip blank tiles. |
+| __`--cover`__ (optional) | csv file containing tiles to produce (default: all)
+| __files__ | file or files to tile |
+| __output_dir__ | place to put tile directory. can be s3:// |
+
+
+
+__Output:__ A directory at zoom level `<zoom>` containing GeoTIFF files representing original input imagery.
+
+
+---
+**All details below are out of date but kept for reference**
+
+<details>
+  <summary>click to expand</summary>
 ### Image Acquisition
 
 | input parameter | description |
@@ -122,4 +136,6 @@ __Multiple Image tiler__: TBD, still not quite sure how to structure the beam da
 
 ### TODO: `split`
 
-This module is responsible for creating a train-validation split of the images 
+This module is responsible for creating a train-validation split of the images
+
+</details>
