@@ -18,6 +18,8 @@ The storage of data in an object storage solution (like S3) allows for a variety
 
 Planet Labs has a robust [API](https://developers.planet.com/docs/orders/reference/#) which abstracts complex image operations including imagery ordering, image subsetting, and band math, among others. Planet can deliver final data products from this compute API directly to cloud storage, which simplifies the infrastructure required to process the data.
 
+These data are also either delivered as, or are converted to, the [Cloud Optimized GeoTIFF](https://www.cogeo.org/) storage format. This format allows for efficient cloud-based processing workflows by permitting HTTP Range requests, allowing partial reads of large files on the cloud. 
+
 ### Data Volume
 
 Though the initial data volume used to train our models has been relatively small (< 10 GB), we are currently in a scale-up period where we hope to use all available ground-truth and imagery collections over a single year for a single watershed to create a robust proof-of-concept for this model. Data volumes for this task range well over 100GB, which, while still very tractable in a local computing environment, severely limits this distributed development model which we've used to create the software required for this project. Copying 100GB of data from one endpoint to another isn't terribly exciting, but s3 availability solves this problem.
@@ -39,4 +41,4 @@ To train the large neural network required for this project, we use GPU-enabled 
 
 * [`s3fs`](https://s3fs.readthedocs.io/en/latest/): Python file system abstraction for s3
 * [`boto3`](https://boto3.amazonaws.com/v1/documentation/api/latest/index.html): AWS SDK for Python
-* [`AWS GPU Instance Pricing`](https://aws.amazon.com/ec2/instance-types/p2/)
+* [AWS GPU Instance Pricing](https://aws.amazon.com/ec2/instance-types/p2/)
