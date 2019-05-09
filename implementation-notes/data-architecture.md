@@ -19,7 +19,7 @@ This project relies upon spatially-explicit raster data derived from airborne or
 <a name="table:datasource"></a>
 
 | data source | derivation | format | reference | resolution | spatial extent | temporal extent |
-| ----  | ---- | ---- | ---- | ---- | ---- | ---- |
+| ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- |
 | Ground Truth | airborne lidar | spatial raster (GeoTIFF) |  https://aso.jpl.nasa.gov/ | 3m | Several Basins: Tuolumne (CA), Merced (CA), San Joaquin (CA), Uncompahgre (CO) | Weekly, Feb 2016 – June 2018 |
 | 4-band imagery | Planet Labs cubesat constellation | spatial raster (COGeoTIFF) | [Planet Specification](https://assets.planet.com/docs/Planet_Combined_Imagery_Product_Specs_letter_screen.pdf) | 3m | Global | ~Daily, since 2015 |
 
