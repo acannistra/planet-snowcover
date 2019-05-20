@@ -37,7 +37,7 @@
   loss = "lovasz"
 
   # Batch size for training.
-  batch_size = 8
+  batch_size = 7
 
   # tile side size in pixels.
   tile_size = 512
