@@ -13,7 +13,7 @@
 
 [[classes]]
   name = "snow"
-  color = "white"
+  color = "pink"
 
 # Indicate which dataset sub-directory and bands to take as input.
 # You could so, add several channels blocks to compose your input Tensor. Orders are meaningful.
