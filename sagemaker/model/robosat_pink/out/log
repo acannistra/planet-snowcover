@@ -1,0 +1,37 @@
+RoboSat - training on CPU, with 1 workers
+RoboSat - training on CPU, with 1 workers
+RoboSat - training on CPU, with 1 workers
+RoboSat - training on CPU, with 1 workers
+RoboSat - training on CPU, with 1 workers
+RoboSat - training on CPU, with 1 workers
+RoboSat - training on CPU, with 1 workers
+RoboSat - training on CPU, with 1 workers
+RoboSat - training on CPU, with 1 workers
+RoboSat - training on CPU, with 1 workers
+RoboSat - training on CPU, with 1 workers
+RoboSat - training on CPU, with 1 workers
+Using checkpoint: planet-snowcover-models/checkpoint-190319-20:47:57
+RoboSat - training on CPU, with 1 workers
+RoboSat - training on CPU, with 1 workers
+Using checkpoint: planet-snowcover-models/checkpoint-190319-20:47:57
+RoboSat - training on CPU, with 1 workers
+Using checkpoint: planet-snowcover-models/checkpoint-190319-20:47:57
+
+RoboSat - training on CPU, with 1 workers
+Using checkpoint: planet-snowcover-models/checkpoint-190319-20:47:57
+
+--- Input tensor from Dataset: planet-snowcover-imagery/(.*)_AnalyticMS_SR_clip_tiled ---
+
+--- Hyper Parameters ---
+Model:			 albunet
+Encoder model:		 resnet50
+Loss function:		 lovasz
+ResNet pre-trained:	 True
+Batch Size:		 1
+Tile Size:		 512
+Data Augmentation:	 0.75
+Learning Rate:		 2.5e-05
+Weight Decay:		 0.0
+
+---
+Epoch: 1/10

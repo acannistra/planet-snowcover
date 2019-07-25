@@ -1,0 +1,17 @@
+torchvision
+numpy
+pillow
+opencv-contrib-python
+tqdm==4.19.9
+requests
+geojson
+mercantile
+osmium
+rasterio
+supermercado
+shapely
+rtree
+pyproj
+toml
+pytest
+webcolors
