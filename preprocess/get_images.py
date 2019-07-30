@@ -2,7 +2,6 @@ import argparse
 import unittest
 
 from datetime import datetime, timedelta
-from dateutil.parser import isoparse
 
 from shapely.geometry import shape
 from json import loads
@@ -45,8 +44,7 @@ def add_parser(subparser):
                         required = True)
 
     parser.add_argument("--date", help="date range centerpoint (YYYY/MM/DD)",
-                        required = True,
-                        type = isoparse)
+                        required = True)
 
     parser.add_argument("--date_range",
                         help="number of days on either side of  centerpoint to search for imagery",
