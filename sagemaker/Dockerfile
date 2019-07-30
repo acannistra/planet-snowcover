@@ -5,9 +5,9 @@ MAINTAINER Tony Cannistra <tony.cannistra@gmail.com>
 RUN apt-get update \
     && apt-get install -y software-properties-common curl \
     && add-apt-repository ppa:jonathonf/python-3.6 \
-    && apt-get remove -y software-properties-common \
     && apt autoremove -y \
     && apt-get update \
+    && apt-get install -y build-essential \ 
     && apt-get install -y python3.6 
 
 RUN apt-get -y update && apt-get install -y --no-install-recommends \
@@ -31,10 +31,6 @@ ENV PATH /root/anaconda3/bin:$PATH
 # Install dependancies
 COPY pytorch_p36.yml /opt/program/
 RUN conda env update --file /opt/program/pytorch_p36.yml
-RUN add-apt-repository ppa:ubuntugis/ppa \
-    && apt-get update \
-    && apt-get install gdal-bin libgdal-dev \
-    && pip install rasterio --no-binary rasterio
 
 
 # There's substantial overlap between scipy and numpy that we eliminate by
@@ -49,9 +45,11 @@ RUN add-apt-repository ppa:ubuntugis/ppa \
 
 ENV PYTHONUNBUFFERED=TRUE
 ENV PYTHONDONTWRITEBYTECODE=TRUE
+
+SHELL ["/bin/bash", "-c"]  
+RUN echo "source activate pytorch_p36" > ~/.bashrc
+ENV PATH="/opt/conda/envs/pytorch_p36/bin:${PATH}"
 ENV PATH="/opt/program:${PATH}"
-
-
 
 # Set up the program in the image
 COPY model /opt/program
