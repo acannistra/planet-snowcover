@@ -171,8 +171,14 @@ def tile_image(imageFile, output_dir, zoom, cover=None, indexes = None, quant = 
         covertiles = set(__load_cover_tiles(cover))
         tiles = set(tiles).intersection(covertiles)
 
+    imageReader = None
+    if (imageFile.startswith("s3://")):
+        with rio.Env(profile_name = aws_profile):
+            imageReader = rio.open(imageFile)
+    else:
+        imageReader = rio.open(imageFile)
 
-    __TILER = partial(_write_tile, image = imageFile,
+    __TILER = partial(_write_tile, image = imageReader,
                      output_dir = output_dir, bands = indexes,
                      quant = quant, aws_profile = aws_profile,
                      skip_blanks = skip_blanks, nodata_val = f.nodata)
