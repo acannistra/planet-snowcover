@@ -200,12 +200,12 @@ def gt_pre(gt_file, output_dir, threshold = None, dst_crs = None, footprint = Fa
 
     else:
         # input file is binary raster
-        binrast_file = args.gt_file
+        binrast_file = gt_file
 
     if footprint:
         vec_filename = ".".join([file_base, 'geojson'])
         with yaspin(text="writing vector footprint...", color="yellow") as spinner:
-            footprintGeoJson = _footprint(args.gt_file)
+            footprintGeoJson = _footprint(gt_file)
             with open(path.join(output_dir, vec_filename), 'w') as vf:
                 vf.write(json.dumps(footprintGeoJson))
 
