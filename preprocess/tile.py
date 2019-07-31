@@ -146,7 +146,13 @@ def tile_image(imageFile, output_dir, zoom, cover=None, indexes = None, quant = 
 
         return [Tile(z, x, y) for _, (z, x, y) in list(coverTiles.iterrows())]
 
-    f = rio.open(imageFile)
+
+    f = None
+    if (imageFile.startswith("s3://")):
+        with rio.Env(profile_name = aws_profile):
+            f = rio.open(imageFile)
+    else:
+        f = rio.open(imageFile)
 
     # check crs:
     if int(f.crs.to_dict()['init'].split(":")[1]) != 4326:
@@ -171,14 +177,8 @@ def tile_image(imageFile, output_dir, zoom, cover=None, indexes = None, quant = 
         covertiles = set(__load_cover_tiles(cover))
         tiles = set(tiles).intersection(covertiles)
 
-    imageReader = None
-    if (imageFile.startswith("s3://")):
-        with rio.Env(profile_name = aws_profile):
-            imageReader = rio.open(imageFile)
-    else:
-        imageReader = rio.open(imageFile)
 
-    __TILER = partial(_write_tile, image = imageReader,
+    __TILER = partial(_write_tile, image = f,
                      output_dir = output_dir, bands = indexes,
                      quant = quant, aws_profile = aws_profile,
                      skip_blanks = skip_blanks, nodata_val = f.nodata)
