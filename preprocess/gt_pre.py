@@ -88,7 +88,7 @@ def add_parser(subparser):
 
     parser.add_argument("output_dir", help="output directory. (AWS S3 and GCP GS compatible).")
 
-    parser.add_argument("--footprint", help="output vector footprint as GeoJSON")
+    parser.add_argument("--footprint", action="store_true", help="output vector footprint as GeoJSON")
 
 
     parser.set_defaults(func = main)
@@ -202,14 +202,15 @@ def gt_pre(gt_file, output_dir, threshold = None, dst_crs = None, footprint = Fa
         # input file is binary raster
         binrast_file = args.gt_file
 
-    vec_filename = ".".join([file_base, 'geojson'])
-    with yaspin(text="writing vector footprint...", color="yellow") as spinner:
-        footprintGeoJson = _footprint(args.gt_file)
-        with open(path.join(output_dir, vec_filename), 'w') as vf:
-            vf.write(json.dumps(footprintGeoJson))
-            
-        spinner.text = "writing vector...done"
-        spinner.ok(SUCCESS)
+    if footprint:
+        vec_filename = ".".join([file_base, 'geojson'])
+        with yaspin(text="writing vector footprint...", color="yellow") as spinner:
+            footprintGeoJson = _footprint(args.gt_file)
+            with open(path.join(output_dir, vec_filename), 'w') as vf:
+                vf.write(json.dumps(footprintGeoJson))
+
+            spinner.text = "writing vector...done"
+            spinner.ok(SUCCESS)
 
     return(0);
 
