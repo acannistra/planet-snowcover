@@ -6,9 +6,6 @@ from datetime import datetime, timedelta
 from shapely.geometry import shape
 from json import loads
 
-from planet_utils.search import SimpleSearch
-from planet_utils.download import CroppedDownload
-
 from os import makedirs, path
 
 from multiprocessing import Pool as ThreadPool
@@ -146,6 +143,11 @@ def _process_zip(zipFile, output_dir, aws_profile = None):
 
 def get_images(geometry, date, date_range, output_dir, max_images = None,
                max_overlap = None, nearest_date = None, max_cloud_cover = None, aws_profile=None):
+
+
+    from planet_utils.search import SimpleSearch
+    from planet_utils.download import CroppedDownload
+
 
     center_date = date
     start_date = center_date - timedelta(days = date_range)
