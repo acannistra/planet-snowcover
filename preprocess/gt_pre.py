@@ -5,10 +5,12 @@ import unittest
 from raster_utils import reproject_raster
 
 import rasterio as rio
+from rasterio import warp
 from rasterio.transform import guard_transform
 
 from os import path, remove, makedirs
 
+import json
 
 from yaspin import yaspin
 SUCCESS = "✔"
@@ -86,10 +88,41 @@ def add_parser(subparser):
 
     parser.add_argument("output_dir", help="output directory. (AWS S3 and GCP GS compatible).")
 
+    parser.add_argument("--footprint", help="output vector footprint as GeoJSON")
+
 
     parser.set_defaults(func = main)
 
 # ---
+
+def generate_polygon(bbox):
+    from shapely.geometry import Polygon
+    """
+    Generates a list of coordinates: [[x1,y1],[x2,y2],[x3,y3],[x4,y4],[x1,y1]]
+    """
+    return Polygon(
+            [[bbox[0],bbox[1]],
+             [bbox[2],bbox[1]],
+             [bbox[2],bbox[3]],
+             [bbox[0],bbox[3]],
+             [bbox[0],bbox[1]]]
+            )
+
+
+def _footprint(file):
+    from shapely.geometry import Polygon, mapping
+
+    ds = rio.open(file)
+    bds = ds.bounds
+
+    bds_trans = warp.transform_bounds(
+        ds.crs,
+        {'init' : 'epsg:4326'},
+        *bds
+    )
+
+    return(mapping(generate_polygon(bds_trans)))
+
 
 def _filetype(filename):
     "return extension of file without '.' "
@@ -151,7 +184,7 @@ def _is_binary_raster(raster):
     return(set(unique(file.read())) == set([1, 0]))
 
 
-def gt_pre(gt_file, output_dir, threshold = None, dst_crs = None):
+def gt_pre(gt_file, output_dir, threshold = None, dst_crs = None, footprint = False):
     file_base = path.splitext(path.basename(gt_file))[0]
 
     if not _is_binary_raster(gt_file):
@@ -170,8 +203,11 @@ def gt_pre(gt_file, output_dir, threshold = None, dst_crs = None):
         binrast_file = args.gt_file
 
     vec_filename = ".".join([file_base, 'geojson'])
-    with yaspin(text="writing vector...", color="yellow") as spinner:
-        _write_vector(binrast_file, path.join(output_dir, vec_filename))
+    with yaspin(text="writing vector footprint...", color="yellow") as spinner:
+        footprintGeoJson = _footprint(args.gt_file)
+        with open(path.join(output_dir, vec_filename), 'w') as vf:
+            vf.write(json.dumps(footprintGeoJson))
+            
         spinner.text = "writing vector...done"
         spinner.ok(SUCCESS)
 
@@ -179,4 +215,8 @@ def gt_pre(gt_file, output_dir, threshold = None, dst_crs = None):
 
 def main(args):
     makedirs(args.output_dir, exist_ok = True)
-    return(gt_pre(args.gt_file, args.output_dir, args.threshold, args.dst_crs))
+    return(gt_pre(args.gt_file,
+                  args.output_dir,
+                  args.threshold,
+                  args.dst_crs,
+                  args.footprint))
