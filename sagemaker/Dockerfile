@@ -31,7 +31,9 @@ ENV PATH /root/anaconda3/bin:$PATH
 # Install dependancies
 COPY pytorch_p36.yml /opt/program/
 RUN conda env update --file /opt/program/pytorch_p36.yml
-
+RUN apt-get update \
+    && apt-get install -y libsm6 libxext6 libxrender-dev
+COPY credentials /root/.aws/credentials
 
 # There's substantial overlap between scipy and numpy that we eliminate by
 # linking them together. Likewise, pip leaves the install caches populated which uses
@@ -53,4 +55,6 @@ ENV PATH="/opt/program:${PATH}"
 
 # Set up the program in the image
 COPY model /opt/program
+COPY start.sh /opt/program
 WORKDIR /opt/program
+#ENTRYPOINT ["/bin/bash", "start.sh"]
