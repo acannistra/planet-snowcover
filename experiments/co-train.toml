@@ -6,7 +6,7 @@
   aws_profile = "esip"
   image_bucket = "planet-snowcover-imagery"
   # regex defines each slippy-map directory, for buckets with many
-  imagery_directory_regex = "(.*)_AnalyticMS_SR_clip_tiled"
+  imagery_directory_regex = "(.*)20180330(.*)_AnalyticMS_SR_clip"
   mask_bucket = "planet-snowcover-snow"
   mask_directory_regex = "ASO_3M_SD_USCOCB_20180330_binary$" # $ = end of string = only dirs (no .tif)
   train_percent = 0.7
