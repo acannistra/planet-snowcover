@@ -7,6 +7,7 @@ from raster_utils import reproject_raster
 import rasterio as rio
 from rasterio import warp
 from rasterio.transform import guard_transform
+from numpy import ma
 
 from os import path, remove, makedirs
 
@@ -135,15 +136,16 @@ def _threshold_raster(file, out_name, threshold=0.9, dst_crs = None):
     file = rio.open(file)
     profile = file.profile
 
-
+    # need masked array
     data = file.read(1)
+    mask = (data != file.nodata)
+    data = ma.array(data, mask = mask, fill_value = file.nodata)
+
     profile.update(dtype='int16')
-    data[data == 0] = -1.
-    profile.update(nodata = -1.)
     profile.update(transform=guard_transform(profile['transform']))
     with rio.open(out_name, 'w', **profile) as dest:
-        threshed = (data >= threshold)
-        data = (threshed).astype('int16')
+        threshed = (data >= threshold) # masked array op
+        data = (threshed).filled().astype('int16') # fill mask with nodata.
         dest.write(data, 1)
 
     if dst_crs is not None:
