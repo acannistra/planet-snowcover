@@ -138,7 +138,7 @@ def _threshold_raster(file, out_name, threshold=0.9, dst_crs = None):
 
     # need masked array
     data = file.read(1)
-    mask = (data != file.nodata)
+    mask = (data == file.nodata)
     data = ma.array(data, mask = mask, fill_value = file.nodata)
 
     profile.update(dtype='int16')
