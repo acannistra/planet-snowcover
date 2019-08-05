@@ -62,8 +62,8 @@ def _write_tile(tile, image, output_dir, tile_size = 512, bands = [1,2,3,4], qua
     data, mask = tile_read(image, tile_xy_bounds, tile_size, indexes=bands)
     bands, height, width = data.shape
 
-    if (skip_blanks and (data == nodata_val).all()):
-        print("Blank (nodata) tile ({}), skipping...".format(tile))
+    if (skip_blanks and (data == nodata_val).any()):
+        print("Nodata ({}) in tile ({}), skipping...".format(nodata_val, tile))
         return (tile, False)
 
     if quant is not None:
