@@ -46,13 +46,15 @@ def add_parser(subparser):
 
     parser.add_argument("--skip-blanks", help="Skip blank tiles.", action = 'store_true')
 
+    parser.add_argument("--max_nodata_pct", help="Maximum percentage of pixels with <nodata> value allowed", type = int, default = 0)
+
     parser.add_argument("files", help="file or files to tile", nargs="+")
 
 
 
     parser.set_defaults(func = main)
 
-def _write_tile(tile, image, output_dir, tile_size = 512, bands = [1,2,3,4], quant = None, aws_profile = None, skip_blanks = True, nodata_val = 0):
+def _write_tile(tile, image, output_dir, tile_size = 512, bands = [1,2,3,4], quant = None, aws_profile = None, skip_blanks = True, nodata_val = 0, max_nodata_pct = 0.0):
     """
         extracts and writes tile from image into output_dir, which can be s3://
 
@@ -62,7 +64,10 @@ def _write_tile(tile, image, output_dir, tile_size = 512, bands = [1,2,3,4], qua
     data, mask = tile_read(image, tile_xy_bounds, tile_size, indexes=bands)
     bands, height, width = data.shape
 
-    if (skip_blanks and (data == nodata_val).any()):
+    # does the number of cells with nodata exceed max_nodata_pct?
+    exceed_nodata_pct = (np.sum(data == nodata_val) >= (max_nodata_pct * data.size())
+
+    if skip_blanks and exceed_nodata_pct:
         print("Nodata ({}) in tile ({}), skipping...".format(nodata_val, tile))
         return (tile, False)
 
@@ -130,7 +135,7 @@ def _write_tile(tile, image, output_dir, tile_size = 512, bands = [1,2,3,4], qua
     return tile, True
 
 
-def tile_image(imageFile, output_dir, zoom, cover=None, indexes = None, quant = None, aws_profile = None, skip_blanks = True):
+def tile_image(imageFile, output_dir, zoom, cover=None, indexes = None, quant = None, aws_profile = None, skip_blanks = True, max_nodata_pct = 0.0):
     """
     Produce either A) all tiles covering <image> at <zoom> or B) all tiles in <cover> if <cover> is not None at <zoom> and place OSM directory structure in <imageFile>/Z/X/Y.png format inside output_dir. If quant, divide all bands by Quant first. Can write to s3:// destinations with aws_profile.
 
@@ -181,7 +186,8 @@ def tile_image(imageFile, output_dir, zoom, cover=None, indexes = None, quant = 
     __TILER = partial(_write_tile, image = f,
                      output_dir = output_dir, bands = indexes,
                      quant = quant, aws_profile = aws_profile,
-                     skip_blanks = skip_blanks, nodata_val = f.nodata)
+                     skip_blanks = skip_blanks, nodata_val = f.nodata,
+                     max_nodata_pct = max_nodata_pct)
 
     with futures.ThreadPoolExecutor() as executor:
         responses = list(executor.map(__TILER, tiles))
@@ -197,4 +203,4 @@ def main(args):
     for image in args.files:
         fbase = path.splitext(path.basename(image))[0]
         image_output = path.join(args.output_dir, fbase)
-        all_tiles.append(tile_image(image, image_output, args.zoom, args.cover, args.indexes, args.quant, args.aws_profile, args.skip_blanks))
+        all_tiles.append(tile_image(image, image_output, args.zoom, args.cover, args.indexes, args.quant, args.aws_profile, args.skip_blanks, args.max_nodata_pct))
