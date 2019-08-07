@@ -46,7 +46,7 @@ def add_parser(subparser):
 
     parser.add_argument("--skip-blanks", help="Skip blank tiles.", action = 'store_true')
 
-    parser.add_argument("--max_nodata_pct", help="Maximum percentage of pixels with <nodata> value allowed", type = int, default = 0)
+    parser.add_argument("--max_nodata_pct", help="Maximum percentage of pixels with <nodata> value allowed", type = float, default = 0)
 
     parser.add_argument("files", help="file or files to tile", nargs="+")
 
