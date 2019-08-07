@@ -66,7 +66,7 @@ def _write_tile(tile, image, output_dir, tile_size = 512, bands = [1,2,3,4], qua
 
     # does the number of cells with nodata exceed max_nodata_pct?
     exceed_nodata_pct = ((np.sum(data == nodata_val) >=
-                         (max_nodata_pct * data.size())))
+                         (max_nodata_pct * data.size)))
 
     if skip_blanks and exceed_nodata_pct:
         print("Nodata ({}) in tile ({}), skipping...".format(nodata_val, tile))
