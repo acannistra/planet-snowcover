@@ -11,14 +11,14 @@ class Lovasz(nn.Module):
     def forward(self, inputs, targets):
 
         N, C, H, W = inputs.size()
-        print(inputs.size(), inputs.dtype)
         #masks = torch.zeros(N, C, H, W).to(targets.device).scatter_(1, targets.view(N, 1, H, W), 1)
         masks = targets
 
         loss = 0.0
 
         for mask, input in zip(masks.view(N, -1), inputs.view(N, -1)):
-
+            
+            input = input.double() 
             max_margin_errors = 1.0 - ((mask * 2 - 1) * input)
             errors_sorted, indices = torch.sort(max_margin_errors, descending=True)
             labels_sorted = mask[indices.data]

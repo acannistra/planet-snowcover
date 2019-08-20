@@ -116,7 +116,7 @@ def tiles_from_slippy_map_s3(root, aws_profile = 'default', trim_protocol = True
                 tile = mercantile.Tile(x=int(x), y=int(y), z=int(z))
                 path = os.path.join(root, z, x, name)
 
-                id = "{}-{}-{}-{}".format(md5(root.encode('utf8')).hexdigest(),
+                id = "{}-{}-{}-{}".format(root.replace("/", "_"),
                                           tile.x,
                                           tile.y,
                                           tile.z)

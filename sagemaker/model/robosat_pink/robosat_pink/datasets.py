@@ -45,11 +45,6 @@ import boto3
 import pandas as pd
 
 
-class ImageTiles(torch.utils.data.Dataset):
-    """
-        Just an image tileset.
-    """
-
 
 class PairedTiles(torch.utils.data.Dataset):
     """ Pairs images with mask from <image> and <tiles> directories
@@ -135,15 +130,16 @@ class S3SlippyMapTiles(torch.utils.data.Dataset):
 
     def __getitem__(self, i):
         id, tile, path = self.tiles[i]
-        print(tile, path)
 
+
+        image = None
         with rio.Env(profile_name=self.aws_profile):
 
             if self.mode == "image":
                 image = cv2.cvtColor(cv2.imread(path), cv2.COLOR_BGR2RGB)
 
             elif self.mode == "multibands":
-                image = rio.open(path)
+                image = rio.open(path).read()
 
             elif self.mode == "mask":
                 image = np.array(Image.open(path).convert("P"))
@@ -152,7 +148,7 @@ class S3SlippyMapTiles(torch.utils.data.Dataset):
                 image = self.transform(image = image)['image']
 
 
-        return tile, image
+        return tile, torch.FloatTensor(image)
 
 
 
@@ -182,7 +178,6 @@ class SlippyMapTiles(torch.utils.data.Dataset):
     def __getitem__(self, i):
 
         tile, path = self.tiles[i]
-        print(tile, path)
 
         if self.mode == "image":
             image = cv2.cvtColor(cv2.imread(path), cv2.COLOR_BGR2RGB)
@@ -244,6 +239,9 @@ class MultiSlippyMapTilesConcatenation(torch.utils.data.Dataset):
 
     def __len__(self):
         return(len(self.overlap))
+
+    def getIds(self):
+        return self.image_ids
 
     def __getitem__(self, i):
 
