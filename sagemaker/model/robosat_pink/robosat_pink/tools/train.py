@@ -95,37 +95,49 @@ def main(args):
     optimizer = Adam(net.parameters(), lr=config["model"]["lr"], weight_decay=config["model"]["decay"])
 
     resume = 0
-    S3_CHECKPOINT = False
-    if args.checkpoint:
 
-        if args.checkpoint.startswith("s3://"):
+    # check checkpoint situation  + load if ncessary
+    checkpoint = None # no checkpoint
+    if args.checkpoint: # command line checkpoint
+        checkpoint = args.checkpoint
+    try: # config file checkpoint
+        checkpoint = config["checkpoint"]['path']
+    except:
+        # no checkpoint in config file
+        pass
+
+
+    S3_CHECKPOINT = False
+    if checkpoint:
+
+        if checkpoint.startswith("s3://"):
             S3_CHECKPOINT = True
             # load from s3
-            args.checkpoint = args.checkpoint[5:]
+            checkpoint = checkpoint[5:]
             sess = boto3.Session(profile_name=config['dataset']['aws_profile'])
             fs = s3fs.S3FileSystem(session=sess)
-            s3ckpt = s3fs.S3File(fs, args.checkpoint, 'rb')
+            s3ckpt = s3fs.S3File(fs, checkpoint, 'rb')
 
         def map_location(storage, _):
             return storage.cuda() if torch.cuda.is_available() else storage.cpu()
 
-    if args.checkpoint is not None:
+    if checkpoint is not None:
         def map_location(storage, _):
             return storage.cuda() if torch.cuda.is_available() else storage.cpu()
         try:
             if S3_CHECKPOINT:
-                with s3fs.S3File(fs, args.checkpoint, 'rb') as C:
+                with s3fs.S3File(fs, checkpoint, 'rb') as C:
                     state = torch.load(io.BytesIO(C.read()),
                                        map_location = map_location)
             else:
-                state = torch.load(args.checkpoint)
+                state = torch.load(checkpoint)
             optimizer.load_state_dict(state['optimizer'])
             net.load_state_dict(state['state_dict'])
             net.to(device)
         except FileNotFoundError as f:
             print("{} checkpoint not found.".format(CHECKPOINT))
 
-        log.log("Using checkpoint: {}".format(args.checkpoint))
+        log.log("Using checkpoint: {}".format(checkpoint))
 
 
     losses = [name for _, name, _ in pkgutil.iter_modules([os.path.dirname(robosat_pink.losses.__file__)])]
@@ -135,7 +147,7 @@ def main(args):
     loss_module = import_module("robosat_pink.losses.{}".format(config["model"]["loss"]))
     criterion = getattr(loss_module, "{}".format(config["model"]["loss"].title()))().to(device)
 
-    train_loader, val_loader = get_dataset_loaders(config, args.workers)
+    train_loader, val_loader = get_dataset_loaders(config, args.workers, idDir = args.out)
 
     if resume >= config["model"]["epochs"]:
         sys.exit(
@@ -289,7 +301,8 @@ def validate(loader, num_classes, device, net, criterion):
     }
 
 
-def get_dataset_loaders(config, workers):
+def get_dataset_loaders(config, workers, idDir=None):
+    # idDir is the place to save train/test IDS as txt files.
 
     p = pprint.PrettyPrinter()
 
@@ -337,6 +350,17 @@ def get_dataset_loaders(config, workers):
     train_tileset = MultiSlippyMapTilesConcatenation(imagery_locs, mask_locs, aws_profile = config['dataset']['aws_profile'], image_ids = train_ids, joint_transform = transform)
 
     test_tileset =MultiSlippyMapTilesConcatenation(imagery_locs, mask_locs, aws_profile = config['dataset']['aws_profile'], image_ids = test_ids, joint_transform = transform)
+
+    train_ids = train_tileset.getIds()
+    test_ids = test_tileset.getIds()
+
+    if idDir:
+        with open(os.path.join(idDir, 'train_ids.txt'), 'w') as f:
+            for item in train_ids:
+                f.write("%s\n" % item)
+        with open(os.path.join(idDir, 'test_ids.txt'), 'w') as f:
+            for item in train_ids:
+                f.write("%s\n" % item)
 
 
     train_loader = DataLoader(train_tileset,

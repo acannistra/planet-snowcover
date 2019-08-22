@@ -1,0 +1,145 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>CubeSat Snow Covered Area Implementation Documentation &#8212; CubeSat SCA  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Planet SCA Data Architecture" href="implementation-notes/data-architecture.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="cubesat-snow-covered-area-implementation-documentation">
+<h1>CubeSat Snow Covered Area Implementation Documentation<a class="headerlink" href="#cubesat-snow-covered-area-implementation-documentation" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="https://tonycannistra.com/about">Tony Cannistra</a> and <a class="reference external" href="https://escience.washington.edu/people/nicoleta-cristea/">Nicoleta Cristea</a> – <a class="reference external" href="https://escience.washington.edu">eScience Institute</a>, University of Washington.</p>
+<small><em>This work is supported in part by the National Science Foundation (IGERT DGE-1258485, GRFP to T.C.), Earth Science Information Partners (<a href="https://www.esipfed.org">https://www.esipfed.org</a>), and the NASA Terrestrial Hydrology Program.</em></small><div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="implementation-notes/data-architecture.html">Planet SCA Data Architecture</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="implementation-notes/data-architecture.html#data-sources">Data Sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="implementation-notes/data-architecture.html#data-acquisition-workflow-ground-truth">Data Acquisition Workflow — Ground Truth</a></li>
+<li class="toctree-l2"><a class="reference internal" href="implementation-notes/data-architecture.html#data-acquisition-workflow-imagery">Data Acquisition Workflow — Imagery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="implementation-notes/data-architecture.html#machine-learning-training-workflow">Machine Learning Training Workflow</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="implementation-notes/cloud-architecture.html">Planet SCA (<small>snow-covered area</small>) Cloud Infrastructure Design</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="implementation-notes/cloud-architecture.html#cloud-storage-aws-s3">Cloud Storage (AWS S3)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="implementation-notes/cloud-architecture.html#hosted-development-environments">Hosted Development Environments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="implementation-notes/cloud-architecture.html#gpu-instances">GPU instances</a></li>
+<li class="toctree-l2"><a class="reference internal" href="implementation-notes/cloud-architecture.html#resources-related-tools">Resources/Related Tools</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="implementation-notes/ml-architecture.html">Planet SCA ML Architecture Design</a></li>
+</ul>
+</div>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>Understanding the responses of species to climate change requires a robust understanding of the impact of abiotic (environmental) factors on habitat suitability and habitat availability at spatial scales relevant to the study species (Hannah et al. 2014). When studying plant species in montane ecosystems, snow cover is a particularly relevant abiotic factor in determining habitat suitability. However, remotely-sensed snow cover measurements are either captured at a spatial scale far too large to be relevant to the study species (e.g. MODIS SCA), or are appropriate in spatial scale but cost-prohibitive (e.g. LiDAR snow measurements).</p>
+<div class="figure align-default" id="id1">
+<img alt="_images/comparison.png" src="_images/comparison.png" />
+<p class="caption"><span class="caption-text">a)Remote sensing platforms observing transitional snowpack (blue shades are lower, and green shades are higher snowpack density) b) Atmospheric transmission/ ground reflectance for the wavelengths used to observe snow cover c) Tradeoffs between spatial, temporal and spectral resolutions in the current sources, d) Locations of repeat LiDAR snow surveys</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+<p>This project evaluates the suitability of Planet data, a commercial satellite imagery product with unprecedented spatial (&lt; 0.8 m) and temporal (&lt; 5 day) resolution, for the purpose of acquiring detailed snow-cover and snow-melt data at ecologically-relevant scales. The challenge herein is the radiometric bandwidth available from Planet imagery: only Red, Green, Blue, and Near Infrared bands are measured by these satellites, which makes standard spectral snow cover indices like the Normalized Difference Snow Index (NDSI, Hall et al. 1995) unusable. We develop a method for using this limited radiometric bandwidth to determine snow cover.</p>
+</div>
+<div class="section" id="technical-overview">
+<h2>Technical Overview<a class="headerlink" href="#technical-overview" title="Permalink to this headline">¶</a></h2>
+<p>Presented here generally, and laid out in more detail in other pages, is the general architecture of our method. We combine Planet imagery with lidar-derived snow area to create a “labeled training set” of images for our machine learning method. This computation is performed on <a class="reference external" href="https://aws.amazon.com">Amazon Web Services</a> infrastructure, a public cloud computing service. Below is a schematic of this process:</p>
+<div class="figure align-default" id="id2">
+<img alt="_images/schematic.png" src="_images/schematic.png" />
+<p class="caption"><span class="caption-text">Workflow components schematic for processing spatial data.</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="#">CubeSat SCA</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="implementation-notes/data-architecture.html">Planet SCA Data Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="implementation-notes/cloud-architecture.html">Planet SCA (<small>snow-covered area</small>) Cloud Infrastructure Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="implementation-notes/ml-architecture.html">Planet SCA ML Architecture Design</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+      <li>Next: <a href="implementation-notes/data-architecture.html" title="next chapter">Planet SCA Data Architecture</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Tony Cannistra.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

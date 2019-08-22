@@ -73,7 +73,12 @@ class Metrics:
             recall = self.tp / (self.tp + self.tn)
             f1 = 2 * (recall * precision) / (recall + precision)
         except ZeroDivisionError:
-            return (-1, -1, -1, -1)
+            return {
+                "accuracy": -1,
+                "precision": -1, 
+                "recall": -1, 
+                "f1": -1
+            }
 
         return {
             "accuracy" : accuracy,

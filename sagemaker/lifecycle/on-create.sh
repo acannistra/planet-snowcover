@@ -26,7 +26,7 @@ rm -rf "$WORKING_DIR/miniconda.sh"
 # Create a custom conda environment
 source "$WORKING_DIR/miniconda/bin/activate"
 
-wget https://raw.githubusercontent.com/acannistra/planet-snowcover/master/sagemaker/lifecycle/imageprocess.yml -O "$WORKING_DIR/imageprocess.yml"
+wget https://raw.githubusercontent.com/acannistra/planet-snowcover/master/sagemaker/lifecycle/imageprocess-no-versions.yml -O "$WORKING_DIR/imageprocess.yml"
 
 conda env update --file "$WORKING_DIR/imageprocess.yml"
 
