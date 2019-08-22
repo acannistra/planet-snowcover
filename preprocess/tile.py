@@ -65,8 +65,9 @@ def _write_tile(tile, image, output_dir, tile_size = 512, bands = [1,2,3,4], qua
     bands, height, width = data.shape
 
     # does the number of cells with nodata exceed max_nodata_pct?
-    exceed_nodata_pct = ((np.sum(data == nodata_val) >=
+    exceed_nodata_pct = ((np.sum(data == nodata_val) >
                          (max_nodata_pct * data.size)))
+
 
     np.place(data, data == nodata_val, 0)
 
@@ -194,6 +195,10 @@ def tile_image(imageFile, output_dir, zoom, cover=None, indexes = None, quant = 
 
     with futures.ThreadPoolExecutor() as executor:
         responses = list(executor.map(__TILER, tiles))
+
+    tiles, status = zip(*responses) 
+
+    print("#tiles: {} | written: {}\tfailed:{}".format(len(tiles), sum(status), len(tiles) - sum(status)))
 
     return(responses)
 
