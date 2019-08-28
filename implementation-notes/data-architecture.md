@@ -19,12 +19,12 @@ This project relies upon spatially-explicit raster data derived from airborne or
 <a name="table:datasource"></a>
 
 | data source | derivation | format | reference | resolution | spatial extent | temporal extent |
-| ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- |
+| ---- | ---- | ---- | ---- | ---- | ---- | ---- | 
 | Ground Truth | airborne lidar | spatial raster (GeoTIFF) |  https://aso.jpl.nasa.gov/ | 3m | Several Basins: Tuolumne (CA), Merced (CA), San Joaquin (CA), Uncompahgre (CO) | Weekly, Feb 2016 – June 2018 |
 | 4-band imagery | Planet Labs cubesat constellation | spatial raster (COGeoTIFF) | [Planet Specification](https://assets.planet.com/docs/Planet_Combined_Imagery_Product_Specs_letter_screen.pdf) | 3m | Global | ~Daily, since 2015 |
 
 
-## Data Acquisition Workflow --- Ground Truth
+## Data Acquisition Workflow – Ground Truth
 
 The Airborne Snow Observatory data are available from the NSIDC (https://nsidc.org/data/ASO_3M_SD/versions/1). The data are available at watershed scale --- a single ASO collect occupies about 4-6GB of space. We manually select collections based on a research and evaluation plan, which specifies the use of ablation-period collects for maximum evaluative potential for our method.
 
@@ -45,7 +45,7 @@ At the end of this process, the s3 bucket `planet-snowcover-snow` contains the f
 
 This approach is repeated for each ASO collect intended for use in model training.
 
-## Data Acquisition Workflow --- Imagery
+## Data Acquisition Workflow – Imagery
 
 As mentioned above, the ground truth data source represents our limiting factor in terms of spatial and temporal data availability. Because we are building an architecture which pairs ground truth with imagery for ML training, we construct the following imagery acqusition and processing workflow on the invariant that each image must have a corresponding ground-truth observation. To allow for this, the following workflow borrows components from the previous ground-truth workflow.
 
