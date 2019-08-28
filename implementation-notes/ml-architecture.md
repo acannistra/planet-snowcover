@@ -41,3 +41,16 @@ We have to create an algorithm configuration for SageMaker to be able to use our
 
 The algorithm we've configured is at `arn:aws:sagemaker:us-west-2:675906086666:algorithm/planet-snowcover-cnn-copy-08-05`, and is not publicly accessible. (AWS has strict validation requirements to listing algorithms publicly, which we won't implement for this project. You can create this algorithm yourself quite easily, described above). 
 
+## SageMaker Training
+
+Only two steps are required to complete a training job via SageMaker: creating a configuration file and creating a Training Job. You can find examples of the configuration files in `/experiments` at the root of this repository. Eventually there will be documentation of those files, but they're fairly self-documenting. Once you've created a configuration file, you'll want to upload it to S3. 
+
+Once the configuration file is in S3, you create a Training Job in SageMaker, specifying your algorithm as created above, the s3:// location of your configuration file in the `config` input channel, and the desired computation parameters. The compute parameters I use are listed below: 
+
+| Variable                    | Value                        |
+|-----------------------------|------------------------------|
+| Instance Type               | `ml.p2.xlarge` (GPU-enabled) |
+| Additional volume size (GB) | 150                          |
+| Maximum Runtime (s)         | 25200 (7 hours)              |
+| S3 Output Path              | s3://planet-snowcover-models |
+| Enable Network Isolation    | False                        |
