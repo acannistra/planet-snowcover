@@ -54,3 +54,5 @@ Once the configuration file is in S3, you create a Training Job in SageMaker, sp
 | Maximum Runtime (s)         | 25200 (7 hours)              |
 | S3 Output Path              | s3://planet-snowcover-models |
 | Enable Network Isolation    | False                        |
+
+Once training has finished, the model checkpoints will be saved in a folder within the `S3 Output Path` bucket. 
