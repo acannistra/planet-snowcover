@@ -20,6 +20,24 @@ In short, the SageMaker training process is as follows:
 1. SageMaker executes training job by deploying the above Docker container to automatically-provisioned compute hardware and executing training routine within Docker container.
 1. Upload model artifacts to S3. 
 
+**Important Note**: if you spend any time reading the SageMaker documentation, you'll see the docs refer to "training and validation data in S3." One of the intended features of SageMaker is the built-in ability to copy training data stored in S3 directly local to the compute environment where training is taking place, removing one layer of complexity from the training process. **However**, because we have highly-structured training data in S3 for this project (image tiles, see [`data-architecture.md`](./data-architecture.md)), we don't take advantage of this functionality. Instead, we use the S3-copying functionality to copy a *configuration file* to the local compute environment, which is then *read by the training code* ([`robosat.pink/robosat_pink/tools/train.py`](https://github.com/acannistra/robosat.pink/blob/master/robosat_pink/tools/train.py#L64)). This allows us both to easily configure each training run (by uploading a configuration file to S3 and specifying it in the Training Job configuration) and still leverage S3 object storage. 
+
 ### Docker Configuration
-Sagemaker's training process uses a Docker container to encapsulate the software and compute environment necessary to complete the training process.
+Sagemaker's training process uses a Docker container to encapsulate the software and compute environment necessary to complete the training process. To do this, we constructed a [`Dockerfile`](https://github.com/acannistra/planet-snowcover/blob/master/sagemaker/Dockerfile) which describes the compute environment required to run the training code. At a high-level, this Dockerfile:
+
+* Is based in the `ubuntu:16.04` image
+* Installs Python3.6 and `pip` from `apt`
+* Installs `conda` and uses [`pytorch_p36.yml`](https://github.com/acannistra/planet-snowcover/blob/master/environment/pytorch_p36.yml) to update the root conda environment. 
+* Copies the `/model` code into the SageMaker specified place in the image. 
+* Copies `./start.sh` from the `/sagemaker` directory into the image, which allows the Docker container to implement the commands required by SageMaker. 
+
+For a complete description of this environment, consult the Dockerfile. 
+
+We use Amazon ECR to host the repository, as required by SageMaker. It's located at `675906086666.dkr.ecr.us-west-2.amazonaws.com/planet-snowcover`, which isn't public. 
+
+### SageMaker Algorithm Configuration 
+
+We have to create an algorithm configuration for SageMaker to be able to use our algorithm when we create a Training Job. This simply allows us to specify the container location (listed above) and the "input channels." SageMaker uses S3 to store model data and artifacts – an "Input Channel" is typically how one would tell SageMaker where the *training data* lives so that it can copy it into the container, but we use it to copy a *configuration file* to the container. We name the input channel `config`. 
+
+The algorithm we've configured is at `arn:aws:sagemaker:us-west-2:675906086666:algorithm/planet-snowcover-cnn-copy-08-05`, and is not publicly accessible. (AWS has strict validation requirements to listing algorithms publicly, which we won't implement for this project. You can create this algorithm yourself quite easily, described above). 
 
