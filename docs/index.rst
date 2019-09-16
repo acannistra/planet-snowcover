@@ -24,6 +24,7 @@ CubeSat Snow Covered Area Implementation Documentation
    implementation-notes/data-architecture.md
    implementation-notes/cloud-architecture.md
    implementation-notes/ml-architecture.md
+   pipeline/X_Acquire_ASO.ipynb
 
 Introduction
 ------------
