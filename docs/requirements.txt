@@ -1,2 +1,3 @@
 recommonmark
 sphinx-markdown-tables
+ipython
