@@ -1,3 +1,5 @@
 recommonmark
 sphinx-markdown-tables
-ipython
+sphinx>=1.4
+ipykernel
+nbsphinx
