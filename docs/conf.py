@@ -30,12 +30,9 @@ author = 'Tony Cannistra'
 # ones.
 
 
-source_parsers = {
-    '.md': 'recommonmark.parser.CommonMarkParser',
-}
-
 source_suffix = ['.rst', '.md', '.ipynb']
 extensions = [
+    'recommonmark',
     'sphinx_markdown_tables',
     'nbsphinx'
 ]
