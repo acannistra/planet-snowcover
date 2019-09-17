@@ -20,10 +20,16 @@ CubeSat Snow Covered Area Implementation Documentation
 
 .. toctree::
    :maxdepth: 2
+   :caption: Implementation Notes
 
    implementation-notes/data-architecture.md
    implementation-notes/cloud-architecture.md
    implementation-notes/ml-architecture.md
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Data Pipeline Notebooks
+   
    pipeline/X_Acquire_ASO.ipynb
 
 Introduction
