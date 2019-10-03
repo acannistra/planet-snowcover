@@ -1,1 +1,5 @@
-m2r
+recommonmark
+sphinx-markdown-tables
+sphinx>=1.4
+ipykernel
+nbsphinx
