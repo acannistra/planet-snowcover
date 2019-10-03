@@ -6,9 +6,9 @@
   aws_profile = "esip"
   image_bucket = "planet-snowcover-imagery"
   # regex defines each slippy-map directory, for buckets with many
-  imagery_directory_regex = '20180525_.*'
+  imagery_directory_regex = '20180524_.*'
   mask_bucket = "planet-snowcover-snow"
-  mask_directory_regex = "ASO_3M_SD_USCOGE_20180525_binary$" # $ = end of string = only dirs (no .tif)
+  mask_directory_regex = "ASO_3M_SD_USCOGE_20180524_binary$" # $ = end of string = only dirs (no .tif)
   train_percent = 0.7
 
 [[classes]]
@@ -21,6 +21,9 @@
   bands = [1, 2, 3, 4]
   mean  = [0.485, 0.456, 0.406, 1.0]
   std   = [0.229, 0.224, 0.225, 1.0]
+  
+[checkpoint]
+  path = "s3://planet-snowcover-models/checkpoint-16-may-all.pth"
 
 
 [model]
