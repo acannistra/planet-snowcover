@@ -1,8 +1,0 @@
-# generate COG from image 
-# usage: generate-cog <input> <output>
-
-gdaladdo -r average $1 2 4 8 16
-
-gdal_translate $1 $2 -co COMPRESS=LZW -co TILED=YES -co INTERLEAVE=BAND
-
-python validate_cloud_optimized_geotiff.py $2
