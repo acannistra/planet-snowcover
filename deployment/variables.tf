@@ -1,9 +1,26 @@
-# Variables
+# @@@@@@@@@@ Important Variables
 variable "aws_profile" {
-	default = "esip"
+  default = "esip"
 }
+variable "public_key" {
+  description = "Public key path"
+  default = "~/.ssh/esip-cannistra.pub"
+}
+variable "private_key" {
+  default = "~/.ssh/esip-cannistra.pem"
+}
+
+# You can leave these alone.
 variable "region" {
   default = "us-west-2"
+}
+variable "availability_zone" {
+  description = "availability zone to create subnet"
+  default = "us-west-2a"
+}
+variable "instance_type" {
+  description = "type for aws EC2 instance"
+  default = "t3.medium"
 }
 variable "cidr_vpc" {
   description = "CIDR block for the VPC"
@@ -13,28 +30,11 @@ variable "cidr_subnet" {
   description = "CIDR block for the subnet"
   default = "10.1.0.0/24"
 }
-variable "availability_zone" {
-  description = "availability zone to create subnet"
-  default = "us-west-2a"
-}
-variable "public_key" {
-  description = "Public key path"
-  default = "/Users/tony/.ssh/esip-cannistra.pub"
-}
-
-variable "private_key" {
-  description = "Public key path"
-  default = "/Users/tony/.ssh/esip-cannistra.pem"
-}
-
 variable "instance_ami" {
   description = "AMI for aws EC2 instance"
   default = "ami-032b008bed102086a"
 }
-variable "instance_type" {
-  description = "type for aws EC2 instance"
-  default = "t3.xlarge"
-}
+
 variable "environment_tag" {
   description = "Environment tag"
   default = "Production"
