@@ -10,8 +10,8 @@ Planet Snowcover is a project that pairs airborne lidar and Planet Labs satellit
 
 </div>
 
-<small>1: Department of Biology, University of Washington, Seattle, WA.
-2: Department of Civil and Environmental Engineering, University of Washington, Seattle, WA</small>
+<div><small>1: Department of Biology, University of Washington, Seattle, WA.</br>2: Department of Civil and Environmental Engineering, University of Washington, Seattle, WA</small>
+
 ## This Repository
 
 This repository serves as the canonical source for the software and infrastructure necessary to sucessfully build and deploy a machine-learning based snow classifier using Planet Labs imagery and airborne lidar data.
