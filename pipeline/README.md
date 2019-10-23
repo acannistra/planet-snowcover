@@ -1,4 +1,4 @@
-# `planet-snowcover` Pipeline Tutorial
+<!-- # `planet-snowcover` Pipeline Tutorial
 
 **Tony Cannistra, 2019**
 
@@ -50,8 +50,7 @@ TBD
 ## 4. Model Training
 
 
-## 5. Prediction and Snow Mask Creation
-=======
+## 5. Prediction and Snow Mask Creation -->
 # Pipeline Tutorials
 *Tony Cannistra, with support from the [ESIP Lab](https://www.esipfed.org/lab) Incubator Program*
 
@@ -66,4 +65,3 @@ Though you can run these tutorials on your local computer, the computational env
 1. [Airborne Snow Observatory Data Acquisition and Processing ](./1_Acquire_ASO.ipynb) (`1_Acquire_ASO.ipynb`, [NBViewer Link](https://nbviewer.jupyter.org/github/acannistra/planet-snowcover/blob/master/pipeline/1_Acquire_ASO.ipynb))
 2. [Planet Labs Imagery Acquisition and Processing](./2_Planet_Ordering.ipynb) (`2_Planet_Ordering.ipynb`, [NBViewer Link](https://nbviewer.jupyter.org/github/acannistra/planet-snowcover/blob/master/pipeline/2_Planet_Ordering.ipynb))
 3. ...
-
