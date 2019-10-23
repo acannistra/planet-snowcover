@@ -64,9 +64,11 @@ This free, open-source software depends on a good number of other free, open-sou
 * [Tensorflow](https://www.tensorflow.org)
 * [scikit-image](https://scikit-image.org)
 * [boto3](https://boto3.amazonaws.com/v1/documentation/api/latest/index.html) / [s3fs](https://s3fs.readthedocs.io/en/latest/)
-* [Geopandas](https://github.com/geopandas/geopandas)
+* [Geopandas](https://github.com/geopandas/geopandas) / [shapely](https://github.com/Toblerity/Shapely) 
 * [Rasterio](https://rasterio.readthedocs.io/en/stable/) / [rio-tiler](https://github.com/cogeotiff/rio-tiler)
 * [mercantile](https://github.com/mapbox/mercantile) / [supermercado](https://github.com/mapbox/supermercado)
+* [Amazon Sagemaker](https://docs.aws.amazon.com/sagemaker/latest/dg/whatis.html)
+
 
 To build and manage our infrastructure, we use [Docker](https://www.docker.com) and [Terraform](https://www.terraform.io).
 
