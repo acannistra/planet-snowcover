@@ -110,5 +110,15 @@ To jump right to the guts of the deployment, here's our [Dockerfile](./sagemaker
 
 Through support from Earth Science Information Partners, we're happy to be able to provide thorough interactive tutorials for these tools and methods in the form of Jupyter notebooks. You can see these tutorials in the data pipeline folder [`./pipeline`](pipeline).
 
+## Acknowledgements and Funding Sources
+
+This work wouldn't be possible without the advice and support of Dr. Nicoleta Cristea, Dr. David Shean, Shashank Buhshan, and others.
+
+We gratefully acknowledge financial support from the [Earth Science Innovation Partners Lab](https://www.esipfed.org), the [NASA Terrestrial Hydrology Program](https://neptune.gsfc.nasa.gov/index.php?section=19), the Planet Labs [Education and Research](https://www.planet.com/markets/education-and-research/) Program, and the [National Science Foundation](http://nsf.gov/).
+
+<img src="http://www.bu.edu/cs/files/2016/09/NSF-Logo-1efvspb.png" height=70>
+<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/NASA_logo.svg/500px-NASA_logo.svg.png" height=70">
+<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Planet_Labs_logo.svg/200px-Planet_Labs_logo.svg.png" height=70>
+
 ## Original Proposal
 To see the original resarch proposal for this project, now of date, view it [here](./original-proposal.md).
