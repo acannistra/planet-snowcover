@@ -60,7 +60,7 @@ To build and manage our infrastructure, we use [Docker](https://www.docker.com) 
 
 <h4>
 Amazon Web Services
-<img src="https://d1.awsstatic.com/logos/aws-logo-lockups/poweredbyaws/PB_AWS_logo_RGB.61d334f1a1a427ea597afa54be359ca5a5aaad5f.png" style="float:right; padding: 5px" height=30>
+<img align="right" src="https://d1.awsstatic.com/logos/aws-logo-lockups/poweredbyaws/PB_AWS_logo_RGB.61d334f1a1a427ea597afa54be359ca5a5aaad5f.png" style="float:right; padding: 5px" height=30>
 </h4>
 
 
@@ -68,7 +68,7 @@ Amazon Web Services
 This project relies on cloud infrastructure from Amazon Web Services, which is a cloud services provider run by Amazon. AWS isn't the only provider in this space, but is the one we chose due to a combination of funding resources and familiarity. To run these tutorials and perform development tasks with this software, you'll need an AWS account. You can get one [here](https://aws.amazon.com/premiumsupport/knowledge-center/create-and-activate-aws-account/).
 
 <h4>Planet Labs
-<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Planet_Labs_logo.svg/200px-Planet_Labs_logo.svg.png" style="float:right;" height=40>
+<img align="right" src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Planet_Labs_logo.svg/200px-Planet_Labs_logo.svg.png" style="float:right;" height=40>
 </h4>
 
 In order to access the imagery data from Planet Labs used to train our computer vision models and assess their performance, we rely on a relationship with collaborator [Dr. David Shean](https://dshean.github.io) in UW Civil and Environmental Engineering, who has access to Planet Labs data through a NASA Terrestrial Hydrology Program award.
@@ -76,7 +76,7 @@ In order to access the imagery data from Planet Labs used to train our computer 
 If you're interested in getting access to Planet Labs imagery for research, check out the [Planet Education and Research Program](https://www.planet.com/markets/education-and-research/).
 
 <h4>NASA Earthdata
-<img src="https://earthdata.nasa.gov/img/nasa-logo.png" style="float:right; filter: invert(100%)" height=40>
+<img align="right" src="https://earthdata.nasa.gov/img/nasa-logo.png" style="float:right; filter: invert(100%)" height=40>
 
 </h4>
 
@@ -90,7 +90,7 @@ For detailed instructions on this process, view the [documentation](./deployment
 
 ## Tutorials
 
-
+**something smart about tutorials**
 
 ## Original Proposal
 To see the original resarch proposal for this project, now of date, view it [here](./original-proposal.md).
