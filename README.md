@@ -4,16 +4,14 @@
 
 Planet Snowcover is a project that pairs airborne lidar and Planet Labs satellite imagery with cutting-edge computer vision techniques to identify snow-covered area at unprecedented spatial and temporal resolutions.
 
-**Researchers**: *[Tony Cannistra](https://www.anthonycannistra.com) and Nicoleta Cristea*
+**Researchers**: *[Tony Cannistra](https://www.anthonycannistra.com)<sup>1</sup>, David Shean<sup>2</sup>, and Nicoleta Cristea<sup>2</sup>*
 
 <img src="./artifacts/co-ex-1.png">
 
 </div>
 
-
-
-
-
+<small>1: Department of Biology, University of Washington, Seattle, WA.
+2: Department of Civil and Environmental Engineering, University of Washington, Seattle, WA</small>
 ## This Repository
 
 This repository serves as the canonical source for the software and infrastructure necessary to sucessfully build and deploy a machine-learning based snow classifier using Planet Labs imagery and airborne lidar data.
