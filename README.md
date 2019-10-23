@@ -1,77 +1,94 @@
-# planet-snowcover
-> Assessing High-Resolution Cubesat Imagery for Detailed Snow Cover Estimation on Mt. Rainier: An Ecological Perspective
+<div style="text-align:center; padding-left: 10%; padding-right: 10%">
 
-Tony Cannistra and Kavya Pradhan – CEE 573 Wi18 University of Washington, Seattle.
+# Planet Snowcover
 
-_**This code is being reworked** to support a more flexible data pipeline and is under active development._
+Planet Snowcover is a project that pairs airborne lidar and Planet Labs satellite imagery with cutting-edge computer vision techniques to identify snow-covered area at unprecedented spatial and temporal resolutions.
 
----
+**Researchers**: *[Tony Cannistra](https://www.anthonycannistra.com)<sup>1</sup>, David Shean<sup>2</sup>, and Nicoleta Cristea<sup>2</sup>*
 
-[**Results Presentation**](https://docs.google.com/presentation/d/174RDwsjo9BVH3Lxn2SKa70jmZlqzDUOFXx_y3du1Qvk/edit?usp=sharing) | [**Final Paper**](./cannistra-pradhan-cee573_final.pdf)
+<img src="./artifacts/co-ex-1.png">
 
-## Introduction
+</div>
 
-Understanding the responses of species to climate change requires a robust understanding of the impact of abiotic (environmental) factors on habitat suitability and habitat availability at spatial scales relevant to the study species (Hannah et al. 2014). When studying plant species in montane ecosystems, snow cover is a particularly relevant abiotic factor in determining habitat suitability. However, remotely-sensed snow cover measurements are either captured at a spatial scale far too large to be relevant to the study species (e.g. MODIS SCA), or are appropriate in spatial scale but cost-prohibitive (e.g. LiDAR snow measurements). This project will evaluate the suitability of Planet data, a commercial satellite imagery product with unprecedented spatial (< 0.8 m) and temporal (< 5 day) resolution, for the purpose of acquiring detailed snow-cover and snow-melt data at ecologically-relevant scales. The challenge herein is the radiometric bandwidth available from Planet imagery: only Red, Green, Blue, and Near Infrared bands are measured by these satellites, which makes standard spectral snow cover indices like the Normalized Difference Snow Index (NDSI, Hall et al. 1995) unusable. We will develop a method for using this limited radiometric bandwidth to determine snow cover.
+<div><small>1: Department of Biology, University of Washington, Seattle, WA.</br>2: Department of Civil and Environmental Engineering, University of Washington, Seattle, WA</small>
 
+## This Repository
 
-## Study System
-<img align="right" src="artifacts/figures/testout.png" width="250"/>
-We will focus our analysis of the usability of Planet data for acquiring snow cover information across Mt. Rainier National Park. The availability of snow presence/absence data through a vast network of iButton sensors acts as the ideal “ground-truthing” dataset since it can be used both for training and validating Planet based snow cover information. The figure shows their geographic distribution in 2017.
+This repository serves as the canonical source for the software and infrastructure necessary to sucessfully build and deploy a machine-learning based snow classifier using Planet Labs imagery and airborne lidar data.
 
-## Objectives
-
-1. Develop a imagery pipeline which identifies snow cover in Planet imagery using two methods:
-   1. Machine learning classification
-   2. Spectral mixture analysis (Adams and Adams 1985; Mustard and Pieters 1989)
-1. Assess the accuracy of the Planet-derived snow cover using previously-derived iButton data with high spatial acuity.
-
-
-## Rationale and Scope
-
-The explosive growth and availability of satellite imagery at unprecedented spatial and temporal resolutions is expanding the potential of geospatial research. However, a majority of the studies that use such data are forced to operate under the assumption that pixel level climate information is sufficient to describe the environmental conditions that an individual organism is facing. Additionally, the necessity for temporal interpolation leads to the reduction of temporal accuracy in these studies. High spatial and temporal accuracy of snow presence/absence is especially important on Mt. Rainier as snow drives much of the seasonal hydrological regimes and can have significant ecological impacts on the plant communities.
-        Planet data is a promising source of high resolution imagery that can be used in ecological studies conducted in this system. However, its utility with respect to inferring snow cover is limited due to the narrowness of the near infrared band which makes distinguishing snow from clouds difficult using NDSI. As an alternative, we will develop two methods of determining snow - a machine learning algorithm and a spectral mixture analysis - and assess the effectiveness of each method.
+* [Requirements](#requirements)
+  * [Basic Requirements](#basic-requirements)
+  * [Development Requirements](#development-requirements)
+  * [Accounts + Data](#accounts-and-data)
+* Infrastructure Deployment
+* Tutorials
+* Implementation Details
+  * AWS Cloud Resources
+  * Open Source Machine Learning
+* Funding Sources
+* [Original Research Proposal](#original-proposal)
 
 
-## Research Management Plan
+## Requirements
+### Basic Requirements
+The goal of this work is to provide a toolkit that is relatively easy to deploy for someone with **working knowledge** of the following tools:
 
-1. Data Acquisition
-   1. Submit academic data request to Planet.com for Mt. Rainier study area (Tony + Kavya) (Completed).
-   2. Verify access to Janneke HRL’s iButton data (Kavya) (Completed).
-1. Computational Infrastructure
-   1. Depending on spatial scope + size of imagery delivered from Planet, use existing cloud compute + storage resources to host and examine imagery and perform analysis (Tony)
-1. Model Development
-   1. Using 5+ years of detailed iButton snow-cover measurements on Mt. Rainier (coupled with Planet imagery) as a training dataset, we will train a nonparametric machine learning model to classify imagery pixels as “snow” or “no-snow,” and validate our predictions.
-   2. The iButton data is our “ground-truth” snow-cover information, which we will use to correlate Planet imagery to data.
-   3. Use Planet data to obtain Normalized Difference Vegetation Index (NDVI) to be used in model training
-   4. Plan:
-      1. Assess data formats
-      2. Determine appropriate model for these data
-      3. Separate iButton data into training and testing sets
-      4. Train snow cover model using iButton (training) data
-1. Model Assessment (using the testing iButton dataset)
-   1. Additional study sites include the Upper Tuolumne River Basin (California) and the Senator Beck Basin (Colorado) for which LIDAR snow cover data exist.
-1. Manuscript Development
+* Python 3
+* Jupyter notebooks
+* Basic command-line tools
 
-## Updates
+More specific requirements can be found in the [Infrastructure Deployment](#infrastructure-deployment) section below.
 
-1. We've acquired Planet Labs Ambassador status to get imagery (January 2017)
-2. We've been able to download snow-on and snow-off images and extract pixel values.
-3. Some initial analysis of the data looks like this:
+### Development Requirements
 
-	<img src="artifacts/figures/histcompare.png" width="500" align="center"/>.
+This free, open-source software depends on a good number of other free, open-source software packages that permit this work. To understand the inner workings of this project, you'll need familiarity with the following:
 
-	 A Gaussian Mixture clustering on all bands (TOA reflectance) looks like this:
+* [PyTorch](https://pytorch.org)
+* [Tensorflow](https://www.tensorflow.org)
+* [scikit-image](https://scikit-image.org)
+* [boto3](https://boto3.amazonaws.com/v1/documentation/api/latest/index.html) / [s3fs](https://s3fs.readthedocs.io/en/latest/)
+* [Geopandas](https://github.com/geopandas/geopandas)
+* [Rasterio](https://rasterio.readthedocs.io/en/stable/) / [rio-tiler](https://github.com/cogeotiff/rio-tiler)
+* [mercantile](https://github.com/mapbox/mercantile) / [supermercado](https://github.com/mapbox/supermercado)
 
-	<img src="artifacts/figures/gaussiancluster.png" width="450" align="center"/>
+To build and manage our infrastructure, we use [Docker](https://www.docker.com) and [Terraform](https://www.terraform.io).
 
 
-## References:        
+### Accounts and Data
+
+<h4>
+Amazon Web Services
+<img align="right" src="https://d1.awsstatic.com/logos/aws-logo-lockups/poweredbyaws/PB_AWS_logo_RGB.61d334f1a1a427ea597afa54be359ca5a5aaad5f.png" style="float:right; padding: 5px" height=30>
+</h4>
 
 
-Adams, J.B., Adams, J.D., 1984, Geologic mapping using Landsat MSS and ™ images: Removing vegetation by modeling spectral mixtures.  Third Thematic Conference on Remote Sensing for Exploration Geology, 615-622.
 
-Hall, D.K., G.A. Riggs, V.V. Salomonson., 1995. Development of methods for mapping global snow cover using Moderate Resolution Imaging Spectrophotometer data.  Remote Sensing Environment, 54 , 127-140.
+This project relies on cloud infrastructure from Amazon Web Services, which is a cloud services provider run by Amazon. AWS isn't the only provider in this space, but is the one we chose due to a combination of funding resources and familiarity. To run these tutorials and perform development tasks with this software, you'll need an AWS account. You can get one [here](https://aws.amazon.com/premiumsupport/knowledge-center/create-and-activate-aws-account/).
 
-Hannah, L., Flint, L., Syphard, A.D., Moritz, M.A., Buckley, L.B., McCullough, I.M., 2014. Fine-grain modeling of species’ response to climate change: holdouts, stepping-stones, and microrefugia. Trends in Ecology & Evolution. 29, 390-397.
+<h4>Planet Labs
+<img align="right" src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Planet_Labs_logo.svg/200px-Planet_Labs_logo.svg.png" style="float:right;" height=40>
+</h4>
 
-Mustard, J.F, Pieters, C. M., 1989. Photometric phase functions of common geologic minerals adn applications to quantitative analysis of mineral mixture reflectance spectra. Journal of geophysical research: Solid Earth, 94, 13619-13634
+In order to access the imagery data from Planet Labs used to train our computer vision models and assess their performance, we rely on a relationship with collaborator [Dr. David Shean](https://dshean.github.io) in UW Civil and Environmental Engineering, who has access to Planet Labs data through a NASA Terrestrial Hydrology Program award.
+
+If you're interested in getting access to Planet Labs imagery for research, check out the [Planet Education and Research Program](https://www.planet.com/markets/education-and-research/).
+
+<h4>NASA Earthdata
+<img align="right" src="https://earthdata.nasa.gov/img/nasa-logo.png" style="float:right; filter: invert(100%)" height=40>
+
+</h4>
+
+Finally, to gain access to the NASA/JPL Airborne Snow Observatory lidar-derived snow depth information, you need an account with NASA Earthdata. [Sign up here](https://urs.earthdata.nasa.gov/users/new).
+
+## Infrastructure Deployment
+
+To explore this work, and the tutorials herein, you'll need to deploy some cloud infrastructure to do so. This project uses [Docker](https://www.docker.com)and [Terraform](https://www.terraform.io) to manage and deploy consistent, reliable cloud infrastructure.
+
+For detailed instructions on this process, view the [documentation](./deployment/).
+
+## Tutorials
+
+Through support from Earth Science Information Partners, we're happy to be able to provide thorough interactive tutorials for these tools and methods in the form of Jupyter notebooks. You can see these tutorials in the data pipeline folder [`./pipeline`](pipeline).
+
+## Original Proposal
+To see the original resarch proposal for this project, now of date, view it [here](./original-proposal.md).
