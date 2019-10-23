@@ -86,6 +86,8 @@ To explore this work, and the tutorials herein, you'll need to deploy some cloud
 
 For detailed instructions on this process, view the [documentation](./deployment/).
 
+To jump right to the guts of the deployment, here's our [Dockerfile](./sagemaker/Dockerfile) and Terraform [Resource Definition](./deployment/resources.tf). 
+
 ## Tutorials
 
 Through support from Earth Science Information Partners, we're happy to be able to provide thorough interactive tutorials for these tools and methods in the form of Jupyter notebooks. You can see these tutorials in the data pipeline folder [`./pipeline`](pipeline).
