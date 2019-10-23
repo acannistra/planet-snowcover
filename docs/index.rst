@@ -27,8 +27,7 @@ CubeSat Snow Covered Area Implementation Documentation
    :caption: Data Pipeline Notebooks
 
    pipeline/README.md
-   pipeline/X_Acquire_ASO.ipynb
-   pipeline/X_Planet_Ordering.ipynb
-
+   pipeline/1_Acquire_ASO.ipynb
+   pipeline/2_Planet_Ordering.ipynb
 
 .. include:: introduction.rst
