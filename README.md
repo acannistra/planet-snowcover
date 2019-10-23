@@ -16,6 +16,7 @@ Planet Snowcover is a project that pairs airborne lidar and Planet Labs satellit
 
 This repository serves as the canonical source for the software and infrastructure necessary to sucessfully build and deploy a machine-learning based snow classifier using Planet Labs imagery and airborne lidar data.
 
+* [Primary Components](#primary-components)
 * [Requirements](#requirements)
   * [Basic Requirements](#basic-requirements)
   * [Development Requirements](#development-requirements)
@@ -28,6 +29,21 @@ This repository serves as the canonical source for the software and infrastructu
 * Funding Sources
 * [Original Research Proposal](#original-proposal)
 
+## Primary Components
+
+The contents of this repository are divided into several main components, which we detail here. This is the place to look if you're looking for something in particular.
+
+| Folder                                             | Description                                                                                                               | Details                                                                                                                                                                                                                     |
+|----------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [`./pipeline`](./pipeline)                         | Jupyter notebooks detailing the entire data processing, machine learning, and evaluation pipeline.                        | These notebooks detail every step in this workflow, from start to finish.                                                                                                                                                   |
+| [`./preprocess`](./preprocess)                     | A set of Python CLI tools for preprocessing data assets.                                                                  | These tools help to reproject and threshold the ASO raster files, create vector footprints of raster data, tile the imagery for training, and other related tasks.                                                          |
+| [`./model`](./model)                               | The implementation of the machine learning/computer vision techniques used by this project.                               | This work relies heavily on the [robosat.pink](https://github.com/datapink/robosat.pink) repository, which we've [forked](https://github.com/acannistra/robosat.pink and modified extensively.                              |
+| [`./sagemaker`](./sagemaker)                       | The infrastructure required to use [Amazon Sagemaker](https://aws.amazon.com/sagemaker/) to manage our ML training jobs.  | Sagemaker requires considerable configuration, including a Docker container. We build this container from this directory, which has a copy of the `./model` directory.                                                      |
+| [`./experiments`](./experiments)                   | Configuration files that describe experiments used to assess the performance of this ML-based snow cover method.          | Our ML infrastructure uses "config files" to describe the inputs and other parameters to train the model effectively. We use these files to describe experiments that we perform, using different sets of ASO and imagery.  |
+| [`./implementation-notes`](./implementation-notes) | Technical descriptions of the implementation considerations that went into this project.                                  | These are working documents, in raw Markdown format.                                                                                                                                                                        |
+| [`./raster_utils`](./raster_utils)                 | Small utility functions for managing raster computations.                                                                 | Not much to see here.                                                                                                                                                                                                       |
+| [`./environment`](./environment)                   | Raw Python environment configuration files.                                                                               | ⚠️ These emerge from `conda` and change often. Use sparingly. We preserve our environment via Docker, which should be used in this case (see the `./sagemaker` directory)                                                    |
+| [`./analysis`](./analysis)                         | Jupyter notebooks that describe analyses about our snow mask product.                                                     | ⚠️ These are a work in progress and change frequently.                                                                                                                                                                       |
 
 ## Requirements
 ### Basic Requirements
@@ -74,8 +90,7 @@ In order to access the imagery data from Planet Labs used to train our computer 
 If you're interested in getting access to Planet Labs imagery for research, check out the [Planet Education and Research Program](https://www.planet.com/markets/education-and-research/).
 
 <h4>NASA Earthdata
-<img align="right" src="https://earthdata.nasa.gov/img/nasa-logo.png" style="float:right; filter: invert(100%)" height=40>
-
+<img align="right" src="./docs/nasa-logo.conv.png" style="float:right;" height=40>
 </h4>
 
 Finally, to gain access to the NASA/JPL Airborne Snow Observatory lidar-derived snow depth information, you need an account with NASA Earthdata. [Sign up here](https://urs.earthdata.nasa.gov/users/new).
@@ -86,7 +101,7 @@ To explore this work, and the tutorials herein, you'll need to deploy some cloud
 
 For detailed instructions on this process, view the [documentation](./deployment/).
 
-To jump right to the guts of the deployment, here's our [Dockerfile](./sagemaker/Dockerfile) and Terraform [Resource Definition](./deployment/resources.tf). 
+To jump right to the guts of the deployment, here's our [Dockerfile](./sagemaker/Dockerfile) and Terraform [Resource Definition](./deployment/resources.tf).
 
 ## Tutorials
 
