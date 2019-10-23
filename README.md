@@ -88,7 +88,7 @@ For detailed instructions on this process, view the [documentation](./deployment
 
 ## Tutorials
 
-**something smart about tutorials**
+Through support from Earth Science Information Partners, we're happy to be able to provide thorough interactive tutorials for these tools and methods in the form of Jupyter notebooks. You can see these tutorials in the data pipeline folder [`./pipeline`](pipeline).
 
 ## Original Proposal
 To see the original resarch proposal for this project, now of date, view it [here](./original-proposal.md).
