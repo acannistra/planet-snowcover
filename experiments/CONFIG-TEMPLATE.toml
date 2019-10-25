@@ -1,0 +1,69 @@
+# Planet-Snowcover Model Configuration File – TEMPLATE
+# Tony Cannistra, 2019. tonycan@uw.edu.
+# University of Washington.
+
+
+#@@@@@@@ LOOK HERE! @@@@@@@@
+[dataset]
+  ### This defines the IMAGERY and SNOW MASK locations that we need to access to 
+  ### complete training, as well as our AWS credentials and other parameters.
+  
+  ## CREDENTIALS
+  aws_profile = "esip" # your aws profile as stored in ~/.aws/credentials. Look there to see your stored profiles. 
+  ## DATA - IMAGERY
+  image_bucket = "planet-snowcover-imagery" # The S3 bucket where your imagery is stored.
+  # regex defines each slippy-map directory, for buckets with many
+  imagery_directory_regex = '2018042\d_.*_tiled' # A Regular Expression to select individual image directories.
+  
+  ## DATA – MASK
+  mask_bucket = "planet-snowcover-snow/ASO_3M_SD_USCAJW_20180423"
+  mask_directory_regex = "ASO_3M_SD_USCAJW_20180423-MASK_02-COG$" # $ = end of string = only dirs (no .tif)
+  
+  ## ML – CONFIG
+  train_percent = 0.7 # percentage of imagery used for training (1 - train_percent used for validation). 
+
+[[classes]]
+  name = "snow"
+  color = "white"
+
+
+
+#@@@@@@@ MOST USERS : AVOID TOUCHING ANYTHING BELOW THIS LINE @@@@@@@@@
+# Indicate which dataset sub-directory and bands to take as input.
+# You could so, add several channels blocks to compose your input Tensor. Orders are meaningful.
+[[channels]]
+  bands = [1, 2, 3, 4]
+  mean  = [0.485, 0.456, 0.406, 1.0]
+  std   = [0.229, 0.224, 0.225, 1.0]
+
+
+[model]
+  # Model name.
+  name = "albunet"
+
+  # Encoder model name.
+  encoder = "resnet50"
+
+  # Use, or not, ImageNet weights pretraining.
+  pretrained = true
+
+  # Loss function name.
+  loss = "lovasz"
+
+  # Batch size for training.
+  batch_size = 7
+
+  # tile side size in pixels.
+  tile_size = 512
+
+  # Total number of epochs to train for (can be overridden)
+  epochs = 50
+
+  # Learning rate for the optimizer.
+  lr = 0.000025
+
+  # Data augmentation, Flip or Rotate probability.
+  data_augmentation = 0.75
+
+  # Weight decay l2 penalty for the optimizer.
+  decay = 0.0
