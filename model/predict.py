@@ -58,16 +58,61 @@ def main():
                         batch_size = config['model']['batch_size'],
                         shuffle = True,
                         num_workers = 1)
-    
+
     palette = make_palette(config["classes"][0]["color"])
 
     fs = s3fs.S3FileSystem(session = boto3.Session(profile_name = 'esip'))
-    
+
     outputdir = args.outputdir[5:] + '/' + os.path.basename(args.tiles)
     print("Saving predictions to {}.".format(outputdir))
-    
+
     predict(net, loader, outputdir , palette, fs)
 
+
+
+def _write_png(tile, data, outputdir, palette):
+    out = Image.fromarray(data, mode="P")
+    out.putpalette(palette)
+
+    path = os.path.join(outputdir, str(tile.z), str(tile.x), str(tile.y) + ".png")
+
+    print('writing {}'.format(path))
+    with fs.open(path, 'wb') as f:
+        out.save(f, format='png', optimize=True)
+
+    ewruen r
+
+def _write_tif(tile, data, outputdir):
+    tile_xy_bounds = xy_bounds(tile)
+    tile_latlon_bounds = bounds(tile)
+
+    bands = 1
+    height, width = data.shape
+
+    new_transform = rio.transform.from_bounds(*tile_latlon_bounds, width, height)
+
+    profile = {
+        'driver' : 'GTiff',
+        'dtype' : data.dtype,
+        'height' : height,
+        'width' : width,
+        'count' : bands,
+        'crs' : {'init' : 'epsg:4326'},
+        'transform' : new_transform
+    }
+
+    tile_file = os.path.join(outputdir, str(z), str(x), str(y) + ".tif")
+
+#    try:
+
+
+    # write data to file
+    with rio.open(tile_file, 'w', **profile) as dst:
+        for band in range(0, bands ):
+            dst.write(data[band], band+1)
+
+
+    return tile, True
 
 
 
@@ -78,39 +123,36 @@ def predict(net, loader, outputdir, palette, fs):
 
         _tiles = list(zip(_tiles[2].cpu().numpy(),
                           _tiles[0].cpu().numpy(),
-                          _tiles[1].cpu().numpy())) # idk why this happens 
-        
+                          _tiles[1].cpu().numpy())) # idk why this happens
+
         print(_tiles)
         with torch.no_grad():
             raw = net(images)
-        
+
         print(len(_tiles), len(raw))
         for tile, raw_prob in zip(_tiles, raw):
             print(tile)
             z, x, y = tile
 
-            prob = raw_prob > 0 
+            prob = raw_prob > 0
 
             image = prob.cpu().numpy().astype(np.uint8).squeeze()
 
-            out = Image.fromarray(image, mode="P")
-            out.putpalette(palette)
+            _write_png(tile, image, outputdir, palette)
+            _write_tif(tile, image, outputdir)
 
-            path = os.path.join(outputdir, str(z), str(x), str(y) + ".png")
-            print('writing {}'.format(path))
-            with fs.open(path, 'wb') as f:
-                out.save(f, format='png', optimize=True)
-                
+
+
 def model(config, trainedModel):
-    
+
     S3_CHECKPOINT = False
     if trainedModel.startswith("s3://"):
         S3_CHECKPOINT = True
-        # load from s3 
+        # load from s3
         trainedModel = trainedModel[5:]
         sess = boto3.Session(profile_name='esip')
         fs = s3fs.S3FileSystem(session=sess)
-    
+
 
     if torch.cuda.is_available():
         device = torch.device("cuda")
@@ -165,4 +207,3 @@ def model(config, trainedModel):
 
 if __name__ == "__main__":
     main()
-
