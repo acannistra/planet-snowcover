@@ -118,3 +118,55 @@ resource "aws_instance" "testInstance" {
     private_key = "${file(var.private_key)}"
   }
 }
+
+  resource "aws_iam_role" "sagemaker_role" {
+  name = "sagemaker-role"
+
+  assume_role_policy = <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Effect": "Allow",
+        "Principal": {
+          "Service": "sagemaker.amazonaws.com"
+        },
+        "Action": "sts:AssumeRole"
+      }
+    ]
+  }
+EOF
+}
+
+resource "aws_iam_policy" "s3-access-policy" {
+  name        = "sagemaker-s3-access-policy"
+  description = "So Sagemaker roles can access S3."
+
+  policy = <<EOF
+{
+  	"Version": "2012-10-17",
+  	"Statement": [{
+  		"Effect": "Allow",
+  		"Action": [
+  			"s3:GetObject",
+  			"s3:PutObject",
+  			"s3:DeleteObject",
+  			"s3:ListBucket"
+  		],
+  		"Resource": [
+  			"arn:aws:s3:::*"
+  		]
+  	}]
+}
+EOF
+}
+
+resource "aws_iam_role_policy_attachment" "attach-sage-fullaccess" {
+  role       = "${aws_iam_role.sagemaker_role.name}"
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSageMakerFullAccess"
+}
+
+resource "aws_iam_role_policy_attachment" "attach-sage-s3access" {
+  role       = "${aws_iam_role.sagemaker_role.name}"
+  policy_arn = "${aws_iam_policy.s3-access-policy.arn}"
+}
