@@ -13,3 +13,6 @@ output "public_instance_ip" {
 output "SSH_HERE" {
   value = "ssh -i ${var.private_key} ubuntu@${aws_instance.testInstance.public_ip}"
 }
+output "sagemaker_role_arn"{
+  value = "${aws_iam_role.sagemaker_role.arn}"
+}
