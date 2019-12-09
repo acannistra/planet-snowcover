@@ -4,7 +4,9 @@
 
 Planet Snowcover is a project that pairs airborne lidar and Planet Labs satellite imagery with cutting-edge computer vision techniques to identify snow-covered area at unprecedented spatial and temporal resolutions.
 
-**Researchers**: *[Tony Cannistra](https://www.anthonycannistra.com)<sup>1</sup>, David Shean<sup>2</sup>, and Nicoleta Cristea<sup>2</sup>*
+<p><img align="right" src="https://centennial.agu.org/wp-content/uploads/2018/08/AGU100_logo_H-CMYK.png" style="float:right; padding: 5px" height=75>💡This work was <a href="https://agu.confex.com/agu/fm19/meetingapp.cgi/Paper/594007">presented</a> by Tony (@acannistra) at AGU 2019 in San Francisco. See the slides <a href="./artifacts/Cannistra-AGU-Planet-Snow.pdf">here</a>. </p> 
+
+**Researchers**: *[Tony Cannistra](https://www.anthonycannistra.com)<sup>1</sup>, Dr. David Shean<sup>2</sup>, and Dr. Nicoleta Cristea<sup>2</sup>*
 
 <img src="./artifacts/co-ex-1.png">
 
