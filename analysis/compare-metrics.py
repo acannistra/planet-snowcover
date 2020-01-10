@@ -1,5 +1,5 @@
 from sklearn import metrics
-METRICS = ["Precision", "Recall", "F-Score", "Balanced Accuracy"]
+METRICS = ["Precision", "Recall", "F-Score", "Balanced Accuracy", "Kappa"]
 
 import click
 import json
@@ -13,6 +13,9 @@ from hashlib import md5
 import rasterio as rio
 
 import matplotlib.pyplot as plt
+import seaborn as sns
+sns.set(style="ticks", context="talk")
+plt.style.use('dark_background')
 
 import ast
 
@@ -41,6 +44,7 @@ def _barplot(data, labels, ax, firstcolor=True):
 def plot_performance(performance, dir, labels=None):
     dataTypes = list(performance.keys())
 
+
     fig, ax = plt.subplots(1, len(METRICS), figsize=(4.67 * len(METRICS), 4.5))
     axes = ax.reshape(-1)
     for m_i, metric in enumerate(METRICS):
@@ -51,7 +55,9 @@ def plot_performance(performance, dir, labels=None):
             _barplot(data, dataTypes, axes[m_i])
         axes[m_i].set_title(metric)
 
-    plt.savefig(os.path.join(dir, "results_combined.pdf"), bbox_inches="tight")
+    plt.tight_layout()
+
+    plt.savefig(os.path.join(dir, "results_combined.pdf"))
 
 
 def compute_performance(true, pred, nodata = -9999):
@@ -68,7 +74,9 @@ def compute_performance(true, pred, nodata = -9999):
 
     accuracy = metrics.balanced_accuracy_score(true, pred)
 
-    return(performance[:3] + (accuracy,))
+    kappa = metrics.cohen_kappa_score(true, pred)
+
+    return(performance[:3] + (accuracy, kappa,))
 
 
 @click.command()
@@ -107,11 +115,13 @@ def compare_all(true, preds, out_directory, gdal, data_region, epsg, plot_labels
     merge_files = " ".join(filenames)
     command = 'bash -c "source activate {}; \
                 cd {}; \
-                gdal_merge.py -co COMPRESS=LZW -separate -o {} \
+                gdal_merge.py -separate -o {} \
                 {}"'.format(gdal, workdir, merged_out_root+".tif", merge_files)
     print(command)
     a = subprocess.run(command, shell=True)
 
+
+    # -co COMPRESS=LZW
     # clip to standard data region
     command = 'bash -c "source activate {}; \
                         cd {}; \

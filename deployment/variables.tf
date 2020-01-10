@@ -32,7 +32,7 @@ variable "cidr_subnet" {
 }
 variable "instance_ami" {
   description = "AMI for aws EC2 instance"
-  default = "ami-032b008bed102086a"
+  default = "ami-001083bce630cc561"
 }
 
 variable "environment_tag" {
