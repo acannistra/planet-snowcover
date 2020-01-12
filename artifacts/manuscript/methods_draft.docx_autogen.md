@@ -67,20 +67,22 @@ band centers and bandwidths (Table X).
   NIR     780 - 860 nm   846 - 888 nm
 
 **Table X:** Spectral bandwidth of PS2 and PS2.SD instruments within the
-PlanetScope constellation, (Planet Labs, Inc., 2019).
+PlanetScope constellation, (Planet Labs, Inc., 2019a).
 
 For the purposes of this study we consider these instruments to be
-identical, and acquire data from each interchangeably.
+identical, and acquire data from each interchangeably. This choice was
+motivated by our intent to construct a method that can leverage the
+entire temporal extent of the Planet imagery catalog.
 
 Planet provides several levels of processing of collected imagery data.
 For this study we used the Level 3B PlanetScope “Analytic Ortho Scene,”
-an orthorectified multispectral surface reflectance product. Planet’s
-atmospheric correction procedure converts top of atmosphere radiance
-(derived via coefficients from sensor darkfield and flat field
-corrections) to surface reflectance using near-real-time MODIS data
-inputs and the 6SV2.1 radiative transfer code (Kotchenova et al., 2008;
-Planet Labs, Inc., 2019). This data type is recommended by Planet for
-analytic applications.
+an orthorectified multispectral surface reflectance data product.
+Planet’s data processing procedure converts top of atmosphere radiance
+(derived by applying sensor darkfield and flat field corrections to raw
+image sensor data) to surface reflectance using near-real-time MODIS
+data inputs and the 6SV2.1 radiative transfer code (Kotchenova et al.,
+2008; Planet Labs, Inc., 2019a). This data type is recommended by Planet
+for analytic applications.
 
 *Scene Selection and Acquisition*
 
@@ -96,8 +98,8 @@ to find spatially-overlapping imagery.) Image candidates were manually
 inspected for relative cloud fraction, and images with fewer clouds were
 selected for inclusion into our analysis. We used porder version 0.5.7,
 an open-source tool (Roy, 2019) for the Planet Orders v2 Application
-Programming Interface (API) (Planet Labs, Inc., 2019), to both query the
-Planet catalog for imagery data and submit imagery orders. Analytic
+Programming Interface (API) (Planet Labs, Inc., 2019b), to both query
+the Planet catalog for imagery data and submit imagery orders. Analytic
 Ortho Scene assets were queried via the “PSScene4Band” identifier and
 the “analytic\_sr” bundle identifier. We used the Planet Clips API to
 acquire only those pixels overlapping our areas of interest (e.g. areas
@@ -105,8 +107,6 @@ covered by ASO collect footprints) both to conserve our imagery quota
 and reduce data volume. Image assets were delivered from Planet directly
 to Amazon Web Services Simple Storage Service (S3) buckets for further
 processing.
-
-*Imagery Processing*
 
 **X.X:** *Machine Learning Methodology*
 
@@ -152,6 +152,134 @@ segmentation when applied to the task of building detection in satellite
 imagery (Iglovikov et al., 2018). To our knowledge this method has not
 been applied to the segmentation of snow in satellite imagery.
 
-**Section X.X:** *Model Training *
+**X.X:** *Cyberinfrastructure & Model Training*
+
+Training a neural network is a computationally-demanding task requiring
+access to large quantities of data and specialized hardware. In
+particular, computers with access to large memory and graphics
+processing units (GPUs) greatly shorten the training time for our model
+and enable quicker experimentation. In addition, the large volume of
+both airborne lidar and satellite imagery data co-located with our study
+sites required us to have access to large data storage facilities. For
+these reasons we chose the compute and storage resources provided by
+Amazon Web Services (AWS), a commercial cloud service provider, to
+enable our training procedure.
+
+*Data Preprocessing *
+
+Once acquired, the imagery and airborne lidar-derived snow masks are
+stored as single or multiband GeoTIFF files (Open Geospatial Consortium,
+2019) in AWS Simple Storage Service (S3) “buckets” to enable access by
+further processing tools. To enable co-registration of the snow mask
+data with imagery data and produce standardized “data units” required by
+neural network training, we then divide the raw imagery and snow mask
+data into 512 by 512 pixel images, or “tiles,” derived from a
+standardized global grid. We use the Spherical Web Mercator Spherical
+Tile standard (sometimes referred to as the “slippy map” tile standard
+due to their employment in interactive mapping applications) to define
+the grid of tiles (OpenStreetMap, 2019), and use the “mercantile,”
+“rasterio,” and “rio-tiler” open-source software packages to enable
+gridding and storage of these images (Mapbox, Inc., 2019; Vincent,
+2019). The spherical Web Mercator tile standard assigns a unique
+spatially-explicit identifier to each 512x512 pixel image tile, which
+can then be used to align imagery tiles and snow mask tiles (e.g. the
+tiles “snow/1/2/3.tif” and “image/1/2/3.tif” have identical spatial
+extent). These tiles are stored as GeoTIFF files in AWS S3 buckets
+tagged with their image or ASO collection identifiers and dates of
+collection. This preprocessing effort is completed via Jupyter notebooks
+(Kluyver et al., 2016) on AWS Elastic Compute Cloud (EC2) compute
+instances (see Figure X).
+
+![](media/image1.png)
+
+**Figure X:** Schematic of data preprocessing procedure for co-located
+Planet Labs Inc. satellite imagery and Airborne Snow Observatory snow
+mask data via Amazon Web Services cloud infrastructure.
+
+*Model Training*
+
+Our implementation of the training procedure is based in the Python
+programming language (v.3.5; Python Software Foundation,
+<https://www.python.org>), and is a heavily modified version of the
+“robosat.pink” software, an open-source set of command-line tools to
+enable machine learning with satellite imagery via the TernausNetV2
+image segmentation network (Courtin and Hofmann, 2019; Iglovikov et al.,
+2018). The original software in this package was developed for three
+band remote sensing imagery and as such was not able to leverage
+multispectral data. We modified the package to enable the use of any
+N-band multispectral imagery data product and to allow for the use of
+cloud-based data storage and computation infrastructure.
+
+To allow for quicker experimentation and simpler reproducibility, we
+packaged the training code, dependencies, and other software for our
+neural network implementation into a platform-agnostic computational
+working environment (or “container”) via Docker (Merkel, 2014). We used
+the AWS “SageMaker” service to manage the training of our network, which
+greatly simplified experimentation with different network
+parameterizations and datasets. We chose the “p2\_xlarge” AWS EC2
+instance type for our training, as it afforded sufficient memory and
+graphics processing units for the task at hand.
+
+We produced several different models for this study in order to assess
+the effects of training procedure on the final predictive accuracy. Each
+of our models was trained using data from a single Airborne Snow
+Observatory collection site. We pair a given set of binary snow mask
+tiles corresponding to a single ASO collection with the corresponding
+set of imagery tiles (with potentially some duplicates due to multiple
+Planet imagery collections within the temporal imagery search window),
+and divide this set of image-mask pairs into training and testing
+subsets via a 70%/30% split. This technique ensures that only Planet
+images that spatially and temporally overlap the ASO data are included
+in the training. Each training effort undergoes 50 epochs with a batch
+size of 7 and a learning rate of 2.5 x 10^-5^. The resulting model
+parameter weights are saved into an AWS S3 bucket. If there are multiple
+ASO collect dates for a single site, we repeat the above procedure for
+any additional ASO collections, but we initialize the model training
+procedure with the weights derived from the previous model training run.
+This allows the training process to build upon previous training runs.
+
+**X.X:** *Performance Evaluation*
+
+To assess the relative ability of our trained models to identify snow in
+Planet imagery, we designed an assessment scheme which allowed us to
+compare the predictions of our models to several other co-located
+remotely-sensed snow-covered area data products. For each comparable
+snow-covered area dataset, described below, we computed several metrics
+of pixel classification performance in accordance with standard
+practice. The metrics we computed are precision, which computes the
+percentage of snow classifications predicted by our model that are also
+snow classifications in in the compared dataset:
+
+$$Precision = \ \frac{\text{True\ Positives}}{\text{True\ Positives}\  + \ \text{False\ Positives}}$$
+
+Recall, which computes the percentage of true snow classifications which
+are also true snow classifications predicted by our model:
+
+$$Recall = \ \frac{\text{True\ Positives}}{\text{True\ Positives}\  + \ \text{False\ Negatives}}$$
+
+F-Score or F1 score, which is the harmonic mean of precision and recall:
+
+$$\text{\ FScore} = 2 \bullet \frac{\text{Precision}\  \times \ Recall}{Precision + Recall}$$
+
+And balanced accuracy, which normalizes the true positive and true
+negative predictions by the number of true positive and true negative
+samples to allow for a less biased assessment of accuracy given the
+relative accuracy of each prediction type:
+
+$$\text{Balanced\ Accuracy} = \frac{True\ Positive\ Rate + True\ Negative\ Rate}{2}$$
+
+Using these metrics we assessed the relative performance of our model
+predictions compared to several other snow covered area datasets. These
+datasets are described in Table X.
+
+  Data                     Observation Type   Reference                                                                      Spatial Resolution   Temporal Resolution
+  ------------------------ ------------------ ------------------------------------------------------------------------------ -------------------- --------------------------------
+  ASO Snow Depth           Airborne lidar     Painter et al., 2016                                                           3 meters             Weekly, during ablation season
+  MODIS Daily Snow Cover   Satellite          Hall, 2015                                                                     500 meters           Daily
+  Sentinel 2 NDSI          Satellite          Drusch et al., 2012                                                            10 meters            2-5 Days
+  Landsat 8 fSCA           Satellite          U.S. Geological Survey, Earth Resources Observation And Science Center, 2018   30 meters            16 Days
+
+**Table X**: Snow covered area datasets used for comparison to model
+predictions.
 
 *This file was autogenerated from artifacts/manuscript/methods_draft.docx*
