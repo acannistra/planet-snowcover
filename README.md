@@ -124,7 +124,7 @@ We gratefully acknowledge financial support from the [Earth Science Innovation P
 <img src="/docs/funding-agency-logos.png" height="70px">
 
 ## Original Proposal
-To see the original resarch proposal for this project, now of date, view it [here](./original-proposal.md).
+To see the original resarch proposal for this project, now of date, view it [here](./_historical/original-proposal.md).
 
 -------------
 <p align="center">
