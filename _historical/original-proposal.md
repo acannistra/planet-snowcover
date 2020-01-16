@@ -8,7 +8,7 @@ Understanding the responses of species to climate change requires a robust under
 
 
 ### Study System
-<img align="right" src="artifacts/figures/testout.png" width="250"/>
+<img align="right" src="figures/testout.png" width="250"/>
 We will focus our analysis of the usability of Planet data for acquiring snow cover information across Mt. Rainier National Park. The availability of snow presence/absence data through a vast network of iButton sensors acts as the ideal “ground-truthing” dataset since it can be used both for training and validating Planet based snow cover information. The figure shows their geographic distribution in 2017.
 
 ### Objectives
@@ -51,11 +51,11 @@ The explosive growth and availability of satellite imagery at unprecedented spat
 2. We've been able to download snow-on and snow-off images and extract pixel values.
 3. Some initial analysis of the data looks like this:
 
-	<img src="artifacts/figures/histcompare.png" width="500" align="center"/>.
+	<img src="figures/histcompare.png" width="500" align="center"/>.
 
 	 A Gaussian Mixture clustering on all bands (TOA reflectance) looks like this:
 
-	<img src="artifacts/figures/gaussiancluster.png" width="450" align="center"/>
+	<img src="figures/gaussiancluster.png" width="450" align="center"/>
 
 
 ### References:
