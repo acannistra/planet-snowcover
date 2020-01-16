@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <title>CubeSat Snow Covered Area Implementation Documentation &#8212; CubeSat SCA  documentation</title>
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
@@ -16,26 +16,37 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Planet SCA Data Architecture" href="implementation-notes/data-architecture.html" />
-   
-  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nobile:regular,italic,bold,bolditalic&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+<!--[if lte IE 6]>
+<link rel="stylesheet" href="_static/ie6.css" type="text/css" media="screen" charset="utf-8" />
+<![endif]-->
 
   </head><body>
-  
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="implementation-notes/data-architecture.html" title="Planet SCA Data Architecture"
+             accesskey="N">next</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">CubeSat SCA  documentation</a> &#187;</li> 
+      </ul>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          
-
           <div class="body" role="main">
             
   <div class="section" id="cubesat-snow-covered-area-implementation-documentation">
 <h1>CubeSat Snow Covered Area Implementation Documentation<a class="headerlink" href="#cubesat-snow-covered-area-implementation-documentation" title="Permalink to this headline">¶</a></h1>
 <p><a class="reference external" href="https://tonycannistra.com/about">Tony Cannistra</a> and <a class="reference external" href="https://escience.washington.edu/people/nicoleta-cristea/">Nicoleta Cristea</a> – <a class="reference external" href="https://escience.washington.edu">eScience Institute</a>, University of Washington.</p>
 <small><em>This work is supported in part by the National Science Foundation (IGERT DGE-1258485, GRFP to T.C.), Earth Science Information Partners (<a href="https://www.esipfed.org">https://www.esipfed.org</a>), and the NASA Terrestrial Hydrology Program.</em></small><div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">Implementation Notes</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="implementation-notes/data-architecture.html">Planet SCA Data Architecture</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="implementation-notes/data-architecture.html#data-sources">Data Sources</a></li>
@@ -54,6 +65,28 @@
 <li class="toctree-l1"><a class="reference internal" href="implementation-notes/ml-architecture.html">Planet SCA ML Architecture Design</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="implementation-notes/ml-architecture.html#sagemaker-configuration">SageMaker Configuration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="implementation-notes/ml-architecture.html#sagemaker-training">SageMaker Training</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">Data Pipeline Notebooks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="pipeline/1_Acquire_ASO.html">Step 1: ASO Acqusition ❄️ ✈️ 🖥 ❄</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pipeline/1_Acquire_ASO.html#ASO-Catalog-Search-🔎">ASO Catalog Search 🔎</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pipeline/1_Acquire_ASO.html#Select-ASO-Region">Select ASO Region</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pipeline/1_Acquire_ASO.html#Select-ASO-Candidates-for-Selected-Region">Select ASO Candidates for Selected Region</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pipeline/1_Acquire_ASO.html#Download-Data-🖥">Download Data 🖥</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pipeline/1_Acquire_ASO.html#Preprocess-for-Tiling">Preprocess for Tiling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pipeline/1_Acquire_ASO.html#Upload-Raw-&amp;-Processed-Artifacts-to-to-Cloud-Storage-☁︎🗑">Upload Raw &amp; Processed Artifacts to to Cloud Storage ☁︎🗑</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pipeline/1_Acquire_ASO.html#Tile-ASO-🗺">Tile ASO 🗺</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pipeline/2_Planet_Ordering.html">Step 2: Planet Labs Imagery Ordering 🛰 🖼</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pipeline/2_Planet_Ordering.html#ASO-Collect-Selection">ASO Collect Selection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pipeline/2_Planet_Ordering.html#Imagery-Ordering-👆">Imagery Ordering 👆</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pipeline/2_Planet_Ordering.html#Image-Tiling-to-Cloud-Storage">Image Tiling to Cloud Storage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pipeline/2_Planet_Ordering.html#In-Summary">In Summary</a></li>
 </ul>
 </li>
 </ul>
@@ -79,35 +112,29 @@
 
 
           </div>
-          
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="#">CubeSat SCA</a></h1>
-
-
-
-
-
-
-
-
-<h3>Navigation</h3>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="implementation-notes/data-architecture.html">Planet SCA Data Architecture</a></li>
-<li class="toctree-l1"><a class="reference internal" href="implementation-notes/cloud-architecture.html">Planet SCA (<small>snow-covered area</small>) Cloud Infrastructure Design</a></li>
-<li class="toctree-l1"><a class="reference internal" href="implementation-notes/ml-architecture.html">Planet SCA ML Architecture Design</a></li>
+  <h3><a href="#">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">CubeSat Snow Covered Area Implementation Documentation</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#technical-overview">Technical Overview</a></li>
+</ul>
+</li>
 </ul>
 
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="#">Documentation overview</a><ul>
-      <li>Next: <a href="implementation-notes/data-architecture.html" title="next chapter">Planet SCA Data Architecture</a></li>
-  </ul></li>
-</ul>
-</div>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="implementation-notes/data-architecture.html"
+                        title="next chapter">Planet SCA Data Architecture</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/index.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
 <div id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
@@ -118,32 +145,25 @@
     </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
-
-
-
-
-
-
-
-
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="footer">
-      &copy;2019, Tony Cannistra.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.2</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
-      
-      |
-      <a href="_sources/index.rst.txt"
-          rel="nofollow">Page source</a>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="implementation-notes/data-architecture.html" title="Planet SCA Data Architecture"
+             >next</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">CubeSat SCA  documentation</a> &#187;</li> 
+      </ul>
     </div>
-
-    
-
-    
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Tony Cannistra.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+    </div>
   </body>
 </html>
