@@ -18,6 +18,7 @@ RUN apt-get -y update && apt-get install -y --no-install-recommends \
          ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
+
 RUN wget https://bootstrap.pypa.io/get-pip.py && python3.6 get-pip.py
 RUN pip install setuptools
 
@@ -48,13 +49,14 @@ COPY credentials /root/.aws/credentials
 ENV PYTHONUNBUFFERED=TRUE
 ENV PYTHONDONTWRITEBYTECODE=TRUE
 
+RUN apt-get install -y git 
+
 SHELL ["/bin/bash", "-c"]  
 RUN echo "source activate pytorch_p36" > ~/.bashrc
 ENV PATH="/opt/conda/envs/pytorch_p36/bin:${PATH}"
 ENV PATH="/opt/program:${PATH}"
 
 # Set up the program in the image
-COPY model /opt/program
 COPY start.sh /opt/program
 WORKDIR /opt/program
-#ENTRYPOINT ["/bin/bash", "start.sh"]
+ENTRYPOINT ["/bin/bash", "start.sh"]
