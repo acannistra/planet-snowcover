@@ -7,8 +7,8 @@ RUN apt-get update \
     && add-apt-repository ppa:jonathonf/python-3.6 \
     && apt autoremove -y \
     && apt-get update \
-    && apt-get install -y build-essential \ 
-    && apt-get install -y python3.6 
+    && apt-get install -y build-essential \
+    && apt-get install -y python3.6
 
 RUN apt-get -y update && apt-get install -y --no-install-recommends \
          wget \
