@@ -17,6 +17,8 @@ from functools import partial
 
 import numpy as np
 
+from time import sleep
+
 from concurrent import futures
 
 import s3fs
@@ -61,7 +63,12 @@ def _write_tile(tile, image, output_dir, tile_size = 512, bands = [1,2,3,4], qua
     """
     tile_xy_bounds = xy_bounds(tile)
     tile_latlon_bounds = bounds(tile)
-    data, mask = tile_read(image, tile_xy_bounds, tile_size, indexes=bands)
+    try: 
+        data, mask = tile_read(image, tile_xy_bounds, tile_size, indexes=bands)
+    except Exception as e:
+        print("failed to read tile")
+        return(tile, False)
+    
     bands, height, width = data.shape
 
     # does the number of cells with nodata exceed max_nodata_pct?
@@ -127,7 +134,17 @@ def _write_tile(tile, image, output_dir, tile_size = 512, bands = [1,2,3,4], qua
         fs = s3fs.S3FileSystem(session =  session)
         # open file , write file
         s3fp = fs.open(tile_path, 'wb')
-        s3fp.write(tile_file.read())
+        try:
+            s3fp.write(tile_file.read())
+        except Exception as e:
+            sleep(5)
+            try: 
+                s3fp.write(tile_file.read())
+            except Exception as e: 
+                return tile, False
+            
+
+            
         # close fps
         s3fp.close()
         tile_file.close()
