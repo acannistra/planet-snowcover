@@ -7,8 +7,8 @@ RUN apt-get update \
     && add-apt-repository ppa:jonathonf/python-3.6 \
     && apt autoremove -y \
     && apt-get update \
-    && apt-get install -y build-essential \ 
-    && apt-get install -y python3.6 
+    && apt-get install -y build-essential \
+    && apt-get install -y python3.6
 
 RUN apt-get -y update && apt-get install -y --no-install-recommends \
          wget \
@@ -48,7 +48,7 @@ COPY credentials /root/.aws/credentials
 ENV PYTHONUNBUFFERED=TRUE
 ENV PYTHONDONTWRITEBYTECODE=TRUE
 
-SHELL ["/bin/bash", "-c"]  
+SHELL ["/bin/bash", "-c"]
 RUN echo "source activate pytorch_p36" > ~/.bashrc
 ENV PATH="/opt/conda/envs/pytorch_p36/bin:${PATH}"
 ENV PATH="/opt/program:${PATH}"
@@ -57,4 +57,4 @@ ENV PATH="/opt/program:${PATH}"
 COPY model /opt/program
 COPY start.sh /opt/program
 WORKDIR /opt/program
-#ENTRYPOINT ["/bin/bash", "start.sh"]
+ENTRYPOINT ["/bin/bash", "start.sh"]
