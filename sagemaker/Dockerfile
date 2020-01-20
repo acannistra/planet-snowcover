@@ -4,11 +4,10 @@ MAINTAINER Tony Cannistra <tony.cannistra@gmail.com>
 
 RUN apt-get update \
     && apt-get install -y software-properties-common curl \
-    && add-apt-repository ppa:jonathonf/python-3.6 \
     && apt autoremove -y \
     && apt-get update \
-    && apt-get install -y build-essential \
-    && apt-get install -y python3.6
+    && apt-get install -y build-essential
+
 
 RUN apt-get -y update && apt-get install -y --no-install-recommends \
          wget \
@@ -18,6 +17,10 @@ RUN apt-get -y update && apt-get install -y --no-install-recommends \
          ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
+RUN apt-get install software-properties-common \
+    && add-apt-repository ppa:deadsnakes/ppa \
+    && apt-get -y update \
+    && apt-get install -y python3.6
 
 RUN wget https://bootstrap.pypa.io/get-pip.py && python3.6 get-pip.py
 RUN pip install setuptools
@@ -49,9 +52,9 @@ COPY credentials /root/.aws/credentials
 ENV PYTHONUNBUFFERED=TRUE
 ENV PYTHONDONTWRITEBYTECODE=TRUE
 
-RUN apt-get install -y git 
+RUN apt-get install -y git
 
-SHELL ["/bin/bash", "-c"]  
+SHELL ["/bin/bash", "-c"]
 RUN echo "source activate pytorch_p36" > ~/.bashrc
 ENV PATH="/opt/conda/envs/pytorch_p36/bin:${PATH}"
 ENV PATH="/opt/program:${PATH}"
