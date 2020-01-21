@@ -49,7 +49,7 @@ def sage_train(config, sagemaker_image, sage_role_arn, aws_profile, aws_region, 
     print("Uploaded {} to {}.".format(config, config_location))
     
     # create estimator 
-    job_prefix = path.splitext(path.basename(config))[0]
+    job_prefix = path.splitext(path.basename(config))[0].replace("_", "-")
     e = build_estimator(sess, job_prefix, sagemaker_image, sage_role_arn, output_bucket)
     
     ans = input("START SAGEMAKER TRAINING JOB? [y/n]: ")
