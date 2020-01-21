@@ -1,14 +1,14 @@
-FROM ubuntu:16.04
+## Thid dockerfile must be built with planet-snowcover repository context.
+
+FROM ubuntu:18.04
 
 MAINTAINER Tony Cannistra <tony.cannistra@gmail.com>
 
 RUN apt-get update \
     && apt-get install -y software-properties-common curl \
-    && add-apt-repository ppa:jonathonf/python-3.6 \
     && apt autoremove -y \
     && apt-get update \
-    && apt-get install -y build-essential \
-    && apt-get install -y python3.6
+    && apt-get install -y build-essential
 
 RUN apt-get -y update && apt-get install -y --no-install-recommends \
          wget \
@@ -18,8 +18,8 @@ RUN apt-get -y update && apt-get install -y --no-install-recommends \
          ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
-RUN wget https://bootstrap.pypa.io/get-pip.py && python3.6 get-pip.py
-RUN pip install setuptools
+RUN apt-get -y update && apt-get install -y python3-pip
+RUN pip3 install setuptools
 
 
 # Anaconda
@@ -34,16 +34,6 @@ RUN conda env update --file /opt/program/pytorch_p36.yml
 RUN apt-get update \
     && apt-get install -y libsm6 libxext6 libxrender-dev
 COPY credentials /root/.aws/credentials
-
-# There's substantial overlap between scipy and numpy that we eliminate by
-# linking them together. Likewise, pip leaves the install caches populated which uses
-# a significant amount of space. These optimizations save a fair amount of space in the
-# image, which reduces start up time.
-
-# Set some environment variables. PYTHONUNBUFFERED keeps Python from buffering our standard
-# output stream, which means that logs can be delivered to the user quickly. PYTHONDONTWRITEBYTECODE
-# keeps Python from writing the .pyc files which are unnecessary in this case. We also update
-# PATH so that the train and serve programs are found when the container is invoked.
 
 ENV PYTHONUNBUFFERED=TRUE
 ENV PYTHONDONTWRITEBYTECODE=TRUE
