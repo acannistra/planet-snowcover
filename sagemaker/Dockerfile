@@ -38,13 +38,14 @@ COPY credentials /root/.aws/credentials
 ENV PYTHONUNBUFFERED=TRUE
 ENV PYTHONDONTWRITEBYTECODE=TRUE
 
-SHELL ["/bin/bash", "-c"]
+RUN apt-get install -y git 
+
+SHELL ["/bin/bash", "-c"]  
 RUN echo "source activate pytorch_p36" > ~/.bashrc
 ENV PATH="/opt/conda/envs/pytorch_p36/bin:${PATH}"
 ENV PATH="/opt/program:${PATH}"
 
 # Set up the program in the image
-COPY model /opt/program
 COPY start.sh /opt/program
 WORKDIR /opt/program
 ENTRYPOINT ["/bin/bash", "start.sh"]
