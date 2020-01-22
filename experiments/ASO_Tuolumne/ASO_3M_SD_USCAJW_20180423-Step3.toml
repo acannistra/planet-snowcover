@@ -1,14 +1,13 @@
-# ASO_3M_SD_USCASJ_20180601
-# Checkpoint: ASO-3M-SD-USCATE-20180528-2020-01-17-23-21-26-065/checkpoint-00050-of-00050.pth
-
+# ASO_3M_SD_USCAJW_20180423
+# Checkpoint: planet-snowcover-models/ASO-3M-SD-USCASJ-20180601-Step2-2020-01-21-21-37-55-126/checkpoint-00050-of-00050.pth
 [dataset]
   # The slippy map dataset's base directory.
   aws_profile = "esip"
   image_bucket = "planet-snowcover-imagery"
   # regex defines each slippy-map directory, for buckets with many
-  imagery_directory_regex = '20180601_.*_tiled$'
+  imagery_directory_regex = '2018042\d_.*_tiled'
   mask_bucket = "planet-snowcover-snow"
-  mask_directory_regex = "ASO_3M_SD_USCASJ_20180601_tiles_02$" # $ = end of string = only dirs (no .tif)
+  mask_directory_regex = "ASO_3M_SD_USCAJW_20180423-MASK_02-COG$" # $ = end of string = only dirs (no .tif)
   train_percent = 0.7
 
 [[classes]]
@@ -22,9 +21,9 @@
   mean  = [0.485, 0.456, 0.406, 1.0]
   std   = [0.229, 0.224, 0.225, 1.0]
 
-# See ASO_3M_SD_USCATE_20180528-Step1.toml for creation step.
+# See ASO_3M_SD_USCASJ_20180601-Step2.toml for creation step.
 [checkpoint]
-  path = "s3://planet-snowcover-models/ASO-3M-SD-USCATE-20180528-2020-01-17-23-21-26-065/checkpoint-00050-of-00050.pth"
+  path = "s3://planet-snowcover-models/ASO-3M-SD-USCASJ-20180601-Step2-2020-01-21-21-37-55-126/checkpoint-00050-of-00050.pth"
 
 
 [model]
