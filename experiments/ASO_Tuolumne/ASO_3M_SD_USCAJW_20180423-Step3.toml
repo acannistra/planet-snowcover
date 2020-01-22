@@ -6,7 +6,7 @@
   image_bucket = "planet-snowcover-imagery"
   # regex defines each slippy-map directory, for buckets with many
   imagery_directory_regex = '2018042\d_.*_tiled'
-  mask_bucket = "planet-snowcover-snow"
+  mask_bucket = "planet-snowcover-snow/ASO_3M_SD_USCAJW_20180423"
   mask_directory_regex = "ASO_3M_SD_USCAJW_20180423-MASK_02-COG$" # $ = end of string = only dirs (no .tif)
   train_percent = 0.7
 
