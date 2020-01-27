@@ -23,18 +23,36 @@ import pyproj
 
 import fiona
 
+from tabulate import tabulate
+
 from pandas import to_datetime
 from datetime import datetime, timedelta
 
-# first is default
-OUTPUT_FORMATS = ["png", "pdf"]
 
-def get_sentinel_image(footprint, date, search_window, destination,
-                       bands = ['B03', 'B11']):
+@click.group()
+def s2():
+    pass
+
+@s2.command()
+@click.argument("destination")
+@click.option("--image_date", "date", help="Date of image collection.",
+              type=click.DateTime(formats=["%Y-%m-%d"]))
+@click.option("--search_window", help="Imagery search window.", default=2)
+@click.option("--footprint",
+             help="Data footprint geojson (within <dir>!).")
+@click.option("--chooser", "choose", help="show chooser", is_flag=True)
+def get_image(footprint, date, search_window, destination,
+                       bands = ['B03', 'B11'], choose=False):
     """
-    Retrieves sentinel-2 scenes that entirely contain <footprint>
-    within date +/- search_window. Downloads <bands> to
-    <destination>/sentinel2,
+    Retrieves sentinel-2 scenes.
+
+    Scenes must entirely contain <footprint>
+    within date +/- search_window.
+
+    Downloads <bands> to
+    <dir>/sentinel2.
+
+    Requires SCIHUB_USERNAME and SCIHUB_PASSWORD environment variables.
     """
     print("Searching for Sentinel-2 Imagery...")
     workdir = path.join(destination,"sentinel-2")
@@ -43,7 +61,7 @@ def get_sentinel_image(footprint, date, search_window, destination,
     api = SentinelAPI(environ['SCIHUB_USERNAME'],
                       environ['SCIHUB_PASSWORD'],
                       'https://scihub.copernicus.eu/dhus')
-    footprint_wkt = geojson_to_wkt(footprint)
+    footprint_wkt = geojson_to_wkt(read_geojson(path.join(destination,footprint)))
     footprint_geom = wkt.loads(footprint_wkt)
 
     date_window = timedelta(days=search_window)
@@ -61,16 +79,24 @@ def get_sentinel_image(footprint, date, search_window, destination,
     results['timedeltas'] = (date - results.datatakesensingstart).abs()
     results = results.sort_values(by='timedeltas', ascending=True)
 
+    image_iloc = 0
+    if choose:
+        print(tabulate(results[[
+            'datatakesensingstart',
+            'cloudcoverpercentage',
+            'timedeltas'
+        ]].reset_index(drop=True), headers='keys'))
+        image_iloc = int(input("Choose image ID [0-{}]: ".format(len(results)-1)))
+
+
 
     # build request for AWS data.
-    tile_name, time, aws_index = AwsTile.tile_id_to_tile(results.iloc[0].level1cpdiidentifier)
+    tile_name, time, aws_index = AwsTile.tile_id_to_tile(results.iloc[image_iloc].level1cpdiidentifier)
     metafiles = ['tileInfo', 'preview']
     request = AwsTileRequest(tile=tile_name, time=time, aws_index=aws_index,
                             bands=bands, metafiles=metafiles,
                             data_folder=workdir,
                             data_source=DataSource.SENTINEL2_L1C)
-
-    print(AwsTile(*AwsTile.tile_id_to_tile(results.iloc[0].level1cpdiidentifier)).get_qi_url('preview'))
 
     if input("Download? (y/n): ").lower() == "y":
         request.save_data()
@@ -80,11 +106,21 @@ def get_sentinel_image(footprint, date, search_window, destination,
 
     dateparts = time.split("-")
     zero_pad_date = "{:d}-{:02d}-{:d}".format(int(dateparts[0]), int(dateparts[1]), int(dateparts[2]))
-    return(path.join(workdir, ",".join([str(tile_name), zero_pad_date, str(aws_index)])))
+
+    imgpath = path.join(workdir, ",".join([str(tile_name), zero_pad_date, str(aws_index)]))
+    print(imgpath)
+    return(imgpath)
 
 
+@s2.command()
+@click.argument("dir")
+@click.option("--reproject", "projection", help="EPSG code to reproject NDSI to.")
+@click.option("--threshold", "threshold", help="NDSI Threshold for binarization")
+@click.option("--clip", help="GeoJSON file to clip NDSI to.")
 def compute_ndsi(dir, projection=None, threshold=None, clip=None):
     """
+    Computes NDSI for s2 image contained in <dir>.
+
     S2_NDSI = (B03 - B11) / (B03 + B11)
     (https://earth.esa.int/web/sentinel/technical-guides/sentinel-2-msi/level-2a/algorithm)
 
@@ -158,6 +194,7 @@ def compute_ndsi(dir, projection=None, threshold=None, clip=None):
     if clip:
         with rio.open(path.join(dir, "NDSI.tif")) as ndsi_src:
             ## NOTICE: USES FIRST FEATURE ONLY
+            clip = fiona.open(clip)
             clip_geom = shape(clip[0]['geometry'])
             print(clip.crs['init'], ndsi_src.crs['init'])
             project = partial(
@@ -183,15 +220,10 @@ def compute_ndsi(dir, projection=None, threshold=None, clip=None):
 
 @click.command()
 @click.argument('figdir')
-@click.option("--image_date", help="Date of image collection.",
-              type=click.DateTime(formats=["%Y-%m-%d"]))
-@click.option("--search_window", help="Imagery search window.", default=2)
-@click.option("--footprint",
-             help="Data footprint.")
+
 @click.option("--ndsi", help="Compute NDSI from S2 imagery.", is_flag=True)
-@click.option("--reproject", help="EPSG code to reproject NDSI to.")
-@click.option("--ndsi_threshold", help="NDSI Threshold for binarization")
-@click.option("--clip", help="Clip NDSI to footprint", is_flag=True)
+
+@click.option("--chooser", help="Show S2 Asset Chooser", is_flag=True)
 def get_sentinel(**kwargs):
     """
     Download overlapping sentinel2 imagery for NDSI computation.
@@ -204,7 +236,8 @@ def get_sentinel(**kwargs):
     s2path = get_sentinel_image(footprint,
                              image_date,
                              kwargs.get("search_window"),
-                             root_dir)
+                             root_dir,
+                             choose = kwargs.get("chooser"))
 
     if kwargs.get("ndsi"):
         if kwargs.get("clip"):
@@ -218,4 +251,4 @@ def get_sentinel(**kwargs):
 
 
 if __name__ == "__main__":
-    get_sentinel()
+    s2()
