@@ -189,7 +189,7 @@ def compute_ndsi(dir, projection=None, threshold=None, clip=None):
         print("Reprojecting to {}...".format(projection))
         # compute projection from b03 CRS to new
         d_transform, d_width, d_height = calculate_default_transform(
-            b03.crs, projection, b03.width, b03.height, *b03.bounds  # new crs
+            b03.crs, rio.CRS({"init":projection}), b03.width, b03.height, *b03.bounds  # new crs
         )  # original
         NDSI_dst_profile.update(
             {
