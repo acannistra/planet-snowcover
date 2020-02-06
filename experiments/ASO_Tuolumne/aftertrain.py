@@ -12,8 +12,8 @@ from subprocess import Popen, PIPE
 @click.option("--aws_profile", "-p", "aws_profile", required=True)
 @click.option("--aws_region", "-r", required=True)
 @click.option("--output", '-o', "output_dir", required=False)
-@click.option("--checkpoint", "checkpoint_num", help="which checkpoint to extract?", default=50)
-def process_training_output(result_path, aws_profile, aws_region, output_dir):
+@click.option("--checkpoint", "checkpoint_name", help="which checkpoint to extract?", default="checkpoint-00050-of-00050.pth")
+def process_training_output(result_path, aws_profile, aws_region, output_dir, checkpoint_name):
     sess = boto3.Session(profile_name=aws_profile, region_name=aws_region)
     fs = s3fs.S3FileSystem(session = sess)
 
@@ -30,7 +30,7 @@ def process_training_output(result_path, aws_profile, aws_region, output_dir):
 
     print("Extracting trained model...")
     members = [
-        "checkpoint-00050-of-00050.pth",
+        checkpoint_name,
         "test_ids.txt",
         "train_ids.txt"
     ]
