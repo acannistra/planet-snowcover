@@ -27,6 +27,7 @@ S3_COPY_COMMAND = "aws s3 cp --profile {aws_profile} --recursive {local} {remote
 @click.option("--test_location")
 @click.option("--aws_profile", required=True)
 @click.option("--checkpoint_name", "-c", default="checkpoint-00050-of-00050.pth")
+@click.option("--other_checkpoint", help="Full path to separate checkpoint.")
 @click.option(
     "--robosat_pink", "--rsp", "rsp", default="~/planet-snowcover/model/robosat_pink"
 )
@@ -38,15 +39,16 @@ def run_prediction(
     test_location,
     aws_profile,
     checkpoint_name,
+    other_checkpoint,
     rsp,
     prediction_output,
 ):
     """
-    Runs model specified using <model_output_dir>/<checkpoint_name> using robosat_pink (located at <rsp>). 
-    
-    Produces predictions for images specified in <config> in s3 bucket (either <model_output_dir> or <prediction_output>) with 
-    diretory format <config_name>:<image_path>. Optionally uses test_ids.txt in <model_output_dir> to limit prediction tiles. 
-    
+    Runs model specified using <model_output_dir>/<checkpoint_name> using robosat_pink (located at <rsp>).
+
+    Produces predictions for images specified in <config> in s3 bucket (either <model_output_dir> or <prediction_output>) with
+    diretory format <config_name>:<image_path>. Optionally uses test_ids.txt in <model_output_dir> to limit prediction tiles.
+
     """
     assert path.exists(
         path.expanduser(path.join(rsp, "rsp"))
@@ -79,9 +81,11 @@ def run_prediction(
 
     prediction_output_loc = path.join(temp_dir.name, config_id)
 
+    checkpoint = path.join(model_output_dir, checkpoint_name) if other_checkpoint is None else other_checkpoint
+
     predict_command = PREDICT_COMMAND.format(
         rsp=rsp,
-        checkpoint=path.join(model_output_dir, checkpoint_name),
+        checkpoint=checkpoint,
         aws_profile=aws_profile,
         config=path.abspath(config),
         ids=path.join(temp_dir.name, "test_ids.txt"),
