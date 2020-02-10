@@ -46,7 +46,8 @@ def getMaskTiles(mask_loc, destination, aws_profile):
 @click.argument("output_dir")
 @click.option("--mask_loc", help="S3 bucket path containing mask tiles", required=True)
 @click.option("--aws_profile")
-def summarize(prediction_path, output_dir, mask_loc, aws_profile):
+@click.option("--image_search_path", help="Download image too? Give path here to search for it.")
+def summarize(prediction_path, output_dir, mask_loc, aws_profile, image):
     """
     Collect relevant files to perform accuracy assessment for given prediction.
 
@@ -59,8 +60,9 @@ def summarize(prediction_path, output_dir, mask_loc, aws_profile):
 
     """
     if ":" in prediction_path:
+        if prediction_path[-1] == '/': print("WARNING: Trailing slash on prediction path. This will cause imagepath to break.")
         imagepath = os.path.basename(prediction_path).replace(":", "/")
-        print(imagepath)
+        print(f"Imagepath: {imagepath}")
     else:
         print("pred needs to contain image dir in path ")
         exit(1)
@@ -133,7 +135,7 @@ def summarize(prediction_path, output_dir, mask_loc, aws_profile):
             print("Download failed {} ({})".format(masktileloc, e))
 
     ## Merge Mask tiles and Predction Tiles into single tifs
-    MERGE_CMD = "gdal_merge.py -ot 'Int16' -co 'COMPRESS=LZW' -o {dir}/{fname}.tif $(find {dir} -name '*.tif')"
+    MERGE_CMD = "gdal_merge.py -init 9999 -a_nodata 9999 -ot 'Int16' -co 'COMPRESS=LZW' -o {dir}/{fname}_merged.tif $(find {dir} -name '*.tif')"
 
     _p = Popen(
         MERGE_CMD.format(dir=maskdir, fname=os.path.basename(mask_loc)),
@@ -143,6 +145,17 @@ def summarize(prediction_path, output_dir, mask_loc, aws_profile):
         MERGE_CMD.format(dir=preddir, fname=os.path.basename(imagepath)),
         shell=True
     ).communicate()
+
+    IMG_SEARCH_COMMAND = "aws s3 ls --profile {profile} --recursive s3://{bucket} | grep {image} |  awk '\{$1=$1\};1'  | cut -f4 -d ' '"
+
+    if image_search_path:
+        searchSlug = "_".join(os.path.basename(imagepath).split("_")[:3]
+
+        (out, err) = Popen(
+            IMG_SEARCH_COMMAND.format(profile = aws_profile, bucket=image_search_path, image = searchSlug)
+        ).communicate()
+
+        print(out)
 
 
 if __name__ == "__main__":
