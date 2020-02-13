@@ -47,7 +47,7 @@ def getMaskTiles(mask_loc, destination, aws_profile):
 @click.option("--mask_loc", help="S3 bucket path containing mask tiles", required=True)
 @click.option("--aws_profile")
 @click.option("--image_search_path", help="Download image too? Give path here to search for it.")
-def summarize(prediction_path, output_dir, mask_loc, aws_profile, image):
+def summarize(prediction_path, output_dir, mask_loc, aws_profile, image_search_path):
     """
     Collect relevant files to perform accuracy assessment for given prediction.
 
@@ -60,12 +60,24 @@ def summarize(prediction_path, output_dir, mask_loc, aws_profile, image):
 
     """
     if ":" in prediction_path:
-        if prediction_path[-1] == '/': print("WARNING: Trailing slash on prediction path. This will cause imagepath to break.")
+        if prediction_path[-1] == '/':
+            print("WARNING: Trailing slash on prediction path. This will cause imagepath to break. Trying to remove it.")
+            prediction_path = prediction_path[:-1]
+
         imagepath = os.path.basename(prediction_path).replace(":", "/")
         print(f"Imagepath: {imagepath}")
     else:
         print("pred needs to contain image dir in path ")
         exit(1)
+
+    # create dir
+    workdir = os.path.join(output_dir, prediction_path.replace("/", ":"))
+    os.makedirs(workdir, exist_ok=True)
+    maskdir = os.path.join(workdir, "mask")
+    os.makedirs(maskdir, exist_ok=True)
+    preddir = os.path.join(workdir, "preds")
+    os.makedirs(preddir, exist_ok=True)
+
 
     ## ASO Mask Tiles
     mask_name = os.path.basename(mask_loc)
@@ -90,6 +102,7 @@ def summarize(prediction_path, output_dir, mask_loc, aws_profile, image):
         imagepath, mode="multibands", aws_profile=aws_profile
     ).tiles
 
+
     mask_ids, mask_tile_ids, mask_paths = zip(*mask_tiles)
     pred_ids, pred_tile_ids, pred_paths = zip(*pred_tiles)
 
@@ -97,20 +110,29 @@ def summarize(prediction_path, output_dir, mask_loc, aws_profile, image):
 
     tile_overlap = set(pred_tile_ids).intersection(set(mask_tile_ids))
 
-    assert len(tile_overlap) > 0, "No overlapping tiles. Double-check mask path."
+
+
+    if len(tile_overlap) == 0:
+        print("No overlapping tiles. Double-check mask path.")
+        pred_mask = ops.cascaded_union(
+            [geometry.Polygon.from_bounds(*mercantile.bounds(t_i)) for t_i in pred_tile_ids]
+        )
+        mask_mask = ops.cascaded_union(
+            [geometry.Polygon.from_bounds(*mercantile.bounds(t_i)) for t_i in mask_tile_ids]
+        )
+        with open(os.path.join(workdir, "pred-mask.geojson"), "w") as f:
+            f.write((json.dumps(geometry.mapping(pred_mask))))
+        with open(os.path.join(workdir, "mask-mask.geojson"), "w") as f:
+            f.write((json.dumps(geometry.mapping(mask_mask))))
+
+        sys.exit(1)
+
 
     # Filter all tiles by overlap
     mask_tiles = [_ for _ in mask_tiles if _[1] in tile_overlap]
     pred_tiles = [_ for _ in pred_tiles if _[1] in tile_overlap]
     image_tiles = [_ for _ in image_tiles if _[1] in tile_overlap]
 
-    # create dir
-    workdir = os.path.join(output_dir, prediction_path.replace("/", ":"))
-    os.makedirs(workdir, exist_ok=True)
-    maskdir = os.path.join(workdir, "mask")
-    os.makedirs(maskdir, exist_ok=True)
-    preddir = os.path.join(workdir, "preds")
-    os.makedirs(preddir, exist_ok=True)
 
     ## Create data extent polygon
     pred_mask = ops.cascaded_union(
@@ -146,16 +168,18 @@ def summarize(prediction_path, output_dir, mask_loc, aws_profile, image):
         shell=True
     ).communicate()
 
-    IMG_SEARCH_COMMAND = "aws s3 ls --profile {profile} --recursive s3://{bucket} | grep {image} |  awk '\{$1=$1\};1'  | cut -f4 -d ' '"
+    IMG_SEARCH_COMMAND = "aws s3 ls --profile {profile} --recursive s3://{bucket} | grep {image} |  awk '\{\$1\=\$1\};1'  | cut -f4 -d ' '"
 
     if image_search_path:
-        searchSlug = "_".join(os.path.basename(imagepath).split("_")[:3]
+        searchSlug = "_".join(os.path.basename(imagepath)).split("_")[:3]
 
-        (out, err) = Popen(
+        out, err = Popen(
             IMG_SEARCH_COMMAND.format(profile = aws_profile, bucket=image_search_path, image = searchSlug)
+            shell=True
         ).communicate()
 
         print(out)
+
 
 
 if __name__ == "__main__":
