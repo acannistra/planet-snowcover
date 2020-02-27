@@ -1,3 +1,0 @@
-#!/bin/sh
-
-python3 -m robosat_pink.tools "$@"
