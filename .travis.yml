@@ -1,0 +1,23 @@
+sudo: required
+branches:
+  only:
+  - master
+  - docker-rework
+services:
+  - docker
+env:
+  global:
+    - IMAGE_NAME=675906086666.dkr.ecr.us-west-2.amazonaws.com/planet-snowcover:latest
+before_script:
+  - docker pull "$IMAGE_NAME" || true
+script:
+  - echo [default]\naws_access_key_id=$AWS_ACCESS_KEY_ID\naws_secret_access_key=$AWS_SECRET_ACCESS_KEY > ./environment/credentials
+  - docker build --pull --cache-from "$IMAGE_NAME" --tag "$IMAGE_NAME" environment/Dockerfile
+after_script:
+  - docker images
+after_success:
+  - docker --version  # document the version travis is using
+  - pip install --user awscli # install aws cli w/o sudo
+  - export PATH=$PATH:$HOME/.local/bin # put aws in the path
+  - eval $(aws ecr get-login --region us-west-2)
+  - docker push "$IMAGE_NAME"
