@@ -14,20 +14,20 @@ RUN apt-get -qq -y update && apt-get -qq install -y --no-install-recommends \
          nginx \
          bzip2 \
 		     libgcc-5-dev \
-         ca-certificates \
+         ca-certificates > /dev/null 2>&1\
     && rm -rf /var/lib/apt/lists/*
 
 RUN apt-get -qq install software-properties-common \
     && add-apt-repository ppa:deadsnakes/ppa \
     && apt-get -y update \
-    && apt-get -qq install -y python3.6
+    && apt-get -qq install -y python3.6 > /dev/null 2>&1
 
 RUN wget https://bootstrap.pypa.io/get-pip.py > /dev/null 2>&1 && python3.6 get-pip.py
 RUN pip install setuptools
 
 
 # Anaconda
-RUN wget https://repo.continuum.io/archive/Anaconda3-5.0.1-Linux-x86_64.sh
+RUN wget https://repo.continuum.io/archive/Anaconda3-5.0.1-Linux-x86_64.sh > /dev/null 2>&1
 RUN bash Anaconda3-5.0.1-Linux-x86_64.sh -b
 RUN rm Anaconda3-5.0.1-Linux-x86_64.sh
 ENV PATH /root/anaconda3/bin:$PATH
