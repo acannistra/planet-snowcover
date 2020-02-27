@@ -2,14 +2,14 @@ FROM ubuntu:16.04
 
 MAINTAINER Tony Cannistra <tony.cannistra@gmail.com>
 
-RUN apt-get update \
+RUN apt-get -qq update \
     && apt-get install -y software-properties-common curl \
     && apt autoremove -y \
     && apt-get update \
     && apt-get install -y build-essential
 
 
-RUN apt-get -y update && apt-get install -y --no-install-recommends \
+RUN apt-get -qq -y update && apt-get install -y --no-install-recommends \
          wget \
          nginx \
          bzip2 \
@@ -22,7 +22,7 @@ RUN apt-get install software-properties-common \
     && apt-get -y update \
     && apt-get install -y python3.6
 
-RUN wget https://bootstrap.pypa.io/get-pip.py && python3.6 get-pip.py
+RUN wget https://bootstrap.pypa.io/get-pip.py > /dev/null 2>&1 && python3.6 get-pip.py
 RUN pip install setuptools
 
 
