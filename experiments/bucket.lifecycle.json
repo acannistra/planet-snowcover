@@ -1,0 +1,17 @@
+{
+    "Rules": [
+        {
+            "ID": "glacier-archive",
+            "Filter": {
+                "Prefix": ""
+            },
+            "Status": "Enabled",
+            "Transitions": [
+                {
+                    "Days": 0,
+                    "StorageClass": "GLACIER"
+                }
+            ]
+        }
+    ]
+}
