@@ -52,5 +52,6 @@ ENV PATH="/opt/program:${PATH}"
 
 # Set up the program in the image
 COPY ./environment/start.sh /opt/program
+COPY ./model /opt/program
 WORKDIR /opt/program
 ENTRYPOINT ["/bin/bash", "start.sh"]
