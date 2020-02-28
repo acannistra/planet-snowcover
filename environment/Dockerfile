@@ -17,33 +17,33 @@ RUN apt-get -qq -y update && apt-get -qq install -y --no-install-recommends \
          ca-certificates > /dev/null 2>&1\
     && rm -rf /var/lib/apt/lists/*
 
-RUN apt-get -qq install software-properties-common \
-    && add-apt-repository ppa:deadsnakes/ppa \
-    && apt-get -y update \
+RUN apt-get -qq install software-properties-common > /dev/null 2>&1 \
+    && add-apt-repository ppa:deadsnakes/ppa > /dev/null 2>&1 \
+    && apt-get -y update > /dev/null 2>&1 \
     && apt-get -qq install -y python3.6 > /dev/null 2>&1
 
 RUN wget https://bootstrap.pypa.io/get-pip.py > /dev/null 2>&1 && python3.6 get-pip.py
-RUN pip install setuptools
+RUN pip install setuptools > /dev/null 2>&1
 
 
 # Anaconda
 RUN wget https://repo.continuum.io/archive/Anaconda3-5.0.1-Linux-x86_64.sh > /dev/null 2>&1
-RUN bash Anaconda3-5.0.1-Linux-x86_64.sh -b
+RUN bash Anaconda3-5.0.1-Linux-x86_64.sh -b > /dev/null 2>&1
 RUN rm Anaconda3-5.0.1-Linux-x86_64.sh
 ENV PATH /root/anaconda3/bin:$PATH
 
 # Install dependancies
 COPY ./environment/pytorch_p36.yml /opt/program/
-RUN conda env update --file /opt/program/pytorch_p36.yml
-RUN apt-get -qq update \
-    && apt-get --qq install -y libsm6 libxext6 libxrender-dev
+RUN conda env update --file /opt/program/pytorch_p36.yml > /dev/null 2>&1
+RUN apt-get -qq update > /dev/null 2>&1 \
+    && apt-get --qq install -y libsm6 libxext6 libxrender-dev > /dev/null 2>&1
 COPY ./environment/credentials /root/.aws/credentials
 
 
 ENV PYTHONUNBUFFERED=TRUE
 ENV PYTHONDONTWRITEBYTECODE=TRUE
 
-RUN apt-get -qq install -y git
+RUN apt-get -qq install -y git > /dev/null 2>&1
 
 SHELL ["/bin/bash", "-c"]
 RUN echo "source activate pytorch_p36" > ~/.bashrc
