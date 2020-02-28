@@ -33,10 +33,10 @@ RUN rm Anaconda3-5.0.1-Linux-x86_64.sh
 ENV PATH /root/anaconda3/bin:$PATH
 
 # Install dependancies
+RUN apt-get update \
+    && apt-get --qq install -y libsm6 libxext6 libxrender-dev
 COPY ./environment/pytorch_p36.yml /opt/program/
 RUN conda env update -q --file /opt/program/pytorch_p36.yml
-RUN apt-get -qq update -y \
-    && apt-get --qq install -y libsm6 libxext6 libxrender-dev
 COPY ./environment/credentials /root/.aws/credentials
 
 
