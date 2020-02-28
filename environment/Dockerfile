@@ -35,7 +35,7 @@ ENV PATH /root/anaconda3/bin:$PATH
 # Install dependancies
 COPY ./environment/pytorch_p36.yml /opt/program/
 RUN conda env update -q --file /opt/program/pytorch_p36.yml
-RUN apt-get -qq -y update \
+RUN apt-get -qq update -y \
     && apt-get --qq install -y libsm6 libxext6 libxrender-dev
 COPY ./environment/credentials /root/.aws/credentials
 
