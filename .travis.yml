@@ -15,8 +15,8 @@ before_script:
 script:
 - if test -z "$AWS_ACCESS_KEY_ID"; then echo "AWS ACCESS KEY empty"; fi;
 - if test -z "$AWS_SECRET_ACCESS_KEY"; then echo "AWS SECRET empty"; fi;
-- echo [default]\naws_access_key_id=$AWS_ACCESS_KEY_ID\naws_secret_access_key=$AWS_SECRET_ACCESS_KEY
-  > ./environment/credentials
+- bash ./environment/create-aws-creds.sh
+- stat ./environment/aws_config
 - docker build --pull --cache-from "$IMAGE_NAME" --tag "$IMAGE_NAME" --file environment/Dockerfile
   .
 after_script:
