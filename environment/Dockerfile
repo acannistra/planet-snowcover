@@ -2,14 +2,14 @@ FROM ubuntu:16.04
 
 MAINTAINER Tony Cannistra <tony.cannistra@gmail.com>
 
-RUN apt-get -qq update \
-    && apt-get -qq install -y software-properties-common curl \
-    && apt autoremove -y \
-    && apt-get -qq update \
-    && apt-get -qq install -y build-essential
+RUN apt-get -qq update > /dev/null 2>&1 \
+    && apt-get -qq install -y software-properties-common curl > /dev/null 2>&1 \
+    && apt autoremove -y > /dev/null 2>&1 \
+    && apt-get -qq update  > /dev/null 2>&1\
+    && apt-get -qq install -y build-essential > /dev/null 2>&1
 
 
-RUN apt-get -qq -y update && apt-get -qq install -y --no-install-recommends \
+RUN apt-get -qq -y update > /dev/null 2>&1 && apt-get -qq install -y --no-install-recommends \
          wget \
          nginx \
          bzip2 \
@@ -34,7 +34,7 @@ ENV PATH /root/anaconda3/bin:$PATH
 
 # Install dependancies
 COPY ./environment/pytorch_p36.yml /opt/program/
-RUN conda env update --file /opt/program/pytorch_p36.yml > /dev/null 2>&1
+RUN conda env update --file /opt/program/pytorch_p36.yml 
 RUN apt-get -qq update > /dev/null 2>&1 \
     && apt-get --qq install -y libsm6 libxext6 libxrender-dev > /dev/null 2>&1
 COPY ./environment/credentials /root/.aws/credentials
