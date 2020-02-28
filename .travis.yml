@@ -12,7 +12,7 @@ before_script:
   - docker pull "$IMAGE_NAME" || true
 script:
   - echo [default]\naws_access_key_id=$AWS_ACCESS_KEY_ID\naws_secret_access_key=$AWS_SECRET_ACCESS_KEY > ./environment/credentials
-  - docker build --pull --cache-from "$IMAGE_NAME" --tag "$IMAGE_NAME" --file environment/Dockerfile . 
+  - docker build -q --pull --cache-from "$IMAGE_NAME" --tag "$IMAGE_NAME" --file environment/Dockerfile . 
 after_script:
   - docker images
 after_success:
