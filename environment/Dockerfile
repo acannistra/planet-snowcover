@@ -2,14 +2,14 @@ FROM ubuntu:16.04
 
 MAINTAINER Tony Cannistra <tony.cannistra@gmail.com>
 
-RUN apt-get -qq update > /dev/null 2>&1 \
-    && apt-get -qq install -y software-properties-common curl > /dev/null 2>&1 \
+RUN apt-get update > /dev/null 2>&1 \
+    && apt-get install -y software-properties-common curl > /dev/null 2>&1 \
     && apt autoremove -y > /dev/null 2>&1 \
-    && apt-get -qq update  > /dev/null 2>&1\
-    && apt-get -qq install -y build-essential > /dev/null 2>&1
+    && apt-get update  > /dev/null 2>&1\
+    && apt-get install -y build-essential > /dev/null 2>&1
 
 
-RUN apt-get -qq -y update > /dev/null 2>&1 && apt-get -qq install -y --no-install-recommends \
+RUN apt-get -y update > /dev/null 2>&1 && apt-get install -y --no-install-recommends \
          wget \
          nginx \
          bzip2 \
@@ -17,10 +17,10 @@ RUN apt-get -qq -y update > /dev/null 2>&1 && apt-get -qq install -y --no-instal
          ca-certificates > /dev/null 2>&1\
     && rm -rf /var/lib/apt/lists/*
 
-RUN apt-get -qq install -y software-properties-common > /dev/null 2>&1 \
+RUN apt-get install -y software-properties-common > /dev/null 2>&1 \
     && add-apt-repository ppa:deadsnakes/ppa > /dev/null 2>&1 \
     && apt-get -y update > /dev/null 2>&1 \
-    && apt-get -qq install -y python3.6 > /dev/null 2>&1
+    && apt-get install -y python3.6 > /dev/null 2>&1
 
 RUN wget https://bootstrap.pypa.io/get-pip.py > /dev/null 2>&1 && python3.6 get-pip.py
 RUN pip install setuptools > /dev/null 2>&1
@@ -34,7 +34,7 @@ ENV PATH /root/anaconda3/bin:$PATH
 
 # Install dependancies
 RUN apt-get update \
-    && apt-get --qq install -y libsm6 libxext6 libxrender-dev
+    && apt-get install -y libsm6 libxext6 libxrender-dev
 COPY ./environment/pytorch_p36.yml /opt/program/
 RUN conda env update -q --file /opt/program/pytorch_p36.yml
 COPY ./environment/credentials /root/.aws/credentials
@@ -43,7 +43,7 @@ COPY ./environment/credentials /root/.aws/credentials
 ENV PYTHONUNBUFFERED=TRUE
 ENV PYTHONDONTWRITEBYTECODE=TRUE
 
-RUN apt-get -qq install -y git > /dev/null 2>&1
+RUN apt-get install -y git > /dev/null 2>&1
 
 SHELL ["/bin/bash", "-c"]
 RUN echo "source activate pytorch_p36" > ~/.bashrc
