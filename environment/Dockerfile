@@ -17,7 +17,7 @@ RUN apt-get -qq -y update > /dev/null 2>&1 && apt-get -qq install -y --no-instal
          ca-certificates > /dev/null 2>&1\
     && rm -rf /var/lib/apt/lists/*
 
-RUN apt-get -qq install software-properties-common > /dev/null 2>&1 \
+RUN apt-get -qq install -y software-properties-common > /dev/null 2>&1 \
     && add-apt-repository ppa:deadsnakes/ppa > /dev/null 2>&1 \
     && apt-get -y update > /dev/null 2>&1 \
     && apt-get -qq install -y python3.6 > /dev/null 2>&1
@@ -34,9 +34,9 @@ ENV PATH /root/anaconda3/bin:$PATH
 
 # Install dependancies
 COPY ./environment/pytorch_p36.yml /opt/program/
-RUN conda env update -q --file /opt/program/pytorch_p36.yml 
-RUN apt-get -qq update > /dev/null 2>&1 \
-    && apt-get --qq install -y libsm6 libxext6 libxrender-dev > /dev/null 2>&1
+RUN conda env update -q --file /opt/program/pytorch_p36.yml
+RUN apt-get -qq -y update \
+    && apt-get --qq install -y libsm6 libxext6 libxrender-dev
 COPY ./environment/credentials /root/.aws/credentials
 
 
