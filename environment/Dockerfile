@@ -37,8 +37,10 @@ RUN apt-get update \
     && apt-get install -y libsm6 libxext6 libxrender-dev
 COPY ./environment/pytorch_p36.yml /opt/program/
 RUN conda env update -q --file /opt/program/pytorch_p36.yml
-COPY ./environment/credentials /root/.aws/credentials
 
+# AWS Credentials
+COPY ./environment/aws_creds /root/.aws/credentials
+COPY ./environment/aws_config /root/.aws/config
 
 ENV PYTHONUNBUFFERED=TRUE
 ENV PYTHONDONTWRITEBYTECODE=TRUE
