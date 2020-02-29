@@ -1,0 +1,32 @@
+sudo: required
+branches:
+  only:
+  - master
+  - docker-rework
+services:
+- docker
+env:
+  global:
+  - IMAGE_NAME=675906086666.dkr.ecr.us-west-2.amazonaws.com/planet-snowcover:latest
+  - secure: FLs0oWya43hMJbuoLB5UKHDGYeYGpPhRKmkCfnDIc9PeLHhmS2zB8Sk8vogtlSxquFGnSC6aSOKceK/DOb1jkR/kQxc0rOb7yU11McGEUOrAQk+hXiEArvAwMonjT4kucldY6oWYXFfIp9Nt/FnMD3foe954dqQC2kBIme2OAjxtQVMb4P9uRpxq26CfzfT4SR/cx7AX1pfVbuDVnxS6qVxUZOw4sCT3UP4hpj99B6aWsoBklihwpsQomcU9/Ob3Icxum0h37WdGI1VT2uUJB3gHbOiwAx4ME3aft3eVGFjl+ba52++NOXlCUJoZc6fx81b5HVDRLYj+KSwzi2OiVwYZPaEd989bYG07MPludIPX3td6950q4qkj92JBpddzB83oUtUB6FxUk/TQ7fmHSTZN+xsfPeWwY/dOKDt3JZ8fGTdt1/i8W2d1doOPuOqt6rexfNuzGr2BbVHgkD24CEruICV3ELczoCXru72AcFimnAPI6Kmap/Fmkw+fKe2SbYkAQB/CDK0VIm3A7pYMSiUTHIW8NEVF6cMOoKzXngWK0CUnL7q0HEFMHe8cjsMTgOHqBq6ll/yj04JU+9pjIEPLWHtWctq6eqMn1VGWu+N9e/wBYx8GEggMD29v0yO9sROzdZIwtjYzTP48qJKBCYRFsUM6T/r+I1oP94lSSD0=
+  - secure: B4vRUBdA3nUfcQh0IB1PkDpFaSTFyXp3rjImAobNwFiQY1yqcqNqOSvRRkY2F8PdkKEPsHY2hsK058mFKeiTLHaZoNTRD4urs42wOih3M9RhopRsRNkAIdL/ymvirZPNNRSQAfTipMrlzguZFoiYkPqALNOHn9LT5fSZt40rbkrELSzo9k/GcRdZnk7JCM1HP4VNBv6mNKW6NVHkt+zd+blMVMYv3IQJSAI+5wDRJKrLWiErqYqV/Nzy7ESslBZpUDq4SSfk0yv4GMfgUnw0mEkH34KPpqYrngZDh0Odeuh0+MtVlyaVmfygp3Czqlkoa+WNXc6JB8kt/ygRizLIQBwABmQvyyOk+uUQmNCCjyzy3dBAnd5YFUvh9qOs6MT6u1WYMZKG/wlD8A+NknQ1wmCe1vsOgDJWLBz4YKoiHJ0ILydLrw7qT/QfHy0WjemKL8BMyMwTRl4NMASRLcIvxdHcy8IL6DBehlI7tDn/vncEZokBwb22dFgkxvDPmGf41V+JaunAcIlh3YMxygug+umQb95mTPwgMDWaTAv1jrkQU6mwxGozXw8/pHukSwLO7Uz10AkUKBhjLzcuLkDlfa4OLYxRZzNETL6PupeVz33PYvbM2zdDAYOnf4tBbuQhYg+emXk0OVtdJlezVfZdme7AxoYEFLYCYkKqxwrZEoc=
+before_script:
+- docker pull "$IMAGE_NAME" || true
+script:
+- if test -z "$AWS_ACCESS_KEY_ID"; then echo "AWS ACCESS KEY empty"; fi;
+- if test -z "$AWS_SECRET_ACCESS_KEY"; then echo "AWS SECRET empty"; fi;
+- bash ./environment/create-aws-creds.sh
+- stat ./environment/aws_config
+- docker build --pull --cache-from "$IMAGE_NAME" --tag "$IMAGE_NAME" --file environment/Dockerfile
+  .
+after_script:
+- docker images
+after_success:
+- docker --version
+- pip install --user awscli
+- aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+- aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+- aws configure set default.region us-west-2
+- export PATH=$PATH:$HOME/.local/bin
+- eval $(aws ecr get-login --no-include-email --region us-west-2)
+- docker push "$IMAGE_NAME"
