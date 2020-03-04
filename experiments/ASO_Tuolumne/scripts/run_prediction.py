@@ -77,7 +77,8 @@ def run_prediction(
                 path.join(temp_dir.name, "test_ids.txt"),
             )
 
-    assert path.exists(path.join(temp_dir.name, "test_ids.txt"))
+    
+        assert path.exists(path.join(temp_dir.name, "test_ids.txt"))
 
     prediction_output_loc = path.join(temp_dir.name, config_id)
 
