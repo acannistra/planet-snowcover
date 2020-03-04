@@ -86,7 +86,7 @@ def run_prediction(
     idlist_flag = ""
     if test_only:
         idlist_flag = "--tile_ids {}".format(path.join(temp_dir.name, "test_ids.txt")),
-    if test_only:
+
     predict_command = PREDICT_COMMAND.format(
         rsp=rsp,
         checkpoint=checkpoint,
