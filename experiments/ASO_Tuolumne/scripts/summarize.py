@@ -20,7 +20,7 @@ import shlex
 import click
 import tqdm
 
-sys.path.append("../../model/robosat_pink/")
+sys.path.append("../../../model/robosat_pink/")
 from robosat_pink import datasets
 
 
@@ -174,7 +174,7 @@ def summarize(prediction_path, output_dir, mask_loc, aws_profile, image_search_p
         searchSlug = "_".join(os.path.basename(imagepath)).split("_")[:3]
 
         out, err = Popen(
-            IMG_SEARCH_COMMAND.format(profile = aws_profile, bucket=image_search_path, image = searchSlug)
+            IMG_SEARCH_COMMAND.format(profile = aws_profile, bucket=image_search_path, image = searchSlug),
             shell=True
         ).communicate()
 
