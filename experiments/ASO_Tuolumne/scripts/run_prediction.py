@@ -15,7 +15,7 @@ import tempfile
 
 from glob import glob
 
-PREDICT_COMMAND = "cd {rsp}; ./rsp predict --create_tif --checkpoint {checkpoint} --aws_profile {aws_profile} --config {config} --tile_ids {ids} {outputloc}"
+PREDICT_COMMAND = "cd {rsp}; ./rsp predict --create_tif --checkpoint {checkpoint} --aws_profile {aws_profile} --config {config} {idlist_flag} {outputloc}"
 
 S3_COPY_COMMAND = "aws s3 cp --profile {aws_profile} --recursive {local} {remote}"
 
@@ -77,18 +77,22 @@ def run_prediction(
                 path.join(temp_dir.name, "test_ids.txt"),
             )
 
-    assert path.exists(path.join(temp_dir.name, "test_ids.txt"))
+        assert path.exists(path.join(temp_dir.name, "test_ids.txt"))
 
     prediction_output_loc = path.join(temp_dir.name, config_id)
 
     checkpoint = path.join(model_output_dir, checkpoint_name) if other_checkpoint is None else other_checkpoint
 
+    idlist_flag = ""
+    if test_only:
+        idlist_flag = "--tile_ids {}".format(path.join(temp_dir.name, "test_ids.txt")),
+    if test_only:
     predict_command = PREDICT_COMMAND.format(
         rsp=rsp,
         checkpoint=checkpoint,
         aws_profile=aws_profile,
         config=path.abspath(config),
-        ids=path.join(temp_dir.name, "test_ids.txt"),
+        idlist_flag=idlist_flag,
         outputloc=prediction_output_loc,
     )
 
