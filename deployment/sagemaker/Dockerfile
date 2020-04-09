@@ -35,12 +35,12 @@ ENV PATH /root/anaconda3/bin:$PATH
 # Install dependancies
 RUN apt-get update \
     && apt-get install -y libsm6 libxext6 libxrender-dev
-COPY ./environment/pytorch_p36.yml /opt/program/
+COPY ./deployment/environment/pytorch_p36.yml /opt/program/
 RUN conda env update -q --file /opt/program/pytorch_p36.yml
 
 # AWS Credentials
-COPY ./environment/aws_creds /root/.aws/credentials
-COPY ./environment/aws_config /root/.aws/config
+COPY ./deployment/environment/aws_creds /root/.aws/credentials
+COPY ./deployment/environment/aws_config /root/.aws/config
 
 ENV PYTHONUNBUFFERED=TRUE
 ENV PYTHONDONTWRITEBYTECODE=TRUE
@@ -53,7 +53,7 @@ ENV PATH="/opt/conda/envs/pytorch_p36/bin:${PATH}"
 ENV PATH="/opt/program:${PATH}"
 
 # Set up the program in the image
-COPY ./environment/start.sh /opt/program
+COPY ./deployment/sagemaker/start.sh /opt/program
 COPY ./model /opt/program
 WORKDIR /opt/program
 ENTRYPOINT ["/bin/bash", "start.sh"]
