@@ -15,7 +15,7 @@ import tempfile
 
 from glob import glob
 
-PREDICT_COMMAND = "cd {rsp}; ./rsp predict --create_tif --checkpoint {checkpoint} --aws_profile {aws_profile} --config {config} {idlist_flag} {outputloc}"
+PREDICT_COMMAND = "cd {rsp}; ./rsp predict --create_tif --checkpoint {checkpoint} --aws_profile {aws_profile} --buffer --config {config} {idlist_flag} {outputloc}"
 
 S3_COPY_COMMAND = "aws s3 cp --profile {aws_profile} --recursive {local} {remote}"
 
