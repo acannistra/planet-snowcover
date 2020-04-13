@@ -1,0 +1,58 @@
+# ASO_3M_SD_USCAJW_20180423
+# Checkpoint: planet-snowcover-models/ASO-3M-SD-USCASJ-20180601-Step2-2020-01-21-21-37-55-126/checkpoint-00050-of-00050.pth
+[dataset]
+  # The slippy map dataset's base directory.
+  aws_profile = "esip"
+  image_bucket = "planet-snowcover-imagery"
+  # regex defines each slippy-map directory, for buckets with many
+  imagery_directory_regex = '2018042\d_.*_tiled'
+  mask_bucket = "planet-snowcover-snow/ASO_3M_SD_USCAJW_20180423"
+  mask_directory_regex = "ASO_3M_SD_USCAJW_20180423-MASK_02-COG$" # $ = end of string = only dirs (no .tif)
+  train_percent = 0.7
+
+[[classes]]
+  name = "snow"
+  color = "white"
+
+# Indicate which dataset sub-directory and bands to take as input.
+# You could so, add several channels blocks to compose your input Tensor. Orders are meaningful.
+[[channels]]
+  bands = [1, 2, 3, 4]
+  mean  = [0.485, 0.456, 0.406, 1.0]
+  std   = [0.229, 0.224, 0.225, 1.0]
+
+# See ASO_3M_SD_USCASJ_20180601-Step2.toml for creation step.
+[checkpoint]
+  path = "s3://planet-snowcover-models/ASO-3M-SD-USCASJ-20180601-Step2-2020-01-21-21-37-55-126/checkpoint-00050-of-00050.pth"
+
+
+[model]
+  # Model name.
+  name = "albunet"
+
+  # Encoder model name.
+  encoder = "resnet50"
+
+  # Use, or not, ImageNet weights pretraining.
+  pretrained = true
+
+  # Loss function name.
+  loss = "lovasz"
+
+  # Batch size for training.
+  batch_size = 7
+
+  # tile side size in pixels.
+  tile_size = 512
+
+  # Total number of epochs to train for.
+  epochs = 50
+
+  # Learning rate for the optimizer.
+  lr = 0.000025
+
+  # Data augmentation, Flip or Rotate probability.
+  data_augmentation = 0.75
+
+  # Weight decay l2 penalty for the optimizer.
+  decay = 0.0
