@@ -18,7 +18,7 @@ if [ "$1" == "train" ]; then
     ls /opt/ml/input/data/config/*.toml
     cd robosat_pink/
     ./rsp train --config /opt/ml/input/data/config/*.toml /opt/ml/model/
-elif [ "$1" == "lab" ]; then 
+elif [ "$1" == "lab" ]; then
     echo "Starting Jupyterlab...(port:8888)"
-    jupyter lab --allow-root --ip=0.0.0.0 
+    jupyter lab --allow-root --ip=0.0.0.0
 fi
