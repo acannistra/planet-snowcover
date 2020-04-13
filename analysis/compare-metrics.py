@@ -48,7 +48,7 @@ def plot_performance(performance, dir, labels=None):
     fig, ax = plt.subplots(1, len(METRICS), figsize=(4.67 * len(METRICS), 4.5))
     axes = ax.reshape(-1)
     for m_i, metric in enumerate(METRICS):
-        data = [performance[dt][m_i] for dt in dataTypes]
+        data = [performance[dt][metric] for dt in dataTypes]
         if labels:
             _barplot(data, labels, axes[m_i])
         else:
@@ -76,7 +76,15 @@ def compute_performance(true, pred, nodata = -9999):
 
     kappa = metrics.cohen_kappa_score(true, pred)
 
-    return(performance[:3] + (accuracy, kappa,))
+    result = {
+        "Precision": performance[0],
+        "Recall" : performance[1],
+        "F-Score": performance[2],
+        "Balanced Accuracy": accuracy,
+        "Kappa" : kappa
+    }
+
+    return result
 
 
 @click.command()
@@ -98,7 +106,7 @@ def compare_all(true, preds, out_directory, gdal, data_region, epsg, plot_labels
     os.makedirs(workdir, exist_ok=True)
 
     # reproject + copy all files to work out_directory
-    shutil.copy(data_region, workdir)
+    shutil.copy(data_region, os.path.join(workdir, "data_region.geojson"))
 
     filenames = []
     for file in workfiles:
@@ -115,7 +123,7 @@ def compare_all(true, preds, out_directory, gdal, data_region, epsg, plot_labels
     merge_files = " ".join(filenames)
     command = 'bash -c "source activate {}; \
                 cd {}; \
-                gdal_merge.py -separate -o {} \
+                gdal_merge.py -separate -co COMPRESS=LZW -o {} \
                 {}"'.format(gdal, workdir, merged_out_root+".tif", merge_files)
     print(command)
     a = subprocess.run(command, shell=True)
@@ -126,7 +134,7 @@ def compare_all(true, preds, out_directory, gdal, data_region, epsg, plot_labels
     command = 'bash -c "source activate {}; \
                         cd {}; \
                         gdalwarp -cutline {} -crop_to_cutline \
-                        -co COMPRESS=LZW -co BIGTIFF=YES -dstnodata -9999 {} {}"'.format(gdal, workdir, data_region, merged_out_root+".tif", merged_out_root+"_clipped.tif")
+                        -co COMPRESS=LZW -co BIGTIFF=YES -dstnodata -9999 {} {}"'.format(gdal, workdir, "data_region.geojson", merged_out_root+".tif", merged_out_root+"_clipped.tif")
     print(command)
     a = subprocess.run(command,
                         shell=True)
