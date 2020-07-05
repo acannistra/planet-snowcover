@@ -34,8 +34,15 @@ variable "instance_ami" {
   description = "AMI for aws EC2 instance"
   default = "ami-001083bce630cc561"
 }
-
+variable "ec2_default_policy_arn"{
+  description = "default policy to attach to EC2 role (via ARN)."
+  default = "arn:aws:iam::aws:policy/PowerUserAccess"
+}
 variable "environment_tag" {
   description = "Environment tag"
   default = "Production"
+}
+variable "DOCKERHUB_IMAGE" {
+  description = "Dockerhub location of main toolset image for dev + sage."
+  default = "tonycannistra/planet-snowcover:latest"
 }

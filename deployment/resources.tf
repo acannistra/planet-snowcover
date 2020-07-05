@@ -6,6 +6,14 @@ provider "aws" {
 }
 
 #resources
+
+## ECR
+resource "aws_ecr_repository" "ps_ecr" {
+  name = "ps-images"
+  image_tag_mutability = "MUTABLE"
+}
+
+## EC2
 resource "aws_vpc" "vpc" {
   cidr_block = "${var.cidr_vpc}"
   enable_dns_support   = true
@@ -87,12 +95,47 @@ resource "aws_key_pair" "ec2key" {
   public_key = "${file(var.public_key)}"
 }
 
-resource "aws_instance" "testInstance" {
+## Create acess role for EC2 instance.
+resource "aws_iam_role" "EC2_access_role" {
+  name = "EC2_access_role"
+
+  assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "Service": "ec2.amazonaws.com"
+      },
+      "Effect": "Allow",
+      "Sid": ""
+    }
+  ]
+}
+EOF
+}
+
+# Attach policy to above role.
+resource "aws_iam_role_policy_attachment" "ec2_enable" {
+  role = "${aws_iam_role.EC2_access_role.name}"
+  policy_arn = "${var.ec2_default_policy_arn}"
+}
+
+# Create instance profile for EC2 instance w/ above  role
+resource "aws_iam_instance_profile" "ec2_instance_profile" {
+  name = "main_ec2_profile"
+  role = "${aws_iam_role.EC2_access_role.name}"
+}
+
+# create instance
+resource "aws_instance" "mainDevInstance" {
   ami           = "${var.instance_ami}"
   instance_type = "${var.instance_type}"
   subnet_id = "${aws_subnet.subnet_public.id}"
   vpc_security_group_ids = ["${aws_security_group.sg_22_80.id}"]
   key_name = "${aws_key_pair.ec2key.key_name}"
+  iam_instance_profile = "${aws_iam_instance_profile.ec2_instance_profile.name}"
 
   tags = {
 		Environment = "${var.environment_tag}"
@@ -106,8 +149,9 @@ resource "aws_instance" "testInstance" {
 
   provisioner "remote-exec" {
     inline = [
-      "sudo $(aws ecr --profile ${var.aws_profile} get-login --no-include-email)",
-			"sudo docker pull 675906086666.dkr.ecr.us-west-2.amazonaws.com/planet-snowcover",
+      "sudo docker pull ${var.DOCKERHUB_IMAGE}",
+			"sudo docker tag ${var.DOCKERHUB_IMAGE} ${aws_ecr_repository.ps_ecr.repository_url}:latest",
+      "sudo docker push ${aws_ecr_repository.ps_ecr.repository_url}:latest"
     ]
   }
 
@@ -119,7 +163,7 @@ resource "aws_instance" "testInstance" {
   }
 }
 
-  resource "aws_iam_role" "sagemaker_role" {
+resource "aws_iam_role" "sagemaker_role" {
   name = "sagemaker-role"
 
   assume_role_policy = <<EOF
