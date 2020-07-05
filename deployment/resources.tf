@@ -76,6 +76,12 @@ resource "aws_security_group" "sg_22_80" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+  ingress {
+    from_port = 8888
+    to_port = 8888
+    protocol = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
   egress {
     from_port   = 0
@@ -146,10 +152,12 @@ resource "aws_instance" "mainDevInstance" {
     destination = "/home/ubuntu/"
   }
 
+  # uploads docker image in DockerHub to newly-created ECR
   provisioner "remote-exec" {
     inline = [
       "sudo docker pull ${var.DOCKERHUB_IMAGE}",
       "sudo docker tag ${var.DOCKERHUB_IMAGE} ${aws_ecr_repository.ps_ecr.repository_url}:latest",
+      "sudo $(aws ecr get-login --no-include-email)",
       "sudo docker push ${aws_ecr_repository.ps_ecr.repository_url}:latest",
     ]
   }
@@ -161,6 +169,8 @@ resource "aws_instance" "mainDevInstance" {
     private_key = file(var.private_key)
   }
 }
+
+## Sagemaker
 
 resource "aws_iam_role" "sagemaker_role" {
   name = "sagemaker-role"
@@ -215,4 +225,3 @@ resource "aws_iam_role_policy_attachment" "attach-sage-s3access" {
   role       = aws_iam_role.sagemaker_role.name
   policy_arn = aws_iam_policy.s3-access-policy.arn
 }
-

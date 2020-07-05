@@ -1,6 +1,6 @@
 # @@@@@@@@@@ Important Variables
 variable "aws_profile" {
-  default = "snowmap"
+  default = "esip-admin"
 }
 
 variable "public_key" {
@@ -9,7 +9,7 @@ variable "public_key" {
 }
 
 variable "private_key" {
-  default = "~/.ssh/snowmap.pem"
+  default = "~/.ssh/snowmap"
 }
 
 # You can leave these alone.
@@ -56,4 +56,3 @@ variable "DOCKERHUB_IMAGE" {
   description = "Dockerhub location of main toolset image for dev + sage."
   default     = "tonycannistra/planet-snowcover:latest"
 }
-

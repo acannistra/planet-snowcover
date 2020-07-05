@@ -1,0 +1,105 @@
+digraph {
+	compound = "true"
+	newrank = "true"
+	subgraph "root" {
+		"[root] aws_ecr_repository.ps_ecr" [label = "aws_ecr_repository.ps_ecr", shape = "box"]
+		"[root] aws_iam_instance_profile.ec2_instance_profile" [label = "aws_iam_instance_profile.ec2_instance_profile", shape = "box"]
+		"[root] aws_iam_policy.s3-access-policy" [label = "aws_iam_policy.s3-access-policy", shape = "box"]
+		"[root] aws_iam_role.EC2_access_role" [label = "aws_iam_role.EC2_access_role", shape = "box"]
+		"[root] aws_iam_role.sagemaker_role" [label = "aws_iam_role.sagemaker_role", shape = "box"]
+		"[root] aws_iam_role_policy_attachment.attach-sage-fullaccess" [label = "aws_iam_role_policy_attachment.attach-sage-fullaccess", shape = "box"]
+		"[root] aws_iam_role_policy_attachment.attach-sage-s3access" [label = "aws_iam_role_policy_attachment.attach-sage-s3access", shape = "box"]
+		"[root] aws_iam_role_policy_attachment.ec2_enable" [label = "aws_iam_role_policy_attachment.ec2_enable", shape = "box"]
+		"[root] aws_instance.mainDevInstance" [label = "aws_instance.mainDevInstance", shape = "box"]
+		"[root] aws_internet_gateway.igw" [label = "aws_internet_gateway.igw", shape = "box"]
+		"[root] aws_key_pair.ec2key" [label = "aws_key_pair.ec2key", shape = "box"]
+		"[root] aws_route_table.rtb_public" [label = "aws_route_table.rtb_public", shape = "box"]
+		"[root] aws_route_table_association.rta_subnet_public" [label = "aws_route_table_association.rta_subnet_public", shape = "box"]
+		"[root] aws_security_group.sg_22_80" [label = "aws_security_group.sg_22_80", shape = "box"]
+		"[root] aws_subnet.subnet_public" [label = "aws_subnet.subnet_public", shape = "box"]
+		"[root] aws_vpc.vpc" [label = "aws_vpc.vpc", shape = "box"]
+		"[root] output.SSH_HERE" [label = "output.SSH_HERE", shape = "note"]
+		"[root] output.public_instance_ip" [label = "output.public_instance_ip", shape = "note"]
+		"[root] output.public_route_table_ids" [label = "output.public_route_table_ids", shape = "note"]
+		"[root] output.public_subnets" [label = "output.public_subnets", shape = "note"]
+		"[root] output.sagemaker_role_arn" [label = "output.sagemaker_role_arn", shape = "note"]
+		"[root] output.vpc_id" [label = "output.vpc_id", shape = "note"]
+		"[root] provider.aws" [label = "provider.aws", shape = "diamond"]
+		"[root] var.DOCKERHUB_IMAGE" [label = "var.DOCKERHUB_IMAGE", shape = "note"]
+		"[root] var.availability_zone" [label = "var.availability_zone", shape = "note"]
+		"[root] var.aws_profile" [label = "var.aws_profile", shape = "note"]
+		"[root] var.cidr_subnet" [label = "var.cidr_subnet", shape = "note"]
+		"[root] var.cidr_vpc" [label = "var.cidr_vpc", shape = "note"]
+		"[root] var.ec2_default_policy_arn" [label = "var.ec2_default_policy_arn", shape = "note"]
+		"[root] var.environment_tag" [label = "var.environment_tag", shape = "note"]
+		"[root] var.instance_ami" [label = "var.instance_ami", shape = "note"]
+		"[root] var.instance_type" [label = "var.instance_type", shape = "note"]
+		"[root] var.private_key" [label = "var.private_key", shape = "note"]
+		"[root] var.public_key" [label = "var.public_key", shape = "note"]
+		"[root] var.region" [label = "var.region", shape = "note"]
+		"[root] aws_ecr_repository.ps_ecr" -> "[root] provider.aws"
+		"[root] aws_iam_instance_profile.ec2_instance_profile" -> "[root] aws_iam_role.EC2_access_role"
+		"[root] aws_iam_policy.s3-access-policy" -> "[root] provider.aws"
+		"[root] aws_iam_role.EC2_access_role" -> "[root] provider.aws"
+		"[root] aws_iam_role.sagemaker_role" -> "[root] provider.aws"
+		"[root] aws_iam_role_policy_attachment.attach-sage-fullaccess" -> "[root] aws_iam_role.sagemaker_role"
+		"[root] aws_iam_role_policy_attachment.attach-sage-s3access" -> "[root] aws_iam_policy.s3-access-policy"
+		"[root] aws_iam_role_policy_attachment.attach-sage-s3access" -> "[root] aws_iam_role.sagemaker_role"
+		"[root] aws_iam_role_policy_attachment.ec2_enable" -> "[root] aws_iam_role.EC2_access_role"
+		"[root] aws_iam_role_policy_attachment.ec2_enable" -> "[root] var.ec2_default_policy_arn"
+		"[root] aws_instance.mainDevInstance" -> "[root] aws_ecr_repository.ps_ecr"
+		"[root] aws_instance.mainDevInstance" -> "[root] aws_iam_instance_profile.ec2_instance_profile"
+		"[root] aws_instance.mainDevInstance" -> "[root] aws_key_pair.ec2key"
+		"[root] aws_instance.mainDevInstance" -> "[root] aws_security_group.sg_22_80"
+		"[root] aws_instance.mainDevInstance" -> "[root] aws_subnet.subnet_public"
+		"[root] aws_instance.mainDevInstance" -> "[root] provisioner.file"
+		"[root] aws_instance.mainDevInstance" -> "[root] provisioner.remote-exec"
+		"[root] aws_instance.mainDevInstance" -> "[root] var.DOCKERHUB_IMAGE"
+		"[root] aws_instance.mainDevInstance" -> "[root] var.instance_ami"
+		"[root] aws_instance.mainDevInstance" -> "[root] var.instance_type"
+		"[root] aws_instance.mainDevInstance" -> "[root] var.private_key"
+		"[root] aws_internet_gateway.igw" -> "[root] aws_vpc.vpc"
+		"[root] aws_key_pair.ec2key" -> "[root] provider.aws"
+		"[root] aws_key_pair.ec2key" -> "[root] var.public_key"
+		"[root] aws_route_table.rtb_public" -> "[root] aws_internet_gateway.igw"
+		"[root] aws_route_table_association.rta_subnet_public" -> "[root] aws_route_table.rtb_public"
+		"[root] aws_route_table_association.rta_subnet_public" -> "[root] aws_subnet.subnet_public"
+		"[root] aws_security_group.sg_22_80" -> "[root] aws_vpc.vpc"
+		"[root] aws_subnet.subnet_public" -> "[root] aws_vpc.vpc"
+		"[root] aws_subnet.subnet_public" -> "[root] var.availability_zone"
+		"[root] aws_subnet.subnet_public" -> "[root] var.cidr_subnet"
+		"[root] aws_vpc.vpc" -> "[root] provider.aws"
+		"[root] aws_vpc.vpc" -> "[root] var.cidr_vpc"
+		"[root] aws_vpc.vpc" -> "[root] var.environment_tag"
+		"[root] meta.count-boundary (EachMode fixup)" -> "[root] aws_iam_role_policy_attachment.attach-sage-fullaccess"
+		"[root] meta.count-boundary (EachMode fixup)" -> "[root] aws_iam_role_policy_attachment.attach-sage-s3access"
+		"[root] meta.count-boundary (EachMode fixup)" -> "[root] aws_iam_role_policy_attachment.ec2_enable"
+		"[root] meta.count-boundary (EachMode fixup)" -> "[root] aws_route_table_association.rta_subnet_public"
+		"[root] meta.count-boundary (EachMode fixup)" -> "[root] output.SSH_HERE"
+		"[root] meta.count-boundary (EachMode fixup)" -> "[root] output.public_instance_ip"
+		"[root] meta.count-boundary (EachMode fixup)" -> "[root] output.public_route_table_ids"
+		"[root] meta.count-boundary (EachMode fixup)" -> "[root] output.public_subnets"
+		"[root] meta.count-boundary (EachMode fixup)" -> "[root] output.sagemaker_role_arn"
+		"[root] meta.count-boundary (EachMode fixup)" -> "[root] output.vpc_id"
+		"[root] output.SSH_HERE" -> "[root] aws_instance.mainDevInstance"
+		"[root] output.public_instance_ip" -> "[root] aws_instance.mainDevInstance"
+		"[root] output.public_route_table_ids" -> "[root] aws_route_table.rtb_public"
+		"[root] output.public_subnets" -> "[root] aws_subnet.subnet_public"
+		"[root] output.sagemaker_role_arn" -> "[root] aws_iam_role.sagemaker_role"
+		"[root] output.vpc_id" -> "[root] aws_vpc.vpc"
+		"[root] provider.aws (close)" -> "[root] aws_iam_role_policy_attachment.attach-sage-fullaccess"
+		"[root] provider.aws (close)" -> "[root] aws_iam_role_policy_attachment.attach-sage-s3access"
+		"[root] provider.aws (close)" -> "[root] aws_iam_role_policy_attachment.ec2_enable"
+		"[root] provider.aws (close)" -> "[root] aws_instance.mainDevInstance"
+		"[root] provider.aws (close)" -> "[root] aws_route_table_association.rta_subnet_public"
+		"[root] provider.aws" -> "[root] var.aws_profile"
+		"[root] provider.aws" -> "[root] var.region"
+		"[root] provisioner.file (close)" -> "[root] aws_instance.mainDevInstance"
+		"[root] provisioner.remote-exec (close)" -> "[root] aws_instance.mainDevInstance"
+		"[root] root" -> "[root] meta.count-boundary (EachMode fixup)"
+		"[root] root" -> "[root] provider.aws (close)"
+		"[root] root" -> "[root] provisioner.file (close)"
+		"[root] root" -> "[root] provisioner.remote-exec (close)"
+	}
+}
+
