@@ -122,6 +122,4 @@ The most important piece of information to note here is **`public_instance_ip`**
 
 ## Accessing Resources + Deploying Jupyter Lab
 
-To actually do some work on these computers, we need to get a little familiar with the `ssh` command line tool. Basically, `ssh` allows you to login to a remote computer (in this case, a cloud computer run by AWS) and perform some tasks, as if you were sitting on your local command line.
-
 ***TODO: Finish this section***
