@@ -155,6 +155,7 @@ resource "aws_instance" "mainDevInstance" {
   # uploads docker image in DockerHub to newly-created ECR
   provisioner "remote-exec" {
     inline = [
+      "export AWS_DEFAULT_REGION=${var.region}",
       "sudo docker pull ${var.DOCKERHUB_IMAGE}",
       "sudo docker tag ${var.DOCKERHUB_IMAGE} ${aws_ecr_repository.ps_ecr.repository_url}:latest",
       "sudo $(aws ecr get-login --no-include-email)",

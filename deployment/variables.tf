@@ -1,6 +1,6 @@
 # @@@@@@@@@@ Important Variables
 variable "aws_profile" {
-  default = "esip-admin"
+  default = "esip_deploy"
 }
 
 variable "public_key" {
