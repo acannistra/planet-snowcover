@@ -7,18 +7,19 @@ services:
 - docker
 env:
   global:
-  - IMAGE_NAME=675906086666.dkr.ecr.us-west-2.amazonaws.com/planet-snowcover:latest
-  - secure: FLs0oWya43hMJbuoLB5UKHDGYeYGpPhRKmkCfnDIc9PeLHhmS2zB8Sk8vogtlSxquFGnSC6aSOKceK/DOb1jkR/kQxc0rOb7yU11McGEUOrAQk+hXiEArvAwMonjT4kucldY6oWYXFfIp9Nt/FnMD3foe954dqQC2kBIme2OAjxtQVMb4P9uRpxq26CfzfT4SR/cx7AX1pfVbuDVnxS6qVxUZOw4sCT3UP4hpj99B6aWsoBklihwpsQomcU9/Ob3Icxum0h37WdGI1VT2uUJB3gHbOiwAx4ME3aft3eVGFjl+ba52++NOXlCUJoZc6fx81b5HVDRLYj+KSwzi2OiVwYZPaEd989bYG07MPludIPX3td6950q4qkj92JBpddzB83oUtUB6FxUk/TQ7fmHSTZN+xsfPeWwY/dOKDt3JZ8fGTdt1/i8W2d1doOPuOqt6rexfNuzGr2BbVHgkD24CEruICV3ELczoCXru72AcFimnAPI6Kmap/Fmkw+fKe2SbYkAQB/CDK0VIm3A7pYMSiUTHIW8NEVF6cMOoKzXngWK0CUnL7q0HEFMHe8cjsMTgOHqBq6ll/yj04JU+9pjIEPLWHtWctq6eqMn1VGWu+N9e/wBYx8GEggMD29v0yO9sROzdZIwtjYzTP48qJKBCYRFsUM6T/r+I1oP94lSSD0=
-  - secure: B4vRUBdA3nUfcQh0IB1PkDpFaSTFyXp3rjImAobNwFiQY1yqcqNqOSvRRkY2F8PdkKEPsHY2hsK058mFKeiTLHaZoNTRD4urs42wOih3M9RhopRsRNkAIdL/ymvirZPNNRSQAfTipMrlzguZFoiYkPqALNOHn9LT5fSZt40rbkrELSzo9k/GcRdZnk7JCM1HP4VNBv6mNKW6NVHkt+zd+blMVMYv3IQJSAI+5wDRJKrLWiErqYqV/Nzy7ESslBZpUDq4SSfk0yv4GMfgUnw0mEkH34KPpqYrngZDh0Odeuh0+MtVlyaVmfygp3Czqlkoa+WNXc6JB8kt/ygRizLIQBwABmQvyyOk+uUQmNCCjyzy3dBAnd5YFUvh9qOs6MT6u1WYMZKG/wlD8A+NknQ1wmCe1vsOgDJWLBz4YKoiHJ0ILydLrw7qT/QfHy0WjemKL8BMyMwTRl4NMASRLcIvxdHcy8IL6DBehlI7tDn/vncEZokBwb22dFgkxvDPmGf41V+JaunAcIlh3YMxygug+umQb95mTPwgMDWaTAv1jrkQU6mwxGozXw8/pHukSwLO7Uz10AkUKBhjLzcuLkDlfa4OLYxRZzNETL6PupeVz33PYvbM2zdDAYOnf4tBbuQhYg+emXk0OVtdJlezVfZdme7AxoYEFLYCYkKqxwrZEoc=
+  - TAG_SLUG_PR=$([ "$TRAVIS_PULL_REQUEST" != "false" ] && echo "$TRAVIS_PULL_REQUEST_BRANCH" || echo "latest")
+  - IMAGE_NAME="675906086666.dkr.ecr.us-west-2.amazonaws.com/planet-snowcover:$TAG_SLUG_PR"
+  - DOCKERHUB_IMAGE_NAME="tonycannistra/planet-snowcover:$TAG_SLUG_PR"
+  - secure: T/E2WhjWS13M2ruqpRJ5pSN46eJB4JSRwoXOcI88xFLKgqvVf/uf6cemOPzHz7WCF33usYNGtfkRXLTlC+i4Pt4uWLCCqDUgfsXj4aKvsV3HVMxcp9ONuozKaDzq8PGInRbCOKUWvJKlLq34WiN8J59lnBYWOcxvlWzbSxhvlHmPPj7xNs7rkSNp+YeOQ0w/2cklxMMFf2EkteJfK3ouf39UntYfnZyRvJNu7zGtePryZsllwMDJsOM1wc6SKB9IpTjdLsbTrj1SLz2RmZk1EnZNn/onjtshsYmTRF3OZHCMHiHPfxtj/xMUQXiUAU1T7eLtgGCXFuMZ3fQ4RKX/a5iHiKedlvjVngpIpJ5xPmXtn657arrJzQMUVCkh8PSDFyWe6vbimAn8KkckLH/dhBiW61YX56OlzqYsayOBonAEuUV7d/Tu9fX8cdCDwzaq56wd1/qo4k0DN7/2mYTfOspv/NKTQy2zV8XDxTHq3a5UeIgRd3t3vbZIrICj0e1FaPovOJId0vNaZGv6plU1WAWvm+Djw7DlOWWglY+BW5XvAW6di+Q4KIAcJVgzGBr4W0cBp3TUOWBkuutxIYHgYJFFlrZfHQafpDLsYqgQKjLwSIZUikU+/BxL17+BqFtLO/rqG0hf+oWYcTUZTBg3FfM6q4lYog2eKj/oTtcPenk=
+  - secure: K7HZ/d4OkXWfPKOsmhEn347K8nxKkRuQsNgZ5rKZRT3tXwrfsPQGibgYYIEtbreVGYUoTwP0PcD4a4adiatNpAayzG3uG4+w62eZyyvM8bR2a/9yi6e4YjYHv5mHszVpnD54RGLg8kvtD4/hRoMt64KqfaGalTq3HqLUpUnRYSu9QCVqUEgSPfZif6gg4DpysInAoZ8SbvTMpL5E05DG7HBiYSsnOpVry/z/BtDV8bJG4S5ba5OouzmgI9Ln9TPntEeSupOpemB/D4X5LcW6TEcLU2ouFL9G1qUbGHdWPgs0faFwuUTDFzUE5KxyvOYs2JIlqQLFIwLcZ1ZkueZfKts0Wm2jVXya5KrZLwc7L0yXjBBvDL6bqS98a0u/+zrbdNV6VeToOZLH0K0wgtWhUggXtd22XXhR83WFewSJymKN/nApeH3pQuKPjGkQWip9G1d4C/KL5jB9L5Aj3Z+uOZjS0MOTq11E9MbbYESMQXRJYVM6B/vXm6Zbrq3dCVJIdNMyw5YrdpkA4PUT1baoCFlx6PDkAZBU4thhT+7Yu4VUXK/0xC/tNheizknDcQvyKNREY6Ae2A2KBDiEXlsKhJzi4lSoqytf0tjHWM6NS0X8P24zKjLtQigiim8iyLBMsHlm23rd1YhiCabkEC7fSzEHIzJ6U3QJheZM42IYu6c=
+  - secure: DueBtc+i04vk/P++FhMZph3OYUXSnTCnVf/ACaMc1T3BfBcP69QYbPOCgct/4CwnhZNLtOuXnJA+G7QEIGoZTWv3hxtAhTijrDWY5VyiTNjoiLQEbLIEklt0FTeSjLqOvm7i2TPEuSV7nYLLVsZLZaVAa4fT5kFxqx6zAHCCZ4gbQ7YE+pOmdLCgr1oTM9TW0FpBCUQHaaRlByVv1S2AfaBx3Ob3FVRGpq8MFbmVrZ7irpLlPJ4okpxQ9WRJdY5runlRloXUAtpEYrEpxDP/sB1m1Lww5fB/X9F+IXlmppqA1gLkycUZrqug9weTw9/+ra71yGskdOgZiaqufkLn9fPx7v03SPm6AE9znu+OL9fdNpjx8Pc9TJ55TwSSd68kGTBFJt9KWo7tqxjEorouRzDf/x8zz+R8mF25vjDmybHWk1aXGeeDmNVgp33tBYxjq9an77riNEtUZZpjq4cZ8wyu4jR6A8DgG+eefdj4GUnYTR7mc8P99SFGdpXey40/swYWrHQkjPKLnnNG+erwRADWCH/8KI0QX7M4PrSw0JaRvrpc0+mzTi8ArD1jGm0P/scFLnWck39ja4rKu91iJbiaChv2y4G14SmKUG5IC2RaCC3I6IM1G8wVo2YVvEQStOU97FsKDKoF/i1597f1HtkCXuGgKH33N/gQRsl3DPg=
+  - secure: DEhA2alHfrqaF7Cfzkj1G/0PmNQsYzh/i7hAp0z6667aC3qqHWi51BSa76nheJEr8LoZ+wC4/5Nu7CyrELYdTkpP9uTeSp5viPuUeuuMknk0o1FFJ/hdb2BKQzrilIT5Nk8b+PF8Pj0wtFBsz1ztmhoE+kJ1hKCeMSIG380nSGGs5AHJaF/y6xysOlv/UIdicVCNy2aME41wqUnvrM7mTnPFsxPZpS/mGYUTW8ejwaway7xWg/V6HrDKe5drnNbi+OzsBag+YW2aLfU/ucvn5kJZLWz56eKox0zrxGFPNKX7UxCMTRD4WNrRQF5iSZIaEFpi2JOiUGFeC/rVgHBZt/t9PtCQC6in2aJjAnL7gy/nnBAF3sYyRC+IoH6X+10DjpRWgDIU68W1pfNMlUIMA5ftJM6H4GeGx7mwiQIyCbWCvNITZpL86+9Re9k6Rms65wm33xqeVlXppQTqlhLmUVtsFdXsPudvFMl4NjzAiirtO37FJWbWnHPnmjGHTrUvp14GhDM3ynpsjKlFXg+U6aPSLumq6Wrt/FZT9ZiKyx9g7nT2Md8s16xJusQLmwRmf5zDTUV4zeDqFmnHWTHUyLEanisve+THXrl5Nnz9Hx21UBq6NZDRgNaFHmA6YeCyBbE5eekXxg3fZ4WwqCnIEmXLJq9fZ5s/abwrPlQwYJU=
 before_script:
 - docker pull "$IMAGE_NAME" || true
 script:
 - if test -z "$AWS_ACCESS_KEY_ID"; then echo "AWS ACCESS KEY empty"; fi;
 - if test -z "$AWS_SECRET_ACCESS_KEY"; then echo "AWS SECRET empty"; fi;
-- bash ./environment/create-aws-creds.sh
-- stat ./environment/aws_config
-- docker build --pull --cache-from "$IMAGE_NAME" --tag "$IMAGE_NAME" --file environment/Dockerfile
-  .
+- docker build --pull --cache-from "$IMAGE_NAME" --tag "$IMAGE_NAME" --file environment/Dockerfile .
 after_script:
 - docker images
 after_success:
@@ -30,3 +31,7 @@ after_success:
 - export PATH=$PATH:$HOME/.local/bin
 - eval $(aws ecr get-login --no-include-email --region us-west-2)
 - docker push "$IMAGE_NAME"
+- docker logout
+- docker login --username=${DOCKERHUB_USER} --password=${DOCKERHUB_PASS}
+- docker tag $IMAGE_NAME $DOCKERHUB_IMAGE_NAME
+- docker push "$DOCKERHUB_IMAGE_NAME"

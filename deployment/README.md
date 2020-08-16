@@ -18,9 +18,11 @@ Before we deploy any infrastructure, we need to set up your local environment so
 
 ## 🔐 Configuring AWS + SSH
 
-There's some preparation that we need to do to be able to deploy our infrastructure. You'll need to have **configured AWS credentials** and **configured an SSH key**. These steps will detail how to do that.
+There's some preparation that we need to do to be able to deploy our infrastructure. You'll need to have **configured AWS credentials** with correct permissions and **configured an SSH key**. These steps will detail how to do that.
 
-### **Configure AWS**:
+### **Configure AWS (Personal Account)**
+
+Follow these steps if you've never created an AWS account before or if you are a qualified administrator of an AWS account.
 
 1. **Sign up for AWS.** To perform this configuration, be sure you have an AWS account. If you don't, [go here](https://aws.amazon.com/premiumsupport/knowledge-center/create-and-activate-aws-account/) and follow the instructions.
 1. **Install the AWS Command Line Tools**. For this tutorial, you'll need to install the AWS CLI tools. If you have `pip` installed, run the following command to install them:
@@ -29,6 +31,14 @@ There's some preparation that we need to do to be able to deploy our infrastruct
 
 3. **Create AWS Credentials**: To sign in to AWS from the CLI, you need an *AccessKey* and *SecretKey* pair. Follow the instructions listed on AWS's documentation [here](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html) to configure access keys. ⚠️**Note**⚠️ that you can only download your secret key once –– if you misplace it, you'll need to create another.
 3. **Sign In with your AWS Credentials**. Once you've installed the AWS cli and configured keys in the AWS console, run `aws configure` to configure the CLI with your credentials.
+
+### **Configure AWS (Group/Shared Account)**
+
+Follow these steps if you're a delegated IAM user of a shared AWS account.
+
+1. **Ask your administrator to update your account policy**. Deploying the resources required to run the code in this project requires a somewhat broad set of permissions. In particular, we require access to the following services: EC2, SageMaker, and S3, as well as some specific IAM permissions. To facilitate this, we provide [`aws_userpolicy.json`](./aws_userpolicy.json), which contains a broad set of permissions that will allow for infrastructure deployment. Please send this policy to your administrator and ask for it to be attached to your account.
+1. **Follow steps 2-4 Above**. Now that you've been properly credentialed, you can install the AWS command line toole, create some credentials, and sign-in.
+
 
 
 
@@ -101,27 +111,53 @@ Finally, to deploy these resources, run
 
     terraform apply
 
-This process will ask you for confirmation (type `yes`), and will talk to AWS to configure the cloud compute resources we need to do this work. It should take less than 5 minutes.
+This process will ask you for confirmation (type `yes`), and will talk to AWS to configure the cloud compute resources we need to do this work. It should take about 20 minutes.
 
 When it's complete, you should see an output looking something like this:
 
     Outputs:
 
     public_instance_ip = [
-    "35.160.4.86",
+    "XXX.XXX.XXX.XXX",
     ]
-    public_route_table_ids = [
-    "rtb-08ef3ffbecd7f07ae",
-    ]
-    public_subnets = [
-    "subnet-08b663ab9282029fe",
-    ]
-    vpc_id = vpc-052b4f723bcd819ce
 
-The most important piece of information to note here is **`public_instance_ip`**, which is the address of our newly deployed cloud computer.
+    SSH_CMD = "ssh -i /path/to/key.pem ubuntu@$XXX.XXX.XXX.XXX"
 
-## Accessing Resources + Deploying Jupyter Lab
+    sagemaker_role_arn = "arn:aws:sagemaker:xxxxx"
 
-To actually do some work on these computers, we need to get a little familiar with the `ssh` command line tool. Basically, `ssh` allows you to login to a remote computer (in this case, a cloud computer run by AWS) and perform some tasks, as if you were sitting on your local command line.
+Importantly, the `SSH_CMD` value is a command which will connect you to the newly-deployed EC2 instance. You'll also need the `sagemaker_role_arn` value for model training.
 
-***TODO: Finish this section***
+## Login + Start JupyterLab
+
+The output of `terraform apply` (which is always available by running `terraform output`), is both an IP adress and a command which can be used to SSH into a newly-deployed EC2 instance. This instance has been provisioned with a Docker image containing JupyterLab, our tutorial and development environment. Follow these steps to launch JupyterLab.
+
+1. SSH into the instance: `eval $(terraform output SSH_CMD)` or copy/paste the SSH_CMD value above.
+1. Once logged-in, run `sudo docker run -ti -p 8888:8888 -v $(pwd):/host tonycannistra/planet-snowcover lab`. This should produce output with a URL like: `http://0.0.0.0:8888/?token=4715df79c9b1c97244618552e2198ba478cd42f3fa5ebbd8`.
+1. In your browser, paste the value of `public_instance_ip` from `terraform output` as follows: `XXX.XXX.XXX.XXX:8888`. In the box, copy and paste the value after `token` in the above URL and press Enter.
+
+**TODO: add smarter volume mounting + git pull of tutorials**
+
+## IMPORTANT: Turn off your instances *every time*.
+
+As mentioned above, this deployment comes with a monthly fee, as does every Amazon resource. To save money, **shut down your EC2 instance when you're done using it**. If you wish to return to your work, do not `terminate` the instance.
+
+If you don't have any saved work and would like to destroy all of the deployed resources, run `terraform destroy`. All unsaved work stored in any of the deployed resources (EC2, mainly) will be lost. 
+
+## Appendix: Provisioned Resources
+
+This terraform configuration will create (and therefore can destroy) the following resources:
+
+* AWS Elastic Container Repository repo (name: `ps-images`)
+* EC2 Virtual Private Cloud
+* EC2 Internet Gateway
+* EC2 subnet within the VPC
+* EC2 network routing table within the VPC for global access from all IPs
+* EC2 security group with ports 22/80/8888 ingress and * egress
+* EC2 public key
+* IAM role for EC2 access to services
+* IAMPo asfzlicyAttachment to above IAM role (policy specified in `variables.tf`)
+* **EC2 Instance** (name: `mainDevInstance`), provisioned with:
+  * local public SSH key for access (*via `file` provisioner*)
+  * Development docker image from DockerHub (specified in `variables.tf`), which is pushed to the newly-created `ps-images` ECR repo (*via `remote-exec` provisioner*)
+* IAM role for SageMaker to access AWS account resources (S3).
+* IAMPolicyAttachment to attach specific resource access to above role

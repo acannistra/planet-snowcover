@@ -1,0 +1,66 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "Stmt1595008360505",
+            "Action": "s3:*",
+            "Effect": "Allow",
+            "Resource": "*"
+        },
+        {
+            "Sid": "Stmt1595008423533",
+            "Action": "sagemaker:*",
+            "Effect": "Allow",
+            "Resource": "*"
+        },
+        {
+            "Sid": "Stmt1595008489022",
+            "Action": [
+                "iam:AttachGroupPolicy",
+                "iam:AttachRolePolicy",
+                "iam:CreatePolicy",
+                "iam:CreateRole",
+                "iam:GetGroup",
+                "iam:GetPolicy",
+                "iam:GetRole",
+                "iam:GetRolePolicy",
+                "iam:GetUser",
+                "iam:ListPolicies",
+                "iam:ListRoles",
+                "iam:ListUserPolicies",
+                "iam:ListUsers",
+                "iam:PutRolePolicy",
+                "iam:PutUserPolicy",
+                "iam:UpdateRole",
+                "iam:CreateAccessKey",
+                "iam:CreateInstanceProfile",
+                "iam:ListAttachedRolePolicies",
+                "iam:GetPolicyVersion",
+                "iam:ListPolicyVersions",
+                "iam:DetachRolePolicy",
+                "iam:GetInstanceProfile",
+                "iam:DeletePolicy",
+                "iam:DeleteRole",
+                "iam:RemoveRoleFromInstanceProfile",
+                "iam:DeleteInstanceProfile",
+                "iam:AddRoleToInstanceProfile",
+                "iam:PassRole",
+                "iam:ListInstanceProfilesForRole"
+            ],
+            "Effect": "Allow",
+            "Resource": "*"
+        },
+        {
+            "Sid": "id",
+            "Action": "ecr:*",
+            "Effect": "Allow",
+            "Resource": "*"
+        },
+        {
+            "Sid": "Stmt1595008520486",
+            "Action": "ec2:*",
+            "Effect": "Allow",
+            "Resource": "*"
+        }
+    ]
+}
