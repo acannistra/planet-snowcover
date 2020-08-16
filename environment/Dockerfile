@@ -38,9 +38,6 @@ RUN apt-get update \
 COPY ./environment/pytorch_p36.yml /opt/program/
 RUN conda env update -q --file /opt/program/pytorch_p36.yml
 
-# AWS Credentials
-COPY ./environment/aws_creds /root/.aws/credentials
-COPY ./environment/aws_config /root/.aws/config
 
 ENV PYTHONUNBUFFERED=TRUE
 ENV PYTHONDONTWRITEBYTECODE=TRUE
