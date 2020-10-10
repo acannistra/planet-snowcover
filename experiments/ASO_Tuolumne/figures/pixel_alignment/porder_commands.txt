@@ -1,0 +1,2 @@
+porder idlist --input (pwd)/tuol_peaks.geojson --start "2018-06-01" --end "2018-09-30" --item PSScene3Band --asset "visual" --outfile (pwd)/ids-peaks-summer-2018.csv --number 1000 --overlap 100
+porder order --name "tuol-2018-summer-peaks" --idlist (pwd)/ids-peaks-summer-2018.csv --item PSScene3Band --bundle visual --boundary (pwd)/tuol_peaks.geojson --aws (pwd)/aws_creds.yml --op clip zipall aws email
