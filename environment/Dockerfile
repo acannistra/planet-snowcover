@@ -1,4 +1,5 @@
 FROM ubuntu:16.04
+ENV GDAL_DISABLE_READDIR_ON_OPEN=FALSE
 
 MAINTAINER Tony Cannistra <tony.cannistra@gmail.com>
 
