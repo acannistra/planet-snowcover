@@ -14,6 +14,7 @@ RUN apt-get -y update && apt-get install -y --no-install-recommends \
          bzip2 \
 		     libgcc-5-dev \
          ca-certificates libspatialindex-dev \
+         libsm6 libxext6 libxrender-dev cmake \
     && rm -rf /var/lib/apt/lists/*
 
 # Anaconda
