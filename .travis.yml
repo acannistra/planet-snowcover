@@ -1,10 +1,7 @@
 sudo: required
 branches:
-  only:
-  - master
-  - docker-rework
-services:
-- docker
+  services:
+    - docker
 env:
   global:
   - IMAGE_NAME=675906086666.dkr.ecr.us-west-2.amazonaws.com/planet-snowcover:latest
