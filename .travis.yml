@@ -17,7 +17,7 @@ script:
 - if test -z "$AWS_SECRET_ACCESS_KEY"; then echo "AWS SECRET empty"; fi;
 - bash ./environment/create-aws-creds.sh
 - stat ./environment/aws_config
-- docker build --pull --cache-from "$IMAGE_NAME" --tag "$IMAGE_NAME" --file environment/Dockerfile
+- travis_wait 30 docker build --pull --cache-from "$IMAGE_NAME" --tag "$IMAGE_NAME" --file environment/Dockerfile
   .
 after_script:
 - docker images
