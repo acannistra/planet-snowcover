@@ -14,23 +14,13 @@ RUN apt-get -y update && apt-get install -y --no-install-recommends \
          bzip2 \
 		     libgcc-5-dev \
          ca-certificates libspatialindex-dev \
+         libsm6 libxext6 libxrender-dev cmake \
     && rm -rf /var/lib/apt/lists/*
 
 # Anaconda
 RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
 RUN bash Miniconda3-latest-Linux-x86_64.sh -b
 ENV PATH /root/miniconda3/bin:$PATH
-
-#needs:
-# albumentations
-# opencv libraries
-# apt-get install -y libsm6 libxext6 libxrender-dev
-# pip install opencv-python
-# conda install -c conda-forge imgaug
-#conda install albumentations -c conda-forgea
-# aws cli
-# credentials :(
-
 
 
 # Install dependancies
