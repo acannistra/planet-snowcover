@@ -26,3 +26,5 @@ ENV PATH /root/miniconda3/bin:$PATH
 # Install dependancies
 COPY process_results.yml /opt/program/
 RUN conda env update --file /opt/program/process_results.yml
+
+RUN pip install --upgrade awscli
