@@ -19,14 +19,12 @@ script:
 - stat ./environment/aws_config
 - docker build --pull --cache-from "$IMAGE_NAME" --tag "$IMAGE_NAME" --file environment/Dockerfile
   .
+- docker build -f experiments/ASO_Tuolumne/Dockerfile
 after_script:
 - docker images
-after_success:
-- docker --version
-- pip install --user awscli
-- aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
-- aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-- aws configure set default.region us-west-2
-- export PATH=$PATH:$HOME/.local/bin
-- eval $(aws ecr get-login --no-include-email --region us-west-2)
-- docker push "$IMAGE_NAME"
+
+deploy:
+  provider: script
+  script: bash scripts/deploy.sh
+  on:
+    branch: master
