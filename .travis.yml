@@ -16,7 +16,7 @@ script:
 - stat ./environment/aws_config
 - docker build --pull --cache-from "$IMAGE_NAME" --tag "$IMAGE_NAME" --file environment/Dockerfile
   .
-- docker build -f experiments/ASO_Tuolumne/Dockerfile
+- docker build -f experiments/ASO_Tuolumne/Dockerfile .
 after_script:
 - docker images
 
