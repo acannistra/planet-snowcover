@@ -55,12 +55,12 @@ endif
 
 run_prediction: config
 	cd $(RSP) && \
-		echo "./rsp predict --create_tif \
+		./rsp predict --create_tif \
 		--checkpoint $(MODEL_LOCATION)/$(MODEL_NAME) \
 		--aws_profile default \
 		--tiles $(VALIDATION_IMAGERY)\
-		--buffer --config \"$(abspath $(RUN_WORKDIR))/config.toml\" \
-		\"$(abspath $(RUN_WORKDIR))/prediction\""
+		--buffer --config $(abspath $(RUN_WORKDIR))/config.toml \
+		$(abspath $(RUN_WORKDIR))/prediction
 
 # .PHONY cleanup
 # cleanup:
