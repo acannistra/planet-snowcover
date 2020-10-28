@@ -1,8 +1,7 @@
 SHELL=/bin/bash
 
-VALIDATION_BUCKET ?= s3://planet-snowcover-validation
-VALIDATION_MASKDIR ?= mask_tiles
-VALIDATION_IMAGEDIR ?= image_tiles
+VALIDATION_MASKS ?= s3://planet-snowcover-snow-2/
+VALIDATION_IMAGES ?= s3://planet-snowcover-imagery-2/
 
 MODEL_TRAIN_CONFIG ?= s3://planet-snowcover-experiments-2/co-train.toml
 MODEL_LOCATION ?= s3://planet-snowcover-experiments-2/planet-snowcover-2020-03-12-02-43-15-610
@@ -11,6 +10,7 @@ MODEL_NAME ?= checkpoint-00050-of-00050.pth
 RSP ?= model/robosat_pink
 
 RUN_WORKDIR = $(shell date +"%m-%d-%Y-%T")
+RUN_WORKDIR := ${RUN_WORKDIR}
 
 .PHONY: verify_creds
 verify_creds:
@@ -58,7 +58,7 @@ run_prediction: config
 		echo "./rsp predict --create_tif \
 		--checkpoint $(MODEL_LOCATION)/$(MODEL_NAME) \
 		--aws_profile default \
-		--tiles $(VALIDATION_BUCKET)/$(VALIDATION_IMAGEDIR) \
+		--tiles $(VALIDATION_IMAGERY)\
 		--buffer --config \"$(abspath $(RUN_WORKDIR))/config.toml\" \
 		\"$(abspath $(RUN_WORKDIR))/prediction\""
 
