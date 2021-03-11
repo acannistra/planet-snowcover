@@ -163,8 +163,18 @@ def _coarsen(asoPath, comparatorPath, outdir=None, data_region=None):
 )
 @click.option("--prefix", help="output folder prefix", default="metrics")
 def compare_all(
-    true, preds, out_directory, gdal, data_region, epsg, plot_labels, coarsen, prefix
+    true, preds, out_directory, gdal, data_region, epsg, plot_labels, prefix
 ):
+    """
+    Example: 
+
+    python ~/Dropbox/Projects/UW/planet-snowcover/analysis/compare-metrics.py
+        mask/ASO_3M_SD_USCATE_20180528_binary_merged.tif \
+        preds/20180528_181109_1025_3B_AnalyticMS_SR_clip_merged.tif \
+        ../LC08_CU_003009_20180603_20190615_C01_V01_SNOW/LC08_CU_003009_20180603_20190615_C01_V01_SNOW_075_4326.tif \
+        --data_region data-mask.geojson --prefix fsca075 --gdal_conda qgis --epsg 3857 --plot_labels "[]" --out_directory .
+
+    """
     workfiles = (true,) + preds
     # generate experiment id
     run_id = md5()
