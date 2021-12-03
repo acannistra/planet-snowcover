@@ -1,4 +1,13 @@
-FROM jupyter/datascience-notebook:9f9e5ca8fe5a
+FROM jupyter/datascience-notebook
+
+USER root 
+
+RUN apt-get -q update && \
+    apt-get -q -y install gdal-bin proj-bin && \
+    apt-get clean && \ 
+    rm -rf /var/lib/apt/ /var/cache/apt/ /var/cache/debconf/
+
+USER $NB_USER
 
 COPY ./deployment/environment/pytorch_p36.yml /tmp/
 RUN conda env update -q --file /tmp/pytorch_p36.yml && \
