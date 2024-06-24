@@ -1,0 +1,8 @@
+{
+"type": "FeatureCollection",
+"name": "tuol_peaks",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { }, "geometry": { "type": "Polygon", "coordinates": [ [ [ -119.368762669798301, 37.952234651084048 ], [ -119.370386130554678, 38.002700951985616 ], [ -119.286342091472036, 38.004365810386631 ], [ -119.284776067499322, 37.953896508018069 ], [ -119.368762669798301, 37.952234651084048 ] ] ] } }
+]
+}
